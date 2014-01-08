@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from 'macros.html' import print_ladder %}
+
+{% block title %}VendAsta Foos Ladder{% endblock %}
+
+{% block styling_or_scripts %}
+
+{% endblock %}
+
+{% block current_home %}class="active"{% endblock %}
+
+{% block heading %}Home Sweet Home{% endblock %}
+
+{% block page_content %}
+    <p>Welcome, {{ name }}, to the VendAsta Foosball Ladder.</p>
+
+    <h4>Ladder</h4>
+    {{ print_ladder(numplayers, active, players) }}
+{% endblock %}
+
+{% block body_scripts %}
+
+{% endblock %}

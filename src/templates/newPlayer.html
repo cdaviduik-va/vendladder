@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% from 'macros.html' import playerSel %}
+{% from 'macros.html' import rankingsSel %}
+
+{% block title %}New Player Entry{% endblock %}
+
+{% block heading %}New Player Entry Form{% endblock %}
+{% block page_content %}
+<form title="newPlayer" action="/newPlayer" method="POST" class="form-horizontal">
+    <fieldset>
+        <div class="control-group">
+            <label class="control-label" for="fname">First Name:</label>
+            <div class="controls">
+                <input name="fname" id="fname" required />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="lname">Last Name:</label>
+            <div class="controls">
+                <input name="lname" id="lname" required />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="skillBaseVal">Skill - Points:</label>
+            <div class="controls">
+                {{ rankingsSel(keys, keyVals, 'skillBaseVal') }}
+            </div>
+        </div>
+
+        <input type="hidden" name="key" value="{{ playerKey }}" readonly="True"/>
+        <button type="submit" class="btn btn-large">Submit</button>
+    </fieldset>
+</form>
+    <div class="alert alert-info">If you aren't sure where you should be as far as points go, keep in mind
+        that in general, 1000 is considered a bright beginner. You can also take a
+        look at the current ladder and see where you fit in.</div>
+    <table class="table table-striped">
+        <tr>
+            <th>Name</th>
+            <th>SkillScore</th>
+        </tr>
+        {% set odd=True %}
+        {%  for player in players %}
+            {% if odd %}
+                <tr>
+                    {% set odd=False %}
+                    {% else %}
+                <tr class="alt">
+                {% set odd=True %}
+            {% endif %}
+        <td>{{ player.first_name }} {{ player.last_name }}</td>
+        <td>{{ player.skillScore }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

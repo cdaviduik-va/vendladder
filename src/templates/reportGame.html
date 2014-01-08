@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% from 'macros.html' import playerSel %}
+{% from 'macros.html' import playerScore %}
+{% from 'macros.html' import printGames %}
+
+{% block title %}Report a Game{% endblock %}
+
+{% block current_reporter %}class="active"{% endblock %}
+
+{% block heading %}Report your latest game{% endblock %}
+
+{% block page_content %}
+<form action="ladder" method="POST" class="form-inline" onsubmit="return formsubmit()">
+<fieldset>
+    <legend>Combatants</legend>
+    <p>Player 1: {{ user[0] }} (you!)</p>
+    <label class="control-label" for="player2">Player 2:</label>
+    {% if key %}
+        {{ playerSel(names, keys, 'player2', oppKey=key) }}
+    {% else %}
+        {{ playerSel(names, keys, 'player2') }}
+    {% endif %}
+    <legend>Games</legend>
+    {{ printGames() }}
+    <span class="label label-info">Note: Enter 1-3 games inclusive</span>
+</fieldset>
+    <input type="hidden" value="{{ userKey }}" id="player1" name="player1" />
+    <br>
+    <button id="submitBtn" type="submit" class="btn">Submit scores!</button>
+</form>
+{% endblock %}
+{% block body_scripts %}
+    <script type="text/javascript">
+        var formsubmit = function()
+        {
+            var player_2 = document.getElementById("player2");
+            var submit_btn = document.getElementById("submitBtn");
+            if(player_2.value != "")
+            {
+                submit_butn.disabled = true;
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    </script>
+{% endblock %}
+{#        Eventually it'd be nice to think about using this #}
+{#    $(document).bind('pageinit', function(){#}
+{##}
+{#        $("select[name='player1']").change(function() {#}
+{#            var player1 = $(this).children(':selected').text();#}
+{#            console.debug(player1);#}
+{#            $(".player1").each(function(){#}
+{#                $(this).text(player1);#}
+{#                $(this).parent().page();#}
+{##}
+{#            });#}
+{#        });#}
+{##}
+{#        $("select[name='player2']").change(function(){#}
+{#            var player2 = $(this).children(':selected').text();#}
+{#            console.debug(player2);#}
+{#            $(".player2").each(function(){#}
+{#                $(this).text(player2).trigger("create");#}
+{#                $(this).parent().page();#}
+{##}
+{#            });#}
+{#        });#}
+{##}
+{#        $("select[name='player1']").change();#}
+{#        $("select[name='player2']").change();#}
+{##}
+{#    });#}
+{#    </script>#}
