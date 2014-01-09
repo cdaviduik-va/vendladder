@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>{% block metatitle %}StarCraft II Tracker{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="{{ '/static/scripts/css/bootstrap.css'|vurl }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ '/static/scripts/css/gritter/jquery.gritter.min.css'| vurl }}"  rel="stylesheet" type="text/css" />
+    <link href="{{ '/static/scripts/css/global.css'| vurl }}" rel="stylesheet" type="text/css" />
+    <link href="//vff-dev.appspot.com/static/css/shared-styles.css" rel="stylesheet" type="text/css" />
+    <link href="/static/scripts/css/bootstrap-overrides.css" type="text/css" rel="stylesheet">
+
+    <script type="text/javascript" src="/_ah/channel/jsapi"></script>
+    <!-- libraries -->
+    <link href="/static/scripts/css/jquery-ui-1.10.2.custom.css" rel="stylesheet" type="text/css">
+    <link href="/static/scripts/css/font-awesome.css" type="text/css" rel="stylesheet">
+
+    <!-- global styles -->
+    <link rel="stylesheet" type="text/css" href="/static/scripts/css/layout.css">
+    <link rel="stylesheet" type="text/css" href="/static/scripts/css/elements.css">
+    <link rel="stylesheet" type="text/css" href="/static/scripts/css/icons.css">
+
+
+
+
+    <script src="//vff-dev.appspot.com/static/js/jquery-1.9.1.min.js"></script>
+    <script src="//vff-dev.appspot.com/static/js/knockout-3.0.0.js"></script>
+    <script src="//vff-dev.appspot.com/static/js/vendasta.forms.js"></script>
+</head>
+<body>
+
+    <div id="statuses">
+    {% block afternav %}{% endblock %}
+    </div>
+
+
+    <div class="content">
+{% block content %}{% endblock %}
+    </div>
+
+    {% block script %}{% endblock %}
+</body>
+</html>

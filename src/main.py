@@ -1,8 +1,10 @@
 import os
 
 from webapp2 import WSGIApplication, Route, SimpleRoute
+from app.sc2.views.filters.vurl import do_vurl
 
 ROUTES = [
+    #Foosball Ladder
     Route('/',              handler='app.views.mainView'),
     Route('/player',        handler='app.views.playerView'),
     Route('/newPlayer',     handler='app.views.newPlayerView'),
@@ -18,12 +20,26 @@ ROUTES = [
     Route('/matchHistory',  handler='app.views.matchHistoryView'),
     Route('/matchHistoryCalc', handler='app.views.matchHistoryCalc'),
     Route('/ladder-redirect', handler='app.views.ladderRedirect'),
+
+    #Starcraft II Tracker
+    SimpleRoute('/sc2/?', handler='app.sc2.views.main.MainView'),
+    SimpleRoute('/sc2/matches/submit/?', handler='app.sc2.views.matches.MatchSubmitView'),
+
+    #General
     SimpleRoute('/.+',      handler='app.views.errorHandler'),
 ]
 
 TEMPLATE_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                             'templates')
 
-CONFIG = {'webapp2_extras.jinja2': {'template_path': TEMPLATE_DIR}}
+CONFIG = {
+    'webapp2_extras.jinja2': {
+        'filters' : {
+            'vurl' : do_vurl
+        },
+        'template_path': TEMPLATE_DIR
+    }
+}
+
 
 app = WSGIApplication(ROUTES, config=CONFIG)
