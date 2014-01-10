@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
-    <title>{% block metatitle %}StarCraft II Tracker{% endblock %}</title>
+    <title>StarCraft II Tracker{% block metatitle %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link href="{{ '/static/scripts/css/bootstrap.css'|vurl }}" rel="stylesheet" type="text/css"/>
     <link href="{{ '/static/scripts/css/gritter/jquery.gritter.min.css'| vurl }}"  rel="stylesheet" type="text/css" />
@@ -34,6 +34,8 @@
 
 
     <div class="content">
+
+<h1>Vendasta {{ year }} {{ season }} StarCraft II - Season {{ season_no }}</h1>
 {% block content %}{% endblock %}
     </div>
 

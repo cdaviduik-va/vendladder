@@ -21,5 +21,12 @@ class UserView(RequestHandler):
                 context["logout"] = users.create_logout_url("/")
             else:
                 context["login"] = users.create_login_url("/")
+        # Seasonal constants
+        season = "Winter"
+        season_number = "1"
+        year = "2014"
+        context["year"] = year
+        context["season"] = season
+        context["season_no"] = season_number
         content = self.jinja2.render_template(template, **context)
         self.response.write(content)

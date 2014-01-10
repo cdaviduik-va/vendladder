@@ -1,0 +1,26 @@
+{% extends "sc2/global.html" %}
+
+{% block metatitle %} - User Creation{% endblock %}
+
+{% block content %}
+<h2>Create a Season (admin)</h2>
+{% if season_created %}
+        <p>Season {{ season_name }} was created successfully.</p>
+{% endif %}
+<p>
+    Add folks to the list of people who can go forth and do battle in Season {{ season_no }}!
+</p>
+
+<form method="post" action="/sc2/admin/season/create/" class="v-form">
+    <div class="form-header">Season Creation</div>
+    <div class="control-group">
+        <label class="control-label" for="seasonname">Season Name:</label>
+        <input type="text" id="seasonname" name="seasonname" required/>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="startdate">Start date:</label>
+        <input type="date" id="startdate" name="startdate" required/>
+    </div>
+    <input type="submit"/>
+</form>
+{% endblock %}
