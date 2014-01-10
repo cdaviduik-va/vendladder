@@ -12,4 +12,4 @@ class PlayerModel(ndb.Model):
     name = ndb.StringProperty()
     vendasta_email = ndb.StringProperty()
     battle_net_name = ndb.StringProperty()
-    skill_level = ndb.Integer()
+    skill_level = ndb.IntegerProperty()
