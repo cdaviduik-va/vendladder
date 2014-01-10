@@ -24,3 +24,10 @@ class SeasonCreateView(UserView):
         season_name = self.request.POST.get("seasonname")
         start_date = self.request.POST.get("startdate")
         new_season = create_season(season_name, start_date)
+
+        data = {
+            "season_created": True if new_season else False,
+            "season_name": season_name
+        }
+
+        self.render_response('/sc2/admin/season/create.html', **data)
