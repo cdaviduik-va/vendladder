@@ -23,4 +23,5 @@ class GameModel(ndb.Model):
     game_length_seconds = ndb.IntegerProperty()
     speed = ndb.StringProperty()
     release = ndb.StringProperty()
-    players = ndb.StructuredProperty(PlayerPerformance, repeated=True)
+    players = ndb.StructuredProperty(PlayerPerformanceModel, repeated=True)
+    type = ndb.StringProperty()

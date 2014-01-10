@@ -3,16 +3,14 @@
 {% block content %}
 <h1>Vendasta 2014 Winter StarCraft II - Season 1</h1>
 
-<h2>Match Submission</h2>
+<h2>Game Submission</h2>
 <p>
     Players do not submit scores for the games this season.  Instead they upload the replays from the games played.  As
     per the previous season rules, failure to submit matches before the deadline will result in a loss for both teams.
 </p>
 
-<form method="post" action="/sc2/matches/submit">
-    <label>Game 1:</label><input name="game1" type="file"/><br />
-    <label>Game 2:</label><input name="game2" type="file"/><br />
-    <label>Game 3 (if required):</label><input name="game3" type="file"/><br />
+<form method="post" action="/sc2/game/submit" enctype="multipart/form-data">
+    <label>Replay File:</label><input name="replay" type="file"/><br />
     <input type="submit" name="Submit" />
 </form>
 {% endblock %}
