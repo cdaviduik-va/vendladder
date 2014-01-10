@@ -19,4 +19,4 @@ class TestReplayParsing(GaeTestCase):
         replay = sc2reader.load_replay('data/Akilon Wastes (2).SC2Replay', load_level=4)
         for player in replay.players:
             if player.is_human:
-                print "Player: %s (%s) - %s" % (player.name, player.play_race)
+                print "Player: %s (%s) - %s" % (player.name, player.play_race, player.result)
