@@ -1,5 +1,7 @@
 import os
 
+import set_sys_path # Must be done first to set up path
+
 from webapp2 import WSGIApplication, Route, SimpleRoute
 from app.sc2.views.filters.vurl import do_vurl
 
@@ -23,7 +25,7 @@ ROUTES = [
 
     #Starcraft II Tracker
     SimpleRoute('/sc2/?', handler='app.sc2.views.main.MainView'),
-    SimpleRoute('/sc2/match/submit/?', handler='app.sc2.views.match.MatchSubmitView'),
+    SimpleRoute('/sc2/game/submit/?', handler='app.sc2.views.game.GameSubmitView'),
 
     SimpleRoute('/sc2/admin/match/create/?', handler='app.sc2.views.admin.match.MatchCreateView'),
 
