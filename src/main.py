@@ -23,7 +23,9 @@ ROUTES = [
 
     #Starcraft II Tracker
     SimpleRoute('/sc2/?', handler='app.sc2.views.main.MainView'),
-    SimpleRoute('/sc2/matches/submit/?', handler='app.sc2.views.matches.MatchSubmitView'),
+    SimpleRoute('/sc2/match/submit/?', handler='app.sc2.views.match.MatchSubmitView'),
+
+    SimpleRoute('/sc2/admin/match/schedule/?', handler='app.sc2.views.admin.match.MatchCreateView'),
 
     #General
     SimpleRoute('/.+',      handler='app.views.errorHandler'),
