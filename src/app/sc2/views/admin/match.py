@@ -13,4 +13,4 @@ class MatchCreateView(UserView):
         """
         data = {}
 
-        self.render_response('/sc2/admin/matches/schedule.html', **data)
+        self.render_response('/sc2/admin/matches/create.html', **data)

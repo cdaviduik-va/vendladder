@@ -10,6 +10,6 @@ class PlayerModel(ndb.Model):
     Model for a StarCraft II player
     """
     name = ndb.StringProperty()
-
-    def build_key(self):
-        return str(uuid.uuid4())
+    vendasta_email = ndb.StringProperty()
+    battle_net_name = ndb.StringProperty()
+    skill_level = ndb.Integer()

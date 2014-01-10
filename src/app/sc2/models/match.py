@@ -10,4 +10,7 @@ class MatchModel(ndb.Model):
     Models a match
     """
     best_of = ndb.IntegerProperty()
-    games = ndb.StructuredProperty(GameModel, repeated=True)
+    start_date = ndb.DateProperty()
+    window_days = ndb.IntegerProperty()
+    team1_players = ndb.StringProperty(repeated=True)
+    team2_players = ndb.StringProperty(repeated=True)
