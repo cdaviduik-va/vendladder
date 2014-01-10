@@ -1,0 +1,40 @@
+{% extends "sc2/global.html" %}
+
+{% block metatitle %} - User Creation{% endblock %}
+
+{% block content %}
+<h2>Create Battlers (admin)</h2>
+{% if user_created %}
+        <p>User {{ name }} was created successfully.</p>
+{% endif %}
+<p>
+    Add folks to the list of people who can go forth and do battle in Season {{ season_no }}!
+</p>
+
+<form method="post" action="/sc2/admin/user/create/" class="v-form">
+    <div class="form-header">User Creation</div>
+    <div class="control-group">
+        <label class="control-label" for="realname">Name:</label>
+        <input type="text" id="realname" name="realname" required/>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="vendemail">Vendasta Email:</label>
+        <input type="email" id="vendemail" name="vendemail" required/>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="bnetname">Battle.net Username (not RealID):</label>
+        <input type="text" id="bnetname" name="bnetname" required/>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="skill">Skill level (1-10):</label>
+        <input type="number" id="skill" name="skill" required/>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="season">Season</label>
+        <input type="text" id="season" name="season" value="Winter 1" required/>
+    </div>
+    <input type="submit"/>
+</form>
+
+<a href="/sc2/admin/">Back to admin functions</a>
+{% endblock %}

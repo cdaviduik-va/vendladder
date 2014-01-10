@@ -23,14 +23,18 @@ ROUTES = [
     Route('/matchHistoryCalc', handler='app.views.matchHistoryCalc'),
     Route('/ladder-redirect', handler='app.views.ladderRedirect'),
 
-    #Starcraft II Tracker
+    # Starcraft II Tracker main routes
     SimpleRoute('/sc2/?', handler='app.sc2.views.main.MainView'),
     SimpleRoute('/sc2/game/submit/?', handler='app.sc2.views.game.GameSubmitView'),
 
+    # SC2 Admin routes
+    SimpleRoute('/sc2/admin/', handler='app.sc2.views.admin.MainAdminView'),
+    SimpleRoute('/sc2/admin/season/create/?', handler='app.sc2.views.admin.season.SeasonCreateView'),
     SimpleRoute('/sc2/admin/match/create/?', handler='app.sc2.views.admin.match.MatchCreateView'),
+    SimpleRoute('/sc2/admin/user/create/?', handler='app.sc2.views.admin.user.UserAdminView'),
 
     #General
-    SimpleRoute('/.+',      handler='app.views.errorHandler'),
+    SimpleRoute('/.+', handler='app.views.errorHandler'),
 ]
 
 TEMPLATE_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),
