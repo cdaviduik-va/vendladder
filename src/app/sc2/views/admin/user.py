@@ -27,11 +27,9 @@ class UserAdminView(UserView):
         season = self.request.POST.get("season")
         player_key = create_player(realname, vendemail, bnetname, skill, season)
 
-        new_guy = player_info(player_key)
-
         data = {
-            "user_created": True,
-            "name": new_guy.name
+            "user_created": True if player_key else False,
+            "name": realname
         }
 
         self.render_response('/sc2/admin/users/create.html', **data)

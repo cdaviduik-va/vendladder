@@ -19,14 +19,10 @@ class TestReplayParsing(GaeTestCase):
         print os.getcwd()
         replay = sc2reader.load_replay('data/Akilon Wastes (2).SC2Replay', load_level=4)
         for player in replay.players:
-<<<<<<< HEAD
             #if player.is_human:
             print "Player: %s (%s) - %s" % (player.name, player.play_race, player.result)
 
     def testModelCreation(self):
         data = ReplayReader.ExtractGameInformation('data/Akilon Wastes (2).SC2Replay')
         print data
-=======
-            if player.is_human:
-                print "Player: %s (%s) - %s" % (player.name, player.play_race, player.result)
->>>>>>> user-creation
+
