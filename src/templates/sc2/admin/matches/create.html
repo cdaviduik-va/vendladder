@@ -21,12 +21,12 @@
     <label>Round:</label><select></select>
 
     <h3>Team 1</h3>
-    <div><label>Player 1</label><select></select></div>
-    <div><label>Player 2</label><select></select></div>
+    <div><label>Player 1</label><select name="team1-player1" data-bind="options: players, optionsText: 'name'"></select></div>
+    <div><label>Player 2</label><select name="team1-player2" data-bind="options: players, optionsText: 'name'"></select></div>
 
     <h3>Team 2</h3>
-    <div><label>Player 1</label><select></select></div>
-    <div><label>Player 2</label><select></select></div>
+    <div><label>Player 1</label><select name="team2-player1" data-bind="options: players, optionsText: 'name'"></select></div>
+    <div><label>Player 2</label><select name="team2-player2" data-bind="options: players, optionsText: 'name'"></select></div>
     <hr />
     <input type="submit" name="Submit" />
 </form>
@@ -35,5 +35,33 @@
 {% block script %}
 <script type="text/javascript" language="javascript">
     var players = {{players | safe}};
+    var viewModel = null;
+
+    function PlayerModel(data) {
+        var self = this;
+
+        self.name = ko.observable(data.name);
+        self.battle_net_name = ko.observable(data.battle_net_name);
+        self.skill_level = ko.observable(data.skill_level);
+        self.vendasta_email = ko.observable(data.vendasta_email);
+    }
+
+    function CreateMatchViewModel(playerData) {
+        var self = this;
+
+        self.players = ko.observableArray();
+
+        //Initialization
+        for(var i=0; i<playerData.length; i++) {
+            var player = new PlayerModel(playerData[i]);
+            self.players.push(player);
+        }
+    }
+
+    $(function() {
+        //Initial setup
+        viewModel = new CreateMatchViewModel(players);
+        ko.applyBindings(viewModel);
+    });
 </script>
 {% endblock %}

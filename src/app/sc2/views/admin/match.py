@@ -17,8 +17,9 @@ class MatchCreateView(UserView):
 
         #Gather all of the players
         players = PlayerModel.query().fetch()
-        data['players'] = players
-        data['remaining_rounds'] = json.dumps([])
+        rounds = []
+        data['players'] = json.dumps([player.to_dict() for player in players])
+        data['remaining_rounds'] = json.dumps([round.to_dict() for round in rounds])
         data['current_season'] = json.dumps([])
 
         #Render the page

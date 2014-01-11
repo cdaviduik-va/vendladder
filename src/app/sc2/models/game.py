@@ -25,3 +25,4 @@ class GameModel(ndb.Model):
     release = ndb.StringProperty()
     players = ndb.StructuredProperty(PlayerPerformanceModel, repeated=True)
     type = ndb.StringProperty()
+    replay = ndb.BlobProperty()
