@@ -19,3 +19,6 @@ class PlayerModel(ndb.Model):
     def get_players_by_season(cls, season="Winter 1", keys_only=False):
         return cls.query(cls.season == season).get(keys_only=keys_only)
 
+    @classmethod
+    def _get_kind(cls):
+        return "SCII_PlayerModel"

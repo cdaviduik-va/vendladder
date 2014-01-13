@@ -14,3 +14,7 @@ class MatchModel(ndb.Model):
     window_days = ndb.IntegerProperty()
     team1_players = ndb.StringProperty(repeated=True)
     team2_players = ndb.StringProperty(repeated=True)
+
+    @classmethod
+    def _get_kind(cls):
+        return "SCII_MatchModel"
