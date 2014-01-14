@@ -11,3 +11,7 @@ class SeasonModel(ndb.Model):
     """
     season_name = ndb.StringProperty()
     start_date = ndb.DateProperty()
+
+    @classmethod
+    def _get_kind(cls):
+        return "SCII_SeasonModel"

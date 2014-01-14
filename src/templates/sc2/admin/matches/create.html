@@ -1,18 +1,69 @@
 {% extends "sc2/global.html" %}
 
 {% block content %}
-<h2>Match Schedule (admin)</h2>
+<h2>Add Match to Schedule (admin)</h2>
+
 <p>
     Players do not submit scores for the games this season.  Instead they upload the replays from the games played.  As
     per the previous season rules, failure to submit matches before the deadline will result in a loss for both teams.
 </p>
 
-<form method="post" action="/sc2/admin/matches/submit">
-    <label>Game 1:</label><input name="game1" type="file"/><br />
-    <label>Game 2:</label><input name="game2" type="file"/><br />
-    <label>Game 3 (if required):</label><input name="game3" type="file"/><br />
+<h3>DEBUG: Current Season</h3>
+<pre>{{ current_season }}</pre>
+
+<h3>DEBUG: "Remaining Rounds</h3>
+<pre>{{ remaining_rounds }}</pre>
+
+<h3>DEBUG: Players</h3>
+<pre>{{ players }}</pre>
+
+<form method="post" action="/sc2/admin/match/submit">
+    <label>Round:</label><select></select>
+
+    <h3>Team 1</h3>
+    <div><label>Player 1</label><select name="team1-player1" data-bind="options: players, optionsText: 'name'"></select></div>
+    <div><label>Player 2</label><select name="team1-player2" data-bind="options: players, optionsText: 'name'"></select></div>
+
+    <h3>Team 2</h3>
+    <div><label>Player 1</label><select name="team2-player1" data-bind="options: players, optionsText: 'name'"></select></div>
+    <div><label>Player 2</label><select name="team2-player2" data-bind="options: players, optionsText: 'name'"></select></div>
+    <hr />
     <input type="submit" name="Submit" />
 </form>
 <br style="clear:both">
 <a href="/sc2/admin/">Back to admin functions</a>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" language="javascript">
+    var players = {{players | safe}};
+    var viewModel = null;
+
+    function PlayerModel(data) {
+        var self = this;
+
+        self.name = ko.observable(data.name);
+        self.battle_net_name = ko.observable(data.battle_net_name);
+        self.skill_level = ko.observable(data.skill_level);
+        self.vendasta_email = ko.observable(data.vendasta_email);
+    }
+
+    function CreateMatchViewModel(playerData) {
+        var self = this;
+
+        self.players = ko.observableArray();
+
+        //Initialization
+        for(var i=0; i<playerData.length; i++) {
+            var player = new PlayerModel(playerData[i]);
+            self.players.push(player);
+        }
+    }
+
+    $(function() {
+        //Initial setup
+        viewModel = new CreateMatchViewModel(players);
+        ko.applyBindings(viewModel);
+    });
+</script>
 {% endblock %}

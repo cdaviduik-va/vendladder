@@ -25,3 +25,4 @@ class TestReplayParsing(GaeTestCase):
     def testModelCreation(self):
         data = ReplayReader.ExtractGameInformation('data/Akilon Wastes (2).SC2Replay')
         print data
+

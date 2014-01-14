@@ -14,6 +14,10 @@ class PlayerPerformanceModel(ndb.Model):
     handicap = ndb.IntegerProperty()
     won = ndb.BooleanProperty()
 
+    @classmethod
+    def _get_kind(cls):
+        return "SCII_PlayerPerformanceModel"
+
 class GameModel(ndb.Model):
     """
     Models a single game within a match
@@ -25,3 +29,8 @@ class GameModel(ndb.Model):
     release = ndb.StringProperty()
     players = ndb.StructuredProperty(PlayerPerformanceModel, repeated=True)
     type = ndb.StringProperty()
+    replay = ndb.BlobProperty()
+
+    @classmethod
+    def _get_kind(cls):
+        return "SCII_GameModel"
