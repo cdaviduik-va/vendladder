@@ -26,6 +26,7 @@ ROUTES = [
     # Starcraft II Tracker main routes
     SimpleRoute('/sc2/?', handler='app.sc2.views.main.MainView'),
     SimpleRoute('/sc2/game/submit/?', handler='app.sc2.views.game.GameSubmitView'),
+    SimpleRoute('/sc2/game/download/?', handler='app.sc2.views.game.GameDownloadView'),
 
     # SC2 Admin routes
     SimpleRoute('/sc2/admin/', handler='app.sc2.views.admin.MainAdminView'),

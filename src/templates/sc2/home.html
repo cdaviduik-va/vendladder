@@ -9,6 +9,28 @@
     <li>Match History</li>
 </ul>
 
+<h2>Game History</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Winning Team</th>
+            <th>Losing Team</th>
+            <th>Map</th>
+            <th>Date</th>
+            <th>Replay</th>
+        </tr>
+    </thead>
+    <tbody data-bind="foreach: games">
+        <tr>
+            <td data-bind="text:winningTeam"></td>
+            <td data-bind="text:losingTeam"></td>
+            <td data-bind="text:map_name"></td>
+            <td data-bind="text:game_time"></td>
+            <td><a data-bind="attr:{href:download_replay_link}">Download</a></td>
+        </tr>
+    </tbody>
+</table>
+<!--
 <h2>Current Match Schedule [Week 1 - January 13th 2014]</h2>
         <table class="table">
             <thead>
@@ -19,4 +41,78 @@
                 </tr>
             </thead>
         </table>
+-->
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" language="javascript">
+    var games = {{games | safe}};
+    var viewModel = null;
+
+    function PlayerPerformanceModel(data) {
+        var self = this;
+
+        self.name = ko.observable(data.name);
+        self.won = ko.observable(data.won);
+    }
+
+    function GameModel(data) {
+        var self = this;
+
+        self.game_id = ko.observable(data.game_id);
+        self.map_name = ko.observable(data.map_name);
+        self.game_time = ko.observable(data.game_time);
+        self.playerPerformances = ko.observableArray();
+
+        self.winningTeam = ko.computed(function() {
+            var winningPlayers = [];
+            var perfs = self.playerPerformances();
+            for(var i=0; i<perfs.length; i++) {
+                if(perfs[i].won()) {
+                    winningPlayers.push(perfs[i].name());
+                }
+            }
+            return winningPlayers.join(', ');
+        });
+
+        self.losingTeam = ko.computed(function() {
+            var losingPlayers = [];
+            var perfs = self.playerPerformances();
+            for(var i=0; i<perfs.length; i++) {
+                if(!perfs[i].won()) {
+                    losingPlayers.push(perfs[i].name());
+                }
+            }
+            return losingPlayers.join(', ');
+        });
+
+        self.download_replay_link = ko.computed(function() {
+            return "/sc2/game/download/?id=" + self.game_id();
+        });
+
+        //Initialization
+        for(var i=0; i<data.players.length; i++) {
+            var playerPerformance = new PlayerPerformanceModel(data.players[i]);
+            self.playerPerformances.push(playerPerformance);
+        }
+    }
+
+    function GamesListViewModel(gamesData) {
+        var self = this;
+
+        self.games = ko.observableArray();
+
+        //Initialization
+        for(var i=0; i<gamesData.length; i++) {
+            var game = new GameModel(gamesData[i]);
+            self.games.push(game);
+        }
+    }
+
+    $(function() {
+        //Initial setup
+        viewModel = new GamesListViewModel(games);
+        ko.applyBindings(viewModel);
+    });
+</script>
 {% endblock %}

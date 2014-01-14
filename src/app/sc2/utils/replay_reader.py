@@ -40,6 +40,8 @@ class ReplayReader():
         game.players = playerStats
         game.type = replay.real_type
 
+        file_name.seek(0)
+        game.replay = file_name.read()
         #Write out the game model
         game.key = ndb.Key(game._get_kind(), str(uuid.uuid4()))
         game.put()
