@@ -1,11 +1,71 @@
 {% extends "sc2/global.html" %}
 
 {% block content %}
+    <a href="/sc2">&lt; Back</a>
     <h1>Player List</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Battle.net Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: players">
+            <tr>
+                <td data-bind="text:name"></td>
+                <td data-bind="text:vendasta_email"></td>
+                <td data-bind="text:pretty_battle_net_name"></td>
+                <td><a data-bind="attr:{href:edit_link}">Edit</a></td>
+            </tr>
+        </tbody>
+    </table>
+
 {% endblock %}
 
-{% block content %}
+{% block script %}
 <script type="text/javascript" language="javascript">
+    var players = {{playersJson | safe}};
+    var viewModel = null;
 
+    function PlayerModel(playerData) {
+        var self = this;
+        self.player_id = ko.observable(playerData.player_id);
+        self.name = ko.observable(playerData.name);
+        self.vendasta_email = ko.observable(playerData.vendasta_email);
+        self.battle_net_name = ko.observable(playerData.battle_net_name);
+
+        //Computed properties
+        self.pretty_battle_net_name = ko.computed(function() {
+            if(!self.battle_net_name()) {
+                return "< Not Entered Yet >";
+            }
+            return self.battle_net_name();
+        });
+
+        self.edit_link = ko.computed(function() {
+            return "/sc2/admin/player/?id=" + self.player_id();
+        });
+    }
+
+    function PlayerListViewModel(playersData) {
+        var self = this;
+
+        self.players = ko.observableArray();
+
+        //Initialization
+        for(var i=0; i<playersData.length; i++) {
+            var player = new PlayerModel(playersData[i]);
+            self.players.push(player);
+        }
+    }
+
+    $(function() {
+        //Initial setup
+        viewModel = new PlayerListViewModel(players);
+        ko.applyBindings(viewModel);
+    });
 </script>
 {% endblock %}

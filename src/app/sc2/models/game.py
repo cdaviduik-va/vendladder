@@ -30,7 +30,14 @@ class GameModel(ndb.Model):
     players = ndb.StructuredProperty(PlayerPerformanceModel, repeated=True)
     type = ndb.StringProperty()
     replay = ndb.BlobProperty()
+    round = ndb.KeyProperty()
+    game_id = ndb.ComputedProperty(lambda self: self.key.id())
 
     @classmethod
     def _get_kind(cls):
         return "SCII_GameModel"
+
+    @classmethod
+    def get_list(cls):
+        query = cls.query().order(-cls.game_time)
+        return query.fetch()

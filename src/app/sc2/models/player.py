@@ -9,6 +9,7 @@ class PlayerModel(ndb.Model):
     """
     Model for a StarCraft II player
     """
+    player_id = ndb.ComputedProperty(lambda self: self.key.id())
     name = ndb.StringProperty()
     vendasta_email = ndb.StringProperty()
     battle_net_name = ndb.StringProperty()
