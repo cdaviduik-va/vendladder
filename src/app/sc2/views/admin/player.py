@@ -1,10 +1,13 @@
 """
 -
 """
+import json
+from app.sc2.models.player import PlayerModel
+from app.sc2.utils import jsonDateTimeHandler
 from app.sc2.views import UserView
 from ...domain.player import create_player, player_info
 
-class UserAdminView(UserView):
+class PlayerAdminView(UserView):
     """
     Allows for the scheduling of matches
     """
@@ -14,7 +17,16 @@ class UserAdminView(UserView):
         """
         data = {}
 
-        self.render_response('/sc2/admin/users/create.html', **data)
+        #Handle edits
+        id = self.request.GET.get('id')
+        if id:
+            player = PlayerModel.get_by_id(id)
+            data['playerJson'] = json.dumps('player', default=jsonDateTimeHandler)
+            data['isUpdate'] = True
+        else:
+            data['isUpdate'] = False
+
+        self.render_response('/sc2/admin/player/create.html', **data)
 
     def post(self):
         """
@@ -28,9 +40,9 @@ class UserAdminView(UserView):
         player_key = create_player(realname, vendemail, bnetname, skill, season)
 
         data = {
-            "user_created": True if player_key else False,
+            "player_created": True if player_key else False,
             "name": realname
         }
 
-        self.render_response('/sc2/admin/users/create.html', **data)
+        self.render_response('/sc2/admin/player/create.html', **data)
 

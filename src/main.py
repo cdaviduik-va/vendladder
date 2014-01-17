@@ -34,7 +34,7 @@ ROUTES = [
     SimpleRoute('/sc2/admin/', handler='app.sc2.views.admin.MainAdminView'),
     SimpleRoute('/sc2/admin/season/create/?', handler='app.sc2.views.admin.season.SeasonCreateView'),
     SimpleRoute('/sc2/admin/match/create/?', handler='app.sc2.views.admin.match.MatchCreateView'),
-    SimpleRoute('/sc2/admin/user/create/?', handler='app.sc2.views.admin.user.UserAdminView'),
+    SimpleRoute('/sc2/admin/player/create/?', handler='app.sc2.views.admin.player.PlayerAdminView'),
 
     #General
     SimpleRoute('/.+', handler='app.views.errorHandler'),

@@ -1,0 +1,92 @@
+{% extends "sc2/global.html" %}
+
+{% block metatitle %} - User Creation{% endblock %}
+
+{% block content %}
+<h2>Create Battlers (admin)</h2>
+{% if user_created %}
+        <p>User {{ name }} was created successfully.</p>
+{% endif %}
+<p>
+    Add folks to the list of people who can go forth and do battle in Season {{ season_no }}!
+</p>
+
+<form method="post" class="v-form" data-bind="with:player, attr:{method:form_url}">
+    <input typ="hidden" id="player_id" data-bind="value:player_id" />
+    <div class="form-header">User{% if is_update %}Update{% else %}Creation{% endif %}</div>
+    <div class="control-group">
+        <label class="control-label" for="realname">Name:</label>
+        <input type="text" id="realname" name="realname" data-bind="value:name"required/>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="vendemail">Vendasta Email:</label>
+        <input type="email" id="vendemail" name="vendemail" data-bind="value:vendasta_email"required/>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="bnetname">Battle.net Username (not RealID):</label>
+        <input type="text" id="bnetname" name="bnetname" data-bind="value:battle_net_name"/>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="skill">Skill level (1-10):</label>
+        <input type="number" id="skill" name="skill" data-bind="value:skill" required/>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="season">Season</label>
+        <input type="text" id="season" name="season" data-bind="value:season" required/>
+    </div>
+    <input type="submit"/>
+</form>
+<br style="clear:both">
+<a href="/sc2/admin/">Back to admin functions</a>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" language="javascript">
+    var player = {{playerJson | safe}};
+    var viewModel = null;
+
+    function PlayerModel(playerData) {
+        var self = this;
+        self.player_id = ko.observable(playerData.player_id);
+        self.name = ko.observable(playerData.name);
+        self.vendasta_email = ko.observable(playerData.vendasta_email);
+        self.battle_net_name = ko.observable(playerData.battle_net_name);
+        self.skill = ko.observable(playerData.skill);
+        self.season = ko.observable(playerData.season);
+
+        //Computed properties
+        self.pretty_battle_net_name = ko.computed(function() {
+            if(!self.battle_net_name()) {
+                return "< Not Entered Yet >";
+            }
+            return self.battle_net_name();
+        });
+
+        self.edit_link = ko.computed(function() {
+            return "/sc2/admin/player/?id=" + self.player_id();
+        });
+    }
+
+    function PlayerCreateEditViewModel(playerData) {
+        var self = this;
+
+        self.player = new PlayerModel(playerData);
+
+        //Computed fields
+        self.form_url = ko.computed(function() {
+            var url = '/sc2/admin/player/';
+            if(player.player_id()) {
+                url += '?id=' + player.player_id();
+            }
+            return url;
+        });
+
+    }
+
+    $(function() {
+        //Initial setup
+        viewModel = new PlayerCreateEditViewModel(player);
+        ko.applyBindings(viewModel);
+    });
+</script>
+{% endblock %}
