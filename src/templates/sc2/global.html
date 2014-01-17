@@ -1,44 +1,41 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
-<head>
-    <title>StarCraft II Tracker{% block metatitle %}{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link href="{{ '/static/scripts/css/bootstrap.css'|vurl }}" rel="stylesheet" type="text/css"/>
-    <link href="{{ '/static/scripts/css/gritter/jquery.gritter.min.css'| vurl }}"  rel="stylesheet" type="text/css" />
-    <link href="{{ '/static/scripts/css/global.css'| vurl }}" rel="stylesheet" type="text/css" />
-    <link href="//vff-dev.appspot.com/static/css/shared-styles.css" rel="stylesheet" type="text/css" />
-    <link href="/static/scripts/css/bootstrap-overrides.css" type="text/css" rel="stylesheet">
+{% extends "base.html" %}
 
-    <script type="text/javascript" src="/_ah/channel/jsapi"></script>
-    <!-- libraries -->
-    <link href="/static/scripts/css/jquery-ui-1.10.2.custom.css" rel="stylesheet" type="text/css">
-    <link href="/static/scripts/css/font-awesome.css" type="text/css" rel="stylesheet">
+{% block styling_or_scripts %}
+    <link href="/static/css/sc2.css" rel="stylesheet" media="screen">
+{% endblock %}
 
-    <!-- global styles -->
-    <link rel="stylesheet" type="text/css" href="/static/scripts/css/layout.css">
-    <link rel="stylesheet" type="text/css" href="/static/scripts/css/elements.css">
-    <link rel="stylesheet" type="text/css" href="/static/scripts/css/icons.css">
+{% block title %}VendAsta Starcraft 2 Ladder{% endblock %}
+{% block menu_heading %}VendAsta Starcraft 2 Ladder{% endblock %}
+{% block heading %}Vendasta {{ year }} {{ season }} StarCraft II - Season {{ season_no }}{% endblock %}
 
+{% block nav_items %}
+    <ul class="nav">
+        {% if logout %}
+            <li><a href="/sc2/game/submit/">Submit a Game Result</a></li>
+        {% endif %}
 
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Ladder
+            <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li><a href="#">View Match History</a></li>
+                <li><a href="#">View Player Rankings</a></li>
+            </ul>
+        </li>
+        <li class="divider-vertical"></li>
 
+        {% if logout %}
+            <li><a href="{{ logout }}">Sign Out</a></li>
+        {% else %}
+            <li><a href="{{ login }}">Sign In</a></li>
+        {% endif %}
+    </ul>
+{% endblock%}
 
-    <script src="//vff-dev.appspot.com/static/js/jquery-1.9.1.min.js"></script>
-    <script src="//vff-dev.appspot.com/static/js/knockout-3.0.0.js"></script>
-    <script src="//vff-dev.appspot.com/static/js/vendasta.forms.js"></script>
-</head>
-<body>
+{% block page_content %}
+    {% block content %}{% endblock %}
+{% endblock %}
 
-    <div id="statuses">
-    {% block afternav %}{% endblock %}
-    </div>
-
-
-    <div class="content">
-
-<h1>Vendasta {{ year }} {{ season }} StarCraft II - Season {{ season_no }}</h1>
-{% block content %}{% endblock %}
-    </div>
-
+{% block body_scripts %}
     {% block script %}{% endblock %}
-</body>
-</html>
+{% endblock %}
