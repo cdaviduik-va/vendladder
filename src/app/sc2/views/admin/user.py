@@ -33,3 +33,4 @@ class UserAdminView(UserView):
         }
 
         self.render_response('/sc2/admin/users/create.html', **data)
+
