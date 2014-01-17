@@ -1,9 +1,7 @@
-import uuid
-
-from google.appengine.ext import ndb
 import sc2reader
 
-from app.sc2.models.game import PlayerPerformanceModel, GameModel
+from app.sc2.models.game import PlayerPerformanceModel, GameModel, ReplayModel
+
 
 class ReplayReader():
     """
@@ -39,12 +37,14 @@ class ReplayReader():
         game.speed = replay.speed
         game.players = playerStats
         game.type = replay.real_type
-
-        file_name.seek(0)
-        game.replay = file_name.read()
-        #Write out the game model
-        game.key = ndb.Key(game._get_kind(), str(uuid.uuid4()))
+        game.key = GameModel.generate_key(game.game_time)
         game.put()
+
+        replay_entity = ReplayModel()
+        file_name.seek(0)
+        replay_entity.replay_file = file_name.read()
+        replay_entity.key = ReplayModel.build_key(game.game_id)
+        replay_entity.put()
 
         #Return the game model
         return game
