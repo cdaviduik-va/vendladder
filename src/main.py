@@ -31,12 +31,13 @@ ROUTES = [
     SimpleRoute('/sc2/game/download/?', handler='app.sc2.views.game.GameDownloadView'),
 
     # SC2 Admin routes
-    SimpleRoute('/sc2/admin/', handler='app.sc2.views.admin.MainAdminView'),
     SimpleRoute('/sc2/admin/season/create/?', handler='app.sc2.views.admin.season.SeasonCreateView'),
     SimpleRoute('/sc2/admin/match/create/?', handler='app.sc2.views.admin.match.MatchCreateView'),
     SimpleRoute('/sc2/admin/player/create/?', handler='app.sc2.views.admin.player.PlayerAdminView'),
+    SimpleRoute('/sc2/admin/round/create/?', handler='app.sc2.views.admin.round.RoundCreateView'),
 
     #General
+    SimpleRoute('/sc2.+', handler='app.sc2.views.main.ErrorView'),
     SimpleRoute('/.+', handler='app.views.errorHandler'),
 ]
 

@@ -23,6 +23,9 @@ class RoundCreateView(UserView):
         season_name = self.request.POST.get("seasonname")
         start_date = self.request.POST.get("startdate")
 
+        # TODO: round creation
+        new_season = False
+
         data = {
             "season_created": True if new_season else False,
             "season_name": season_name

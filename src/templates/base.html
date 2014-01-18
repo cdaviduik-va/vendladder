@@ -21,7 +21,7 @@
                 <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                     <span class="icon-th"></span>
                 </a>
-                <a class="brand" href="/">{% block menu_heading %}VendAsta FoosLadder{% endblock %}</a>
+                <a class="brand" href="{% block home_page %}/{% endblock %}">{% block menu_heading %}VendAsta FoosLadder{% endblock %}</a>
                 <div class="nav-collapse collapse">
                     {% block nav_items %}
                         <ul class="nav">
@@ -88,7 +88,7 @@
     </div>
     <div class="navbar navbar-fixed-bottom">
         <div class="container">
-            <p>&copy; Graham Holtslander 2013 </p>
+            {% block watermark %}<p>&copy; Graham Holtslander 2013 </p>{% endblock %}
         </div>
     </div>
 
