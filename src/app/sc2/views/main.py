@@ -20,3 +20,17 @@ class MainView(UserView):
                                    default=jsonDateTimeHandler)
 
         self.render_response('sc2/home.html', **data)
+
+
+class ErrorView(UserView):
+    """
+    Display an error message without going to the root homepage
+    """
+    def get(self):
+        """
+        Get function for ErrorView
+        """
+        data = {}
+
+        path = self.request.path_qs[1:]
+        self.render_response("sc2/error.html", error_message=path)

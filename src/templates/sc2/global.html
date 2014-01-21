@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block title %}VendAsta Starcraft 2 Ladder{% endblock %}
+{% block home_page_url %}/sc2{% endblock %}
 {% block menu_heading %}VendAsta Starcraft 2 Ladder{% endblock %}
 {% block heading %}Vendasta {{ year }} {{ season }} StarCraft II - Season {{ season_no }}{% endblock %}
 
@@ -25,8 +26,20 @@
                 <li><a href="/sc2/player/">View Player Rankings</a></li>
             </ul>
         </li>
+    {% if is_admin %}
         <li class="divider-vertical"></li>
-
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Admin
+                <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li><a href="/sc2/admin/season/create">New Season</a></li>
+                <li><a href="/sc2/admin/round/create">Create Rounds</a></li>
+                <li><a href="/sc2/admin/player/create">Add Players</a></li>
+                <li><a href="/sc2/admin/match/create">Set up Matches</a></li>
+            </ul>
+        </li>
+    {% endif %}
+        <li class="divider-vertical"></li>
         {% if logout %}
             <li><a href="{{ logout }}">Sign Out</a></li>
         {% else %}
@@ -38,6 +51,9 @@
 {% block page_content %}
     {% block content %}{% endblock %}
 {% endblock %}
+
+{# Blanking out the watermark #}
+{% block watermark %}{% endblock %}
 
 {% block body_scripts %}
     {% block script %}{% endblock %}
