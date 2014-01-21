@@ -38,10 +38,17 @@ class GameModel(ndb.Model):
         return "SCII_GameModel"
 
     @classmethod
-    def generate_key(cls, game_time):
+    def generate_key(cls, game_time, player_names):
         """ Generate a unique key based on the time the game was played. """
-        hashed_game_time = hashlib.md5(str(game_time)).hexdigest()
-        key_name = 'GM-' + hashed_game_time
+        if not game_time:
+            raise ValueError('game_time required')
+        if not player_names:
+            raise ValueError('player_names required')
+
+        player_names = sorted(player_names)
+        string_to_hash = str(game_time) + ''.join(player_names)
+        hashed_string = hashlib.md5(string_to_hash).hexdigest()
+        key_name = 'GM-' + hashed_string
         return ndb.Key(cls._get_kind(), key_name)
 
     @classmethod

@@ -37,7 +37,8 @@ class ReplayReader():
         game.speed = replay.speed
         game.players = playerStats
         game.type = replay.real_type
-        game.key = GameModel.generate_key(game.game_time)
+        player_names = [player.name for player in replay.players]
+        game.key = GameModel.generate_key(game.game_time, player_names)
         game.put()
 
         replay_entity = ReplayModel()
