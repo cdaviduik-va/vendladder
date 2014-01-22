@@ -11,9 +11,15 @@
     Add folks to the list of people who can go forth and do battle in Season {{ season_no }}!
 </p>
 
+<<<<<<< HEAD
 <form method="post" class="v-form" data-bind="with:player, attr:{url:form_url}">
     <input type="hidden" name="player_id" data-bind="value:player_id" />
     <div class="form-header">User{% if is_update %}Update{% else %}Creation{% endif %}</div>
+=======
+<h3>User {% if is_update %}Update{% else %}Creation{% endif %}</h3>
+<form method="post" class="v-form" data-bind="with:player, attr:{method:form_url}">
+    <input type="hidden" id="player_id" data-bind="value:player_id" />
+>>>>>>> 96d9a4a015989364c1abf87205254f6e07ff0063
     <div class="control-group">
         <label class="control-label" for="realname">Name:</label>
         <input type="text" id="realname" name="realname" data-bind="value:name"required/>

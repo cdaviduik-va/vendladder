@@ -1,7 +1,6 @@
 """
 Player model
 """
-import uuid
 from google.appengine.ext import ndb
 
 
