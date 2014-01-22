@@ -1,10 +1,11 @@
 """
 Deals with stuff with users... you know
 """
+from google.appengine.ext import ndb
 from google.appengine.ext.ndb import Key
 from ..models.player import PlayerModel
 
-def create_player(real_name, vend_email, bnet_name, skill_level, season):
+def create_player(real_name, vend_email, bnet_name, skill_level, season, player_id = None):
     """
     Creates a player from args provided.
     """
@@ -13,6 +14,8 @@ def create_player(real_name, vend_email, bnet_name, skill_level, season):
     player = PlayerModel(name=real_name, vendasta_email=vend_email,
                          battle_net_name=bnet_name, skill_level=skill_level_int,
                          season=season)
+    if player_id:
+        player.key = ndb.Key(PlayerModel._get_kind(), int(player_id))
     player_key = player.put()
     return player_key
 

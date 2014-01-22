@@ -2,6 +2,7 @@
 -
 """
 import json
+from google.appengine.ext import ndb
 from app.sc2.models.player import PlayerModel
 from app.sc2.utils import jsonDateTimeHandler
 from app.sc2.views import UserView
@@ -20,11 +21,13 @@ class PlayerAdminView(UserView):
         #Handle edits
         id = self.request.GET.get('id')
         if id:
-            player = PlayerModel.get_by_id(id)
-            data['playerJson'] = json.dumps('player', default=jsonDateTimeHandler)
+            player = ndb.Key(PlayerModel._get_kind(), int(id)).get()
+            data['playerJson'] = json.dumps(player, default=jsonDateTimeHandler)
             data['isUpdate'] = True
         else:
+            data['playerJson'] = json.dumps({'season':'Winter 1'})
             data['isUpdate'] = False
+
 
         self.render_response('/sc2/admin/player/create.html', **data)
 
@@ -32,17 +35,18 @@ class PlayerAdminView(UserView):
         """
         Handles creating (or at least passing off to the creating of) users
         """
+        player_id = self.request.POST['player_id']
         realname = self.request.POST["realname"]
         vendemail = self.request.POST.get("vendemail")
         bnetname = self.request.POST.get("bnetname")
         skill = self.request.POST.get("skill")
         season = self.request.POST.get("season")
-        player_key = create_player(realname, vendemail, bnetname, skill, season)
+        player_key = create_player(realname, vendemail, bnetname, skill, season, player_id)
 
-        data = {
-            "player_created": True if player_key else False,
-            "name": realname
-        }
+        data = {}
+        player = player_key.get()
+        data['playerJson'] = json.dumps(player, default=jsonDateTimeHandler)
+        data['isUpdate'] = True
 
         self.render_response('/sc2/admin/player/create.html', **data)
 
