@@ -6,17 +6,29 @@
     <table class="table">
         <thead>
             <tr>
+                <th>Rank</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Battle.net Name</th>
-                <th>Actions</th>
+                <th>League</th>
+                <th>Wins</th>
+                <th>Losses</th>
+                <th>Ratio</th>
+                <th>Score</th>
+                <th></th>
             </tr>
         </thead>
         <tbody data-bind="foreach: players">
             <tr>
+                <td data-bind="text:$index() + 1"></td>
                 <td data-bind="text:name"></td>
                 <td data-bind="text:vendasta_email"></td>
-                <td data-bind="text:pretty_battle_net_name"></td>
+                <td data-bind="text:battle_net_name"></td>
+                <td data-bind="text:league"></td>
+                <td data-bind="text:games_won"></td>
+                <td data-bind="text:games_lost"></td>
+                <td data-bind="text:ratio"></td>
+                <td data-bind="text:score"></td>
                 <td><a data-bind="attr:{href:edit_link}">Edit</a></td>
             </tr>
         </tbody>
@@ -31,21 +43,17 @@
 
     function PlayerModel(playerData) {
         var self = this;
-        self.player_id = ko.observable(playerData.player_id);
-        self.name = ko.observable(playerData.name);
-        self.vendasta_email = ko.observable(playerData.vendasta_email);
-        self.battle_net_name = ko.observable(playerData.battle_net_name);
-
-        //Computed properties
-        self.pretty_battle_net_name = ko.computed(function() {
-            if(!self.battle_net_name()) {
-                return "< Not Entered Yet >";
-            }
-            return self.battle_net_name();
-        });
+        self.name = playerData.name;
+        self.vendasta_email = playerData.vendasta_email;
+        self.battle_net_name = playerData.battle_net_name;
+        self.score = playerData.score;
+        self.games_won = playerData.games_won;
+        self.games_lost = playerData.games_lost;
+        self.ratio = playerData.ratio;
+        self.league = playerData.league;
 
         self.edit_link = ko.computed(function() {
-            return "/sc2/admin/player/?id=" + self.player_id();
+            return "/sc2/admin/player/edit/" + self.battle_net_name + '/';
         });
     }
 
@@ -55,7 +63,7 @@
         self.players = ko.observableArray();
 
         //Initialization
-        for(var i=0; i<playersData.length; i++) {
+        for(var i=0; i < playersData.length; i++) {
             var player = new PlayerModel(playersData[i]);
             self.players.push(player);
         }

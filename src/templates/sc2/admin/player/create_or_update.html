@@ -1,0 +1,61 @@
+{% extends "sc2/global.html" %}
+
+{% block metatitle %} - User Creation{% endblock %}
+
+{% block content %}
+
+{% if not is_update %}
+    <h2>Create Battlers (admin)</h2>
+    <p>
+        Add folks to the list of people who can go forth and do battle in Season {{ season_no }}!
+    </p>
+{% else %}
+    <h2>Edit details for &lt;<span data-bind="text:battle_net_name"></span>&gt; (admin)</h2>
+    <p>
+        Update folks details who can go forth and do battle in Season {{ season_no }}!
+    </p>
+{% endif %}
+
+<form method="post" class="v-form">
+    <div class="control-group">
+        <label class="control-label" for="battle_net_name">Battle.net Username (not RealID):</label>
+        <input type="text" id="battle_net_name" name="battle_net_name" data-bind="value:battle_net_name" required {% if is_update %}disabled{% endif %}/>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="real_name">Name:</label>
+        <input type="text" id="real_name" name="real_name" data-bind="value:name"/>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="vendasta_email">Vendasta Email:</label>
+        <input type="email" id="vendasta_email" name="vendasta_email" data-bind="value:vendasta_email"/>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="score">Score (edit with caution):</label>
+        <input type="text" id="score" name="score" data-bind="value:score" required/>
+    </div>
+    <input type="submit"/>
+</form>
+<br style="clear:both">
+<a href="/sc2/admin/">Back to admin functions</a>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" language="javascript">
+    var player = {{playerJson | safe}};
+    var viewModel = null;
+
+    function PlayerModel(playerData) {
+        var self = this;
+        self.name = playerData.name;
+        self.vendasta_email = playerData.vendasta_email;
+        self.battle_net_name = playerData.battle_net_name;
+        self.score = playerData.score;
+    }
+
+    $(function() {
+        //Initial setup
+        viewModel = new PlayerModel(player);
+        ko.applyBindings(viewModel);
+    });
+</script>
+{% endblock %}

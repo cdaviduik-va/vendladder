@@ -2,51 +2,66 @@
 -
 """
 import json
-from google.appengine.ext import ndb
-from app.sc2.models.player import PlayerModel
+from app.sc2.domain.player import create_player, get_player_details, update_player
 from app.sc2.utils import jsonDateTimeHandler
 from app.sc2.views import UserView
-from ...domain.player import create_player, player_info
+from constants import Seasons
+import constants
 
-class PlayerAdminView(UserView):
+
+class PlayerCreateView(UserView):
     """
-    Allows for the scheduling of matches
+    Create a player
     """
     def get(self):
         """
         Handles the display of the match creation form
         """
-        data = {}
-
-        #Handle edits
-        id = self.request.GET.get('id')
-        if id:
-            player = ndb.Key(PlayerModel._get_kind(), int(id)).get()
-            data['playerJson'] = json.dumps(player, default=jsonDateTimeHandler)
-            data['isUpdate'] = True
-        else:
-            data['playerJson'] = json.dumps({'season':'Winter 1'})
-            data['isUpdate'] = False
-
-
-        self.render_response('/sc2/admin/player/create.html', **data)
+        data = {
+            'playerJson': json.dumps({
+                'score': constants.DEFAULT_SCORE,
+                'season': Seasons.CURRENT_SEASON
+            })
+        }
+        return self.render_response('/sc2/admin/player/create_or_update.html', **data)
 
     def post(self):
         """
         Handles creating (or at least passing off to the creating of) users
         """
-        player_id = self.request.POST['player_id']
-        realname = self.request.POST["realname"]
-        vendemail = self.request.POST.get("vendemail")
-        bnetname = self.request.POST.get("bnetname")
-        skill = self.request.POST.get("skill")
-        season = self.request.POST.get("season")
-        player_key = create_player(realname, vendemail, bnetname, skill, season, player_id)
+        battle_net_name = self.request.POST.get("battle_net_name", '').strip()
+        if not battle_net_name:
+            return self.abort(400, 'Battle.net Username is required.')
 
-        data = {}
-        player = player_key.get()
-        data['playerJson'] = json.dumps(player, default=jsonDateTimeHandler)
-        data['isUpdate'] = True
+        real_name = self.request.POST["real_name"]
+        vendasta_email = self.request.POST.get("vendasta_email")
+        score = self.request.POST.get("score")
+        season = self.request.POST.get("season") or Seasons.CURRENT_SEASON
 
-        self.render_response('/sc2/admin/player/create.html', **data)
+        try:
+            create_player(battle_net_name, real_name=real_name, vendasta_email=vendasta_email, score=score, season=season)
+        except ValueError, e:
+            return self.abort(400, e.message)
 
+        return self.redirect_to('sc2-player')
+
+
+class PlayerEditView(UserView):
+
+    def get(self, battle_net_name):
+        player_details = get_player_details(battle_net_name)
+        data = {
+            'is_update': True,
+            'playerJson': json.dumps(player_details, default=jsonDateTimeHandler)
+        }
+        return self.render_response('/sc2/admin/player/create_or_update.html', **data)
+
+    def post(self, battle_net_name):
+        kwargs = {
+            'name': self.request.POST["real_name"],
+            'vendasta_email': self.request.POST.get("vendasta_email"),
+            'score': self.request.POST.get("score")
+        }
+        update_player(battle_net_name, **kwargs)
+
+        return self.redirect_to('sc2-player')

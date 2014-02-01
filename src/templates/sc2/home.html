@@ -45,7 +45,7 @@
     function PlayerPerformanceModel(data) {
         var self = this;
 
-        self.name = ko.observable(data.name);
+        self.battle_net_name = ko.observable(data.battle_net_name);
         self.won = ko.observable(data.won);
     }
 
@@ -62,7 +62,7 @@
             var perfs = self.playerPerformances();
             for(var i=0; i<perfs.length; i++) {
                 if(perfs[i].won()) {
-                    winningPlayers.push(perfs[i].name());
+                    winningPlayers.push(perfs[i].battle_net_name());
                 }
             }
             return winningPlayers.join(', ');
@@ -73,7 +73,7 @@
             var perfs = self.playerPerformances();
             for(var i=0; i<perfs.length; i++) {
                 if(!perfs[i].won()) {
-                    losingPlayers.push(perfs[i].name());
+                    losingPlayers.push(perfs[i].battle_net_name());
                 }
             }
             return losingPlayers.join(', ');

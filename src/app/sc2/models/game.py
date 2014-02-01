@@ -3,23 +3,27 @@ SC2 Game models.
 """
 import hashlib
 from google.appengine.ext import ndb
+from app.sc2.models import BaseModel
+from constants import Seasons
 
 
-class PlayerPerformanceModel(ndb.Model):
+class PlayerStatsModel(BaseModel):
     """
     Models a player's performance within a game
     """
-    name = ndb.StringProperty()
+    battle_net_name = ndb.StringProperty()
     race = ndb.StringProperty()
     was_random = ndb.BooleanProperty()
     handicap = ndb.IntegerProperty()
     won = ndb.BooleanProperty()
+    season = ndb.StringProperty(required=True, choices=Seasons.VALID_SEASONS)
 
     @classmethod
     def _get_kind(cls):
-        return "SCII_PlayerPerformanceModel"
+        return "SCII_PlayerStatsModel"
 
-class GameModel(ndb.Model):
+
+class GameModel(BaseModel):
     """
     Models a single game within a match
     """
@@ -28,7 +32,7 @@ class GameModel(ndb.Model):
     game_length_seconds = ndb.IntegerProperty()
     speed = ndb.StringProperty()
     release = ndb.StringProperty()
-    players = ndb.StructuredProperty(PlayerPerformanceModel, repeated=True)
+    players = ndb.StructuredProperty(PlayerStatsModel, repeated=True)
     type = ndb.StringProperty()
     round = ndb.KeyProperty()
     game_id = ndb.ComputedProperty(lambda self: self.key.id())
@@ -47,8 +51,7 @@ class GameModel(ndb.Model):
 
         player_names = sorted(player_names)
         string_to_hash = str(game_time) + ''.join(player_names)
-        hashed_string = hashlib.md5(string_to_hash).hexdigest()
-        key_name = 'GM-' + hashed_string
+        key_name = hashlib.md5(string_to_hash).hexdigest()
         return ndb.Key(cls._get_kind(), key_name)
 
     @classmethod
@@ -61,12 +64,9 @@ class GameModel(ndb.Model):
         query = cls.query().order(-cls.game_time)
         return query.fetch()
 
-class ReplayModel(ndb.Model):
-    created = ndb.DateTimeProperty(auto_now_add=True)
-    updated = ndb.DateTimeProperty(auto_now=True)
 
-    replay_id = ndb.ComputedProperty(lambda self: self.key.id())
-    game_id = ndb.ComputedProperty(lambda self: self.key.parent().id())
+class ReplayModel(BaseModel):
+    game_id = ndb.ComputedProperty(lambda self: self.key.id())
     replay_file = ndb.BlobProperty()
 
     @classmethod
@@ -76,10 +76,7 @@ class ReplayModel(ndb.Model):
     @classmethod
     def build_key(cls, game_id):
         """ Build a key corresponding to the game this is a replay for. """
-        game_hash = game_id.partition('-')[2]
-        parent_key = GameModel.build_key(game_id)
-        key_name = 'RP-' + game_hash
-        return ndb.Key(cls._get_kind(), key_name, parent=parent_key)
+        return ndb.Key(cls._get_kind(), game_id)
 
     @classmethod
     def get_by_game_id(cls, game_id):
