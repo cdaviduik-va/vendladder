@@ -48,6 +48,7 @@ class PlayerRankModel(BaseModel):
     score = ndb.IntegerProperty(default=500)
     games_won = ndb.IntegerProperty(default=0)
     games_lost = ndb.IntegerProperty(default=0)
+    games_played = ndb.ComputedProperty(lambda self: self.compute_games_played())
 
     @classmethod
     def build_key(cls, battle_net_name, season):
@@ -67,6 +68,10 @@ class PlayerRankModel(BaseModel):
             player_rank.put()
         return player_rank
 
+    @classmethod
+    def lookup_for_current_season(cls):
+        return cls.query(cls.season == Seasons.CURRENT_SEASON).fetch()
+
     def compute_league(self):
         if self.score < Leagues.SILVER_THRESHOLD:
             return Leagues.BRONZE
@@ -83,7 +88,9 @@ class PlayerRankModel(BaseModel):
         return Leagues.GRAND_MASTER
 
     def compute_ratio(self):
-        total_num_games = self.games_won + self.games_lost
-        if not total_num_games:
+        if not self.games_played:
             return 0
-        return float(self.games_won) / total_num_games
+        return float(self.games_won) / self.games_played
+
+    def compute_games_played(self):
+        return self.games_won + self.games_lost
