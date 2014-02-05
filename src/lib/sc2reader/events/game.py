@@ -13,6 +13,8 @@ class GameEvent(Event):
     """
     This is the base class for all game events. The attributes below are universally available.
     """
+    name = 'GameEvent'
+
     def __init__(self, frame, pid):
         #: The id of the player generating the event. This is 16 for global non-player events.
         #: Prior to Heart of the Swarm this was the player id. Since HotS it is
@@ -33,12 +35,9 @@ class GameEvent(Event):
         #: A flag indicating if it is a local or global event.
         self.is_local = (pid != 16)
 
-        #: Short cut string for event class name
-        self.name = self.__class__.__name__
-
     def _str_prefix(self):
         player_name = self.player.name if getattr(self, 'pid', 16) != 16 else "Global"
-        return "%s\t%-15s " % (Length(seconds=int(self.frame/16)), player_name)
+        return "{0}\t{1:<15} ".format(Length(seconds=int(self.frame / 16)), player_name)
 
     def __str__(self):
         return self._str_prefix() + self.name
@@ -49,6 +48,9 @@ class GameStartEvent(GameEvent):
     Recorded when the game starts and the frames start to roll. This is a global non-player
     event.
     """
+
+    name = 'GameStartEvent'
+
     def __init__(self, frame, pid, data):
         super(GameStartEvent, self).__init__(frame, pid)
 
@@ -60,6 +62,9 @@ class PlayerLeaveEvent(GameEvent):
     """
     Recorded when a player leaves the game.
     """
+
+    name = 'PlayerLeaveEvent'
+
     def __init__(self, frame, pid, data):
         super(PlayerLeaveEvent, self).__init__(frame, pid)
 
@@ -72,6 +77,9 @@ class UserOptionsEvent(GameEvent):
     This event is recorded for each player at the very beginning of the game before the
     :class:`GameStartEvent`.
     """
+
+    name = 'UserOptionsEvent'
+
     def __init__(self, frame, pid, data):
         super(UserOptionsEvent, self).__init__(frame, pid)
         #:
@@ -117,8 +125,12 @@ def create_command_event(frame, pid, data):
         return SelfAbilityEvent(frame, pid, data)
 
 
+class PlayerActionEvent(GameEvent):
+    name = 'PlayerActionEvent'
+
+
 @loggable
-class AbilityEvent(GameEvent):
+class AbilityEvent(PlayerActionEvent):
     """
     Ability events are generated when ever a player in the game issues a command
     to a unit or group of units. They are split into three subclasses of ability,
@@ -128,6 +140,11 @@ class AbilityEvent(GameEvent):
     See :class:`LocationAbilityEvent`, :class:`TargetAbilityEvent`, and :class:`SelfAbilityEvent`
     for individual details.
     """
+
+    name = 'AbilityEvent'
+
+    is_player_action = True
+
     def __init__(self, frame, pid, data):
         super(AbilityEvent, self).__init__(frame, pid)
 
@@ -246,6 +263,9 @@ class LocationAbilityEvent(AbilityEvent):
     Note that like all AbilityEvents, the event will be recorded regardless
     of whether or not the command was successful.
     """
+
+    name = 'LocationAbilityEvent'
+
     def __init__(self, frame, pid, data):
         super(LocationAbilityEvent, self).__init__(frame, pid, data)
 
@@ -272,6 +292,9 @@ class TargetAbilityEvent(AbilityEvent):
 
     Note that all AbilityEvents are recorded regardless of whether or not the command was successful.
     """
+
+    name = 'TargetAbilityEvent'
+
     def __init__(self, frame, pid, data):
         super(TargetAbilityEvent, self).__init__(frame, pid, data)
 
@@ -322,6 +345,9 @@ class SelfAbilityEvent(AbilityEvent):
 
     Note that all AbilityEvents are recorded regardless of whether or not the command was successful.
     """
+
+    name = 'SelfAbilityEvent'
+
     def __init__(self, frame, pid, data):
         super(SelfAbilityEvent, self).__init__(frame, pid, data)
 
@@ -330,7 +356,7 @@ class SelfAbilityEvent(AbilityEvent):
 
 
 @loggable
-class SelectionEvent(GameEvent):
+class SelectionEvent(PlayerActionEvent):
     """
     Selection events are generated when ever the active selection of the
     player is updated. Unlike other game events, these events can also be
@@ -341,6 +367,10 @@ class SelectionEvent(GameEvent):
     by non-player actions. When a player action updates a control group
     a :class:`HotkeyEvent` is generated.
     """
+
+    name = 'SelectionEvent'
+    is_player_action = True
+
     def __init__(self, frame, pid, data):
         super(SelectionEvent, self).__init__(frame, pid)
 
@@ -389,32 +419,39 @@ class SelectionEvent(GameEvent):
 def create_control_group_event(frame, pid, data):
     update_type = data['control_group_update']
     if update_type == 0:
-        return SetControlGroupEvent(frame, pid, data)
+        return SetToHotkeyEvent(frame, pid, data)
     elif update_type == 1:
-        return AddToControlGroupEvent(frame, pid, data)
+        return AddToHotkeyEvent(frame, pid, data)
     elif update_type == 2:
-        return GetControlGroupEvent(frame, pid, data)
+        return GetFromHotkeyEvent(frame, pid, data)
     elif update_type == 3:
         # TODO: What could this be?!?
-        return ControlGroupEvent(frame, pid, data)
+        return HotkeyEvent(frame, pid, data)
 
 
 @loggable
-class ControlGroupEvent(GameEvent):
+class HotkeyEvent(PlayerActionEvent):
     """
-    ControlGroup events are recorded when ever a player action modifies or accesses a control
-    group. There are three kinds of events, generated by each of the possible
+    Hotkey events are recorded when ever a player action modifies a control
+    group. I know that calling control group events hotkey events doesn't make
+    sense but for backwards compatibility I haven't changed it yet. Sorry.
+
+    There are three kinds of hotkey events, generated by each of the possible
     player actions:
 
-    * :class:`SetControlGroup` - Recorded when a user sets a control group (ctrl+#).
-    * :class:`GetControlGroup` - Recorded when a user retrieves a control group (#).
-    * :class:`AddToControlGroup` - Recorded when a user adds to a control group (shift+ctrl+#)
+    * :class:`SetToHotkeyEvent` - Recorded when a user sets a control group (ctrl+#).
+    * :class:`GetFromHotkeyEvent` - Recorded when a user retrieves a control group (#).
+    * :class:`AddToHotkeyEvent` - Recorded when a user adds to a control group (shift+ctrl+#)
 
     All three events have the same set of data (shown below) but are interpretted differently.
     See the class entry for details.
     """
+
+    name = 'HotkeyEvent'
+    is_player_action = True
+
     def __init__(self, frame, pid, data):
-        super(ControlGroupEvent, self).__init__(frame, pid)
+        super(HotkeyEvent, self).__init__(frame, pid)
 
         #: Index to the control group being modified
         self.control_group = data['control_group_index']
@@ -435,32 +472,37 @@ class ControlGroupEvent(GameEvent):
         self.mask_data = data['remove_mask'][1]
 
 
-class SetControlGroupEvent(ControlGroupEvent):
+class SetToHotkeyEvent(HotkeyEvent):
     """
-    Extends :class:`ControlGroupEvent`
+    Extends :class:`HotkeyEvent`
 
     This event does a straight forward replace of the current control group contents
     with the player's current selection. This event doesn't have masks set.
     """
 
+    name = 'SetToHotkeyEvent'
 
-class AddToControlGroupEvent(SetControlGroupEvent):
+
+class AddToHotkeyEvent(HotkeyEvent):
     """
-    Extends :class:`ControlGroupEvent`
+    Extends :class:`HotkeyEvent`
 
     This event adds the current selection to the control group.
     """
 
+    name = 'AddToHotkeyEvent'
 
-class GetControlGroupEvent(ControlGroupEvent):
+
+class GetFromHotkeyEvent(HotkeyEvent):
     """
-    Extends :class:`ControlGroupEvent`
-
+    Extends :class:`HotkeyEvent`
     This event replaces the current selection with the contents of the control group.
     The mask data is used to limit that selection to units that are currently selectable.
     You might have 1 medivac and 8 marines on the control group but if the 8 marines are
     inside the medivac they cannot be part of your selection.
     """
+
+    name = 'GetFromHotkeyEvent'
 
 
 @loggable
@@ -470,6 +512,9 @@ class CameraEvent(GameEvent):
     It does not matter why the camera changed, this event simply records the current
     state of the camera after changing.
     """
+
+    name = 'CameraEvent'
+
     def __init__(self, frame, pid, data):
         super(CameraEvent, self).__init__(frame, pid)
 
@@ -497,10 +542,8 @@ class CameraEvent(GameEvent):
 
 @loggable
 class ResourceTradeEvent(GameEvent):
-    """
-    Generated when a player trades resources with another player. But not when fullfulling
-    resource requests.
-    """
+    name = 'ResourceTradeEvent'
+
     def __init__(self, frame, pid, data):
         super(ResourceTradeEvent, self).__init__(frame, pid)
 
@@ -532,13 +575,12 @@ class ResourceTradeEvent(GameEvent):
         self.custom_resource = self.resources[3] if len(self.resources) >= 4 else None
 
     def __str__(self):
-        return self._str_prefix() + " transfer {0} minerals, {1} gas, {2} terrazine, and {3} custom to {4}" % (self.minerals, self.vespene, self.terrazine, self.custom, self.reciever)
+        return self._str_prefix() + " transfer {0} minerals, {1} gas, {2} terrazine, and {3} custom to {4}".format(self.minerals, self.vespene, self.terrazine, self.custom, self.recipient)
 
 
 class ResourceRequestEvent(GameEvent):
-    """
-    Generated when a player creates a resource request.
-    """
+    name = 'ResourceRequestEvent'
+
     def __init__(self, frame, pid, data):
         super(ResourceRequestEvent, self).__init__(frame, pid)
 
@@ -558,13 +600,12 @@ class ResourceRequestEvent(GameEvent):
         self.custom_resource = self.resources[3] if len(self.resources) >= 4 else None
 
     def __str__(self):
-        return self._str_prefix() + " requests {0} minerals, {1} gas, {2} terrazine, and {3} custom" % (self.minerals, self.vespene, self.terrazine, self.custom)
+        return self._str_prefix() + " requests {0} minerals, {1} gas, {2} terrazine, and {3} custom".format(self.minerals, self.vespene, self.terrazine, self.custom)
 
 
 class ResourceRequestFulfillEvent(GameEvent):
-    """
-    Generated when a player accepts a resource request.
-    """
+    name = 'ResourceRequestFulfillEvent'
+
     def __init__(self, frame, pid, data):
         super(ResourceRequestFulfillEvent, self).__init__(frame, pid)
 
@@ -573,9 +614,8 @@ class ResourceRequestFulfillEvent(GameEvent):
 
 
 class ResourceRequestCancelEvent(GameEvent):
-    """
-    Generated when a player cancels their resource request.
-    """
+    name = 'ResourceRequestCancelEvent'
+
     def __init__(self, frame, pid, data):
         super(ResourceRequestCancelEvent, self).__init__(frame, pid)
 

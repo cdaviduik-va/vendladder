@@ -33,10 +33,7 @@ train_commands = json.loads(command_data)
 
 
 class Unit(object):
-    """
-    Represents an in-game unit.
-    """
-
+    """Represents an in-game unit."""
     def __init__(self, unit_id):
         #: A reference to the player that currently owns this unit. Only available for 2.0.8+ replays.
         self.owner = None
@@ -56,10 +53,24 @@ class Unit(object):
         #: Specifically, it is the frame that the :class:`~sc2reader.events.tracker.UnitDiedEvent` is received.
         self.died_at = None
 
+        #: Deprecated, see :attr:`self.killing_player`
+        self.killed_by = None
+
         #: A reference to the player that killed this unit. Only available for 2.0.8+ replays.
         #: This value is not set if the killer is unknown or not relevant (morphed into a
         #: different unit or used to create a building, etc)
-        self.killed_by = None
+        self.killing_player = None
+
+        #: A reference to the unit that killed this unit. Only available for 2.1+ replays.
+        #: This value is not set if the killer is unknown or not relevant (morphed into a
+        #: different unit or used to create a building, etc). If the killing unit dies before
+        #: the killed unit dies, a bug may cause the killing unit to be None. This can occur
+        #: due because of projectile speeds.
+        self.killing_unit = None
+
+        #: A list of units that this unit has killed. Only available for 2.1+ replays.
+        #: The unit only gets credit for the kills that it gets the final blow on.
+        self.killed_units = list()
 
         #: The unique in-game id for this unit. The id can sometimes be zero because
         #: TargetAbilityEvents will create a new unit with id zero when a unit
@@ -195,22 +206,64 @@ class Unit(object):
         return str(self)
 
 
+class UnitType(object):
+    """ Represents an in game unit type """
+    def __init__(self, type_id, str_id=None, name=None, title=None, race=None, minerals=0,
+                 vespene=0, supply=0, is_building=False, is_worker=False, is_army=False):
+        #: The internal integer id representing this unit type
+        self.id = type_id
+
+        #: The internal string id representing this unit type
+        self.str_id = str_id
+
+        #: The name of this unit type
+        self.name = name
+
+        #: The printable title of this unit type; has spaces and possibly punctuation
+        self.title = title
+
+        #: The race this unit type belongs to
+        self.race = race
+
+        #: The mineral cost of this unit type
+        self.minerals = minerals
+
+        #: The vespene cost of this unit type
+        self.vespene = vespene
+
+        #: The supply cost of this unit type
+        self.supply = supply
+
+        #: Boolean flagging this unit type as a building
+        self.is_building = is_building
+
+        #: Boolean flagging this unit type as a worker
+        self.is_worker = is_worker
+
+        #: Boolean flagging this unit type as an army unit
+        self.is_army = is_army
+
+
 class Ability(object):
+    """ Represents an in-game ability """
+    def __init__(self, id, name=None, title=None, is_build=False, build_time=0, build_unit=None):
+        #: The internal integer id representing this ability.
+        self.id = id
 
-    #: The internal integer id representing this ability.
-    id = None
+        #: The name of this ability
+        self.name = name
 
-    #: The name of this ability
-    name = ""
+        #: The printable title of this ability; has spaces and possibly punctuation.
+        self.title = title
 
-    #: Boolean flagging this ability as creating a new unit.
-    is_build = False
+        #: Boolean flagging this ability as creating a new unit.
+        self.is_build = is_build
 
-    #: The number of seconds required to build this unit. 0 if not ``is_build``.
-    build_time = 0
+        #: The number of seconds required to build this unit. 0 if not ``is_build``.
+        self.build_time = build_time
 
-    #: A reference to the :class:`Unit` type built by this ability. None if not ``is_build``.
-    build_unit = None
+        #: A reference to the :class:`UnitType` type built by this ability. Default to None.
+        self.build_unit = build_unit
 
 
 @loggable
@@ -260,20 +313,20 @@ class Build(object):
             self.logger.error("Unable to change type of {0} to {1} [frame {2}]; unit type not found in build {3}".format(unit, new_type, frame, self.id))
 
     def add_ability(self, ability_id, name, title=None, is_build=False, build_time=None, build_unit=None):
-        ability = type(str(name), (Ability,), dict(
-            id=ability_id,
+        ability = Ability(
+            ability_id,
             name=name,
             title=title or name,
             is_build=is_build,
             build_time=build_time,
             build_unit=build_unit
-        ))
+        )
         setattr(self, name, ability)
         self.abilities[ability_id] = ability
 
     def add_unit_type(self, type_id, str_id, name, title=None, race='Neutral', minerals=0, vespene=0, supply=0, is_building=False, is_worker=False, is_army=False):
-        unit = type(str(name), (Unit,), dict(
-            id=type_id,
+        unit = UnitType(
+            type_id,
             str_id=str_id,
             name=name,
             title=title or name,
@@ -284,7 +337,7 @@ class Build(object):
             is_building=is_building,
             is_worker=is_worker,
             is_army=is_army,
-        ))
+        )
         setattr(self, name, unit)
         self.units[type_id] = unit
         self.units[str_id] = unit
@@ -349,4 +402,4 @@ hots_builds = dict()
 for version in ('base', '23925', '24247', '24764'):
     hots_builds[version] = load_build('HotS', version)
 
-builds = {'WoL': wol_builds, 'HotS': hots_builds}
+datapacks = builds = {'WoL': wol_builds, 'HotS': hots_builds}

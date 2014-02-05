@@ -4,7 +4,6 @@ from __future__ import absolute_import, print_function, unicode_literals, divisi
 from collections import defaultdict, namedtuple
 from datetime import datetime
 import hashlib
-import sys
 from xml.etree import ElementTree
 import zlib
 
@@ -15,8 +14,8 @@ from sc2reader.decoders import BitPackedDecoder
 from sc2reader import log_utils
 from sc2reader import readers
 from sc2reader import exceptions
-from sc2reader.data import builds as datapacks
-from sc2reader.exceptions import SC2ReaderLocalizationError
+from sc2reader.data import datapacks
+from sc2reader.exceptions import SC2ReaderLocalizationError, CorruptTrackerFileError
 from sc2reader.objects import Participant, Observer, Computer, Team, PlayerSummary, Graph, BuildEntry, MapInfo
 from sc2reader.constants import REGIONS, GAME_SPEED_FACTOR, LOBBY_PROPERTIES
 
@@ -184,7 +183,7 @@ class Replay(Resource):
     #: SC2 Expansion. One of 'WoL', 'HotS'
     expasion = str()
 
-    def __init__(self, replay_file, filename=None, load_level=4, engine=sc2reader.engine, **options):
+    def __init__(self, replay_file, filename=None, load_level=4, engine=sc2reader.engine, do_tracker_events=True, **options):
         super(Replay, self).__init__(replay_file, filename, **options)
         self.datapack = None
         self.raw_data = dict()
@@ -193,8 +192,6 @@ class Replay(Resource):
         self.load_level = None
 
         #default values, filled in during file read
-        self.player_names = list()
-        self.other_people = set()
         self.speed = ""
         self.type = ""
         self.game_type = ""
@@ -206,7 +203,6 @@ class Replay(Resource):
         self.map_hash = ""
         self.gateway = ""
         self.events = list()
-        self.events_by_type = defaultdict(list)
         self.teams, self.team = list(), dict()
 
         self.player = utils.PersonDict()
@@ -280,12 +276,11 @@ class Replay(Resource):
             self.load_players()
 
         # Load tracker events if requested
-        if load_level >= 3:
+        if load_level >= 3 and do_tracker_events:
             self.load_level = 3
             for data_file in ['replay.tracker.events']:
                 self._read_data(data_file, self._get_reader(data_file))
             self.load_tracker_events()
-
 
         # Load events if requested
         if load_level >= 4:
@@ -296,6 +291,12 @@ class Replay(Resource):
 
         # Run this replay through the engine as indicated
         if engine:
+            resume_events = [ev for ev in self.game_events if ev.name == 'HijackReplayGameEvent']
+            if self.base_build <= 26490 and self.tracker_events and len(resume_events) > 0:
+                raise CorruptTrackerFileError(
+                    "Cannot run engine on resumed games with tracker events. Run again with the " +
+                    "do_tracker_events=False option to generate context without tracker events.")
+
             engine.run(self)
 
     def load_details(self):
@@ -469,9 +470,9 @@ class Replay(Resource):
         if 'replay.message.events' not in self.raw_data:
             return
 
-        self.messages = self.raw_data['replay.message.events'].messages
-        self.pings = self.raw_data['replay.message.events'].pings
-        self.packets = self.raw_data['replay.message.events'].packets
+        self.messages = self.raw_data['replay.message.events']['messages']
+        self.pings = self.raw_data['replay.message.events']['pings']
+        self.packets = self.raw_data['replay.message.events']['packets']
 
         self.message_events = self.messages+self.pings+self.packets
         self.events = sorted(self.events + self.message_events, key=lambda e: e.frame)
@@ -553,9 +554,9 @@ class Replay(Resource):
         self.register_reader('replay.game.events', readers.GameEventsReader_22612(), lambda r: 22612 <= r.base_build < 23260)
         self.register_reader('replay.game.events', readers.GameEventsReader_23260(), lambda r: 23260 <= r.base_build < 24247)
         self.register_reader('replay.game.events', readers.GameEventsReader_24247(), lambda r: 24247 <= r.base_build < 26490)
-        self.register_reader('replay.game.events', readers.GameEventsReader_26490(), lambda r: 26490 <= r.base_build)
+        self.register_reader('replay.game.events', readers.GameEventsReader_26490(), lambda r: 26490 <= r.base_build < 27950)
+        self.register_reader('replay.game.events', readers.GameEventsReader_27950(), lambda r: 27950 <= r.base_build)
         self.register_reader('replay.game.events', readers.GameEventsReader_HotSBeta(), lambda r: r.versions[1] == 2 and r.build < 24247)
-
 
     def register_default_datapacks(self):
         """Registers factory default datapacks."""
