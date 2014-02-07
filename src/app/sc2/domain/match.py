@@ -12,7 +12,7 @@ def get_suggested_matches(team_size=2):
     """
     player_ranks = PlayerRankModel.lookup_for_current_season()
     if not player_ranks:
-        return None
+        return []
 
     player_ranks = sorted(player_ranks, key=lambda player_rank: (player_rank.games_played, player_rank.score), reverse=True)
     all_teams = [team for team in itertools.combinations(player_ranks, team_size)]

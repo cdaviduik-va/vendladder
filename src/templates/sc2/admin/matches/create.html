@@ -21,52 +21,56 @@
 
 {% endif %}
 
-<h3>Suggested Matches</h3>
+{% if suggested_matches %}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Team 1</th>
-            <th>Team 2</th>
-            <th>Team 1 Average Score</th>
-            <th>Team 2 Average Score</th>
-            <th>Average Games Played</th>
-            <th>Score Diff</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for match in suggested_matches[:20] %}
+    <h3>Suggested Matches</h3>
+
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    {% for player_rank in match.team1 %}
-                        {{ player_rank.battle_net_name }}
-                        {% if not loop.last %}
-                            &
-                        {% endif %}
-                    {% endfor %}
-                </td><td>
-                    {% for player_rank in match.team2 %}
-                        {{ player_rank.battle_net_name }}
-                        {% if not loop.last %}
-                            &
-                        {% endif %}
-                    {% endfor %}
-                </td><td>
-                    {{ match.team1_average_score }}
-                </td><td>
-                    {{ match.team2_average_score }}
-                </td><td>
-                    {{ match.average_games_played }}
-                </td><td>
-                    {{ match.score_diff }}
-                </td><td>
-                    <a href="#" class="btn btn-primary">Create Match</a>
-                </td>
+                <th>Team 1</th>
+                <th>Team 2</th>
+                <th>Team 1 Average Score</th>
+                <th>Team 2 Average Score</th>
+                <th>Average Games Played</th>
+                <th>Score Diff</th>
+                <th></th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for match in suggested_matches[:20] %}
+                <tr>
+                    <td>
+                        {% for player_rank in match.team1 %}
+                            {{ player_rank.battle_net_name }}
+                            {% if not loop.last %}
+                                &
+                            {% endif %}
+                        {% endfor %}
+                    </td><td>
+                        {% for player_rank in match.team2 %}
+                            {{ player_rank.battle_net_name }}
+                            {% if not loop.last %}
+                                &
+                            {% endif %}
+                        {% endfor %}
+                    </td><td>
+                        {{ match.team1_average_score }}
+                    </td><td>
+                        {{ match.team2_average_score }}
+                    </td><td>
+                        {{ match.average_games_played }}
+                    </td><td>
+                        {{ match.score_diff }}
+                    </td><td>
+                        <a href="#" class="btn btn-primary">Create Match</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endif %}
 
 <form method="post" action="/sc2/admin/match/submit">
     <label>Round:</label><select></select>
