@@ -1,9 +1,9 @@
-from app.sc2.domain.player import update_player_ranks
 import sc2reader
 
 from constants import *
 from app.sc2.models.player import PlayerModel, PlayerRankModel
 from app.sc2.models.game import PlayerStatsModel, GameModel, ReplayModel
+from app.sc2.domain.player import update_player_ranks
 
 
 class ReplayReader():

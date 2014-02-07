@@ -27,6 +27,7 @@ class GameModel(BaseModel):
     """
     Models a single game within a match
     """
+    game_id = ndb.ComputedProperty(lambda self: self.key.id())
     map_name = ndb.StringProperty()
     game_time = ndb.DateTimeProperty()
     game_length_seconds = ndb.IntegerProperty()
@@ -35,7 +36,6 @@ class GameModel(BaseModel):
     players = ndb.StructuredProperty(PlayerStatsModel, repeated=True)
     type = ndb.StringProperty()
     round = ndb.KeyProperty()
-    game_id = ndb.ComputedProperty(lambda self: self.key.id())
 
     @classmethod
     def _get_kind(cls):

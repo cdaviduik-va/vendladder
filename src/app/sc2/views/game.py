@@ -2,7 +2,7 @@
 Handlers for sc2 games.
 """
 import json
-from app.sc2.models.game import ReplayModel
+from app.sc2.models.game import ReplayModel, GameModel
 from app.sc2.utils import jsonDateTimeHandler
 from app.sc2.utils.replay_reader import ReplayReader
 from app.sc2.views import UserView
@@ -51,7 +51,9 @@ class GameDownloadView(UserView):
         Handles the display of the match submission form
         """
         game_id = self.request.GET.get('id')
+        game = GameModel.get_by_id(game_id)
+        filename = game.game_time.date().isoformat() + ' ' + ' '.join([player.battle_net_name for player in game.players]) + '.replay'
         replay = ReplayModel.get_by_game_id(game_id)
         self.response.headers['Content-Type'] = 'application/binary'
-        self.response.headers['Content-Disposition'] = 'attachement; filename="game.SC2Replay"'
+        self.response.headers['Content-Disposition'] = 'attachment; filename="%s"' % str(filename)
         self.response.out.write(replay.replay_file)
