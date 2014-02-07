@@ -30,12 +30,15 @@ class GameSubmitView(UserView):
         uploaded_file = self.request.POST.get('replay')
 
         # Process the file
-        game = ReplayReader.ExtractGameInformation(uploaded_file.file)
+        try:
+            game = ReplayReader.ExtractGameInformation(uploaded_file.file)
+        except ValueError, e:
+            return self.abort(400, e.message)
 
         data['game'] = json.dumps(game.to_dict(exclude=['replay']), default=jsonDateTimeHandler, indent=2)
 
-        data['winning_team'] = [player.name for player in game.players if player.won]
-        data['losing_team'] = [player.name for player in game.players if not player.won]
+        data['winning_team'] = [player.battle_net_name for player in game.players if player.won]
+        data['losing_team'] = [player.battle_net_name for player in game.players if not player.won]
 
         self.render_response('/sc2/game/submit_complete.html', **data)
 

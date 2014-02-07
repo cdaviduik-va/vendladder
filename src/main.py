@@ -2,43 +2,9 @@ import os
 
 import set_sys_path # Must be done first to set up path
 
-from webapp2 import WSGIApplication, Route, SimpleRoute
+from webapp2 import WSGIApplication, uri_for
 from app.sc2.views.filters.vurl import do_vurl
-
-ROUTES = [
-    #Foosball Ladder
-    Route('/',              handler='app.views.mainView'),
-    Route('/player',        handler='app.views.playerView'),
-    Route('/newPlayer',     handler='app.views.newPlayerView'),
-    Route('/selector',      handler='app.views.selectorView'),
-    Route('/ladder',        handler='app.views.ladder.ladderView'),
-    Route('/recordGame',    handler='app.views.reportView'),
-    Route('/reportGame',    handler='app.views.reportView'),
-    Route('/settings',      handler='app.views.settingsView'),
-    Route('/compare',       handler='app.views.compareView'),
-    Route('/playerView',    handler='app.views.playerStatsView'),
-    Route('/about',         handler='app.views.aboutView'),
-    Route('/leaderboard',   handler='app.views.leaderboardView'),
-    Route('/matchHistory',  handler='app.views.matchHistoryView'),
-    Route('/matchHistoryCalc', handler='app.views.matchHistoryCalc'),
-    Route('/ladder-redirect', handler='app.views.ladderRedirect'),
-
-    # Starcraft II Tracker main routes
-    SimpleRoute('/sc2/?', handler='app.sc2.views.main.MainView'),
-    SimpleRoute('/sc2/game/submit/?', handler='app.sc2.views.game.GameSubmitView'),
-
-    SimpleRoute('/sc2/player/?', handler='app.sc2.views.player.PlayerIndex'),
-    SimpleRoute('/sc2/game/download/?', handler='app.sc2.views.game.GameDownloadView'),
-
-    # SC2 Admin routes
-    SimpleRoute('/sc2/admin/season/create/?', handler='app.sc2.views.admin.season.SeasonCreateView'),
-    SimpleRoute('/sc2/admin/match/create/?', handler='app.sc2.views.admin.match.MatchCreateView'),
-    SimpleRoute('/sc2/admin/round/create/?', handler='app.sc2.views.admin.round.RoundCreateView'),
-
-    #General
-    SimpleRoute('/sc2.+', handler='app.sc2.views.main.ErrorView'),
-    SimpleRoute('/.+', handler='app.views.errorHandler'),
-]
+from urls import ROUTES
 
 TEMPLATE_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                             'templates')
@@ -47,6 +13,9 @@ CONFIG = {
     'webapp2_extras.jinja2': {
         'filters' : {
             'vurl' : do_vurl
+        },
+        'globals': {
+            'uri_for': uri_for
         },
         'template_path': TEMPLATE_DIR
     }

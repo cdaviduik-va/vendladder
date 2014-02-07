@@ -1,0 +1,39 @@
+from webapp2 import Route, SimpleRoute
+from webapp2_extras.routes import RedirectRoute
+
+ROUTES = [
+    #Foosball Ladder
+    Route('/',              handler='app.views.mainView'),
+    Route('/player',        handler='app.views.playerView'),
+    Route('/newPlayer',     handler='app.views.newPlayerView'),
+    Route('/selector',      handler='app.views.selectorView'),
+    Route('/ladder',        handler='app.views.ladder.ladderView'),
+    Route('/recordGame',    handler='app.views.reportView'),
+    Route('/reportGame',    handler='app.views.reportView'),
+    Route('/settings',      handler='app.views.settingsView'),
+    Route('/compare',       handler='app.views.compareView'),
+    Route('/playerView',    handler='app.views.playerStatsView'),
+    Route('/about',         handler='app.views.aboutView'),
+    Route('/leaderboard',   handler='app.views.leaderboardView'),
+    Route('/matchHistory',  handler='app.views.matchHistoryView'),
+    Route('/matchHistoryCalc', handler='app.views.matchHistoryCalc'),
+    Route('/ladder-redirect', handler='app.views.ladderRedirect'),
+
+    # Starcraft II Tracker main routes
+    RedirectRoute('/sc2/', handler='app.sc2.views.main.MainView', name='sc2-home', strict_slash=True),
+    RedirectRoute('/sc2/game/submit/', handler='app.sc2.views.game.GameSubmitView', name='sc2-game-submit', strict_slash=True),
+
+    RedirectRoute('/sc2/player/', handler='app.sc2.views.player.PlayerIndex', name='sc2-player', strict_slash=True),
+    RedirectRoute('/sc2/game/download/', handler='app.sc2.views.game.GameDownloadView', name='sc2-game-download', strict_slash=True),
+
+    # SC2 Admin routes
+    RedirectRoute('/sc2/admin/season/create/', handler='app.sc2.views.admin.season.SeasonCreateView', name='sc2-admin-season-create', strict_slash=True),
+    RedirectRoute('/sc2/admin/match/create/', handler='app.sc2.views.admin.match.MatchCreateView', name='sc2-admin-match-create', strict_slash=True),
+    RedirectRoute('/sc2/admin/round/create/', handler='app.sc2.views.admin.round.RoundCreateView', name='sc2-admin-round-create', strict_slash=True),
+    RedirectRoute('/sc2/admin/player/create/', handler='app.sc2.views.admin.player.PlayerCreateView', name='sc2-admin-player-create', strict_slash=True),
+    RedirectRoute('/sc2/admin/player/edit/<battle_net_name>/', handler='app.sc2.views.admin.player.PlayerEditView', name='sc2-admin-player-edit', strict_slash=True),
+
+    #General
+    SimpleRoute('/sc2.+', handler='app.sc2.views.main.ErrorView'),
+    SimpleRoute('/.+', handler='app.views.errorHandler'),
+]
