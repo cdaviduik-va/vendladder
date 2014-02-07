@@ -8,14 +8,65 @@
     per the previous season rules, failure to submit matches before the deadline will result in a loss for both teams.
 </p>
 
-<h3>DEBUG: Current Season</h3>
-<pre>{{ current_season }}</pre>
+{% if is_debug %}
 
-<h3>DEBUG: "Remaining Rounds</h3>
-<pre>{{ remaining_rounds }}</pre>
+    <h3>DEBUG: Current Season</h3>
+    <pre>{{ current_season }}</pre>
 
-<h3>DEBUG: Players</h3>
-<pre>{{ players }}</pre>
+    <h3>DEBUG: "Remaining Rounds</h3>
+    <pre>{{ remaining_rounds }}</pre>
+
+    <h3>DEBUG: Players</h3>
+    <pre>{{ players }}</pre>
+
+{% endif %}
+
+<h3>Suggested Matches</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Team 1</th>
+            <th>Team 2</th>
+            <th>Team 1 Average Score</th>
+            <th>Team 2 Average Score</th>
+            <th>Average Games Played</th>
+            <th>Score Diff</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for match in suggested_matches[:20] %}
+            <tr>
+                <td>
+                    {% for player_rank in match.team1 %}
+                        {{ player_rank.battle_net_name }}
+                        {% if not loop.last %}
+                            &
+                        {% endif %}
+                    {% endfor %}
+                </td><td>
+                    {% for player_rank in match.team2 %}
+                        {{ player_rank.battle_net_name }}
+                        {% if not loop.last %}
+                            &
+                        {% endif %}
+                    {% endfor %}
+                </td><td>
+                    {{ match.team1_average_score }}
+                </td><td>
+                    {{ match.team2_average_score }}
+                </td><td>
+                    {{ match.average_games_played }}
+                </td><td>
+                    {{ match.score_diff }}
+                </td><td>
+                    <a href="#" class="btn btn-primary">Create Match</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
 <form method="post" action="/sc2/admin/match/submit">
     <label>Round:</label><select></select>
