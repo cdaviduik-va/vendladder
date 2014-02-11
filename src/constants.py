@@ -1,13 +1,6 @@
 DEFAULT_SCORE = 500
 
 
-class Seasons():
-    SEASON_1_2014 = 'SEASON-1-2014'
-    VALID_SEASONS = frozenset([SEASON_1_2014])
-
-    CURRENT_SEASON = SEASON_1_2014
-
-
 class Leagues():
     """
     Corresponds to: http://en.wikipedia.org/wiki/Elo_rating_system#United_States_Chess_Federation_ratings

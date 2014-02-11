@@ -3,10 +3,9 @@
 {% block content %}
 <h2>Add Match to Schedule (admin)</h2>
 
-<p>
-    Players do not submit scores for the games this season.  Instead they upload the replays from the games played.  As
-    per the previous season rules, failure to submit matches before the deadline will result in a loss for both teams.
-</p>
+<div class="well">
+    Players do not submit scores for the games this season.  Instead they upload the replays from the games played.
+</div>
 
 {% if is_debug %}
 
@@ -21,9 +20,12 @@
 
 {% endif %}
 
-{% if suggested_matches %}
-
     <h3>Suggested Matches</h3>
+
+    <form class="form-inline">
+        <input type="text" name="exclude_players" placeholder="Exclude Players" value="{{ exclude_players }}"/>
+        <button type="submit" class="btn">Search for Matches</button>
+    </form>
 
     <table class="table">
         <thead>
@@ -37,61 +39,61 @@
                 <th></th>
             </tr>
         </thead>
-        <tbody>
-            {% for match in suggested_matches[:20] %}
-                <tr>
-                    <td>
-                        {% for player_rank in match.team1 %}
-                            {{ player_rank.battle_net_name }}
-                            {% if not loop.last %}
-                                &
-                            {% endif %}
-                        {% endfor %}
-                    </td><td>
-                        {% for player_rank in match.team2 %}
-                            {{ player_rank.battle_net_name }}
-                            {% if not loop.last %}
-                                &
-                            {% endif %}
-                        {% endfor %}
-                    </td><td>
-                        {{ match.team1_average_score }}
-                    </td><td>
-                        {{ match.team2_average_score }}
-                    </td><td>
-                        {{ match.average_games_played }}
-                    </td><td>
-                        {{ match.score_diff }}
-                    </td><td>
-                        <a href="#" class="btn btn-primary">Create Match</a>
-                    </td>
-                </tr>
-            {% endfor %}
+        <tbody data-bind="foreach: suggestedMatches">
+            <tr>
+                <td data-bind="text:team1Formatted"></td>
+                <td data-bind="text:team2Formatted"></td>
+                <td data-bind="text:team1AverageScore"></td>
+                <td data-bind="text:team2AverageScore"></td>
+                <td data-bind="text:averageGamesPlayed"></td>
+                <td data-bind="text:scoreDiff"></td>
+                <td>
+                    <button class="btn btn-primary" data-bind="click: createMatch">Create Match</button>
+                </td>
+            </tr>
         </tbody>
     </table>
+    <div class="alert alert-warning" data-bind="visible: suggestedMatches().length == 0">
+        There are no suggested matches available at the moment.
+    </div>
 
-{% endif %}
+    <form id="create-match-form" method="post" action="{{ uri_for('sc2-admin-match-create') }}">
 
-<form method="post" action="/sc2/admin/match/submit">
-    <label>Round:</label><select></select>
+        <div class="sc2-team-selection">
+            <h3>Team 1</h3>
+            <div>
+                <label for="team1player1">Player 1</label>
+                <select id="team1player1" name="team1player1" data-bind="options: players, optionsValue: 'battle_net_name', optionsText: 'battle_net_name'"></select>
+            </div>
+            <div>
+                <label for="team1player2">Player 2</label>
+                <select id="team1player2" name="team1player2" data-bind="options: players, optionsValue: 'battle_net_name', optionsText: 'battle_net_name'"></select>
+            </div>
+        </div>
 
-    <h3>Team 1</h3>
-    <div><label>Player 1</label><select name="team1-player1" data-bind="options: players, optionsText: 'name'"></select></div>
-    <div><label>Player 2</label><select name="team1-player2" data-bind="options: players, optionsText: 'name'"></select></div>
+        <h3 class="vs">
+            Vs.
+        </h3>
 
-    <h3>Team 2</h3>
-    <div><label>Player 1</label><select name="team2-player1" data-bind="options: players, optionsText: 'name'"></select></div>
-    <div><label>Player 2</label><select name="team2-player2" data-bind="options: players, optionsText: 'name'"></select></div>
-    <hr />
-    <input type="submit" name="Submit" />
-</form>
-<br style="clear:both">
-<a href="/sc2/admin/">Back to admin functions</a>
-{% endblock %}
+        <div class="sc2-team-selection">
+            <h3>Team 2</h3>
+            <div>
+                <label for="team2player1">Player 1</label>
+                <select id="team2player1" name="team2player1" data-bind="options: players, optionsValue: 'battle_net_name', optionsText: 'battle_net_name'"></select>
+            </div>
+            <div>
+                <label for="team2player2">Player 2</label>
+                <select id="team2player2" name="team2player2" data-bind="options: players, optionsValue: 'battle_net_name', optionsText: 'battle_net_name'"></select>
+            </div>
+        </div>
+        <input class="btn btn-primary" type="submit" value="Create Match"/>
+    </form>
+    {% endblock %}
 
 {% block script %}
 <script type="text/javascript" language="javascript">
-    var players = {{players | safe}};
+    var players = {{ players|safe }};
+    var suggestedMatchesData = {{ suggested_matches_json|safe }};
     var viewModel = null;
 
     function PlayerModel(data) {
@@ -103,21 +105,58 @@
         self.vendasta_email = ko.observable(data.vendasta_email);
     }
 
-    function CreateMatchViewModel(playerData) {
+    function SuggestedMatch(data) {
+        var self = this;
+        self.team1 = data.team1;
+        self.team2 = data.team2;
+        self.team1AverageScore = data.team1_average_score;
+        self.team2AverageScore = data.team2_average_score;
+        self.averageGamesPlayed = data.average_games_played;
+        self.scoreDiff = data.score_diff;
+
+        self.team1Formatted = ko.computed(function() {
+            return self.team1.join(' & ');
+        });
+
+        self.team2Formatted = ko.computed(function() {
+            return self.team2.join(' & ');
+        });
+
+        self.createMatch = function() {
+            var url = '{{ uri_for('sc2-admin-match-create') }}';
+            var data = {
+                team1player1: self.team1[0],
+                team1player2: self.team1[1],
+                team2player1: self.team2[0],
+                team2player2: self.team2[1]
+            };
+            $.post(url, data, function () {
+                window.location.href = url + '?success=True';
+            }).error(function() {
+                alert('Error creating match.')
+            });
+        }
+    }
+
+    function CreateMatchViewModel(playerData, suggestedMatchesData) {
         var self = this;
 
         self.players = ko.observableArray();
+        self.suggestedMatches = ko.observableArray();
 
         //Initialization
-        for(var i=0; i<playerData.length; i++) {
-            var player = new PlayerModel(playerData[i]);
-            self.players.push(player);
-        }
+        ko.utils.arrayForEach(playerData, function(player) {
+            self.players.push(new PlayerModel(player));
+        });
+
+        ko.utils.arrayForEach(suggestedMatchesData, function(suggestedMatch) {
+            self.suggestedMatches.push(new SuggestedMatch(suggestedMatch));
+        });
     }
 
     $(function() {
         //Initial setup
-        viewModel = new CreateMatchViewModel(players);
+        viewModel = new CreateMatchViewModel(players, suggestedMatchesData);
         ko.applyBindings(viewModel);
     });
 </script>

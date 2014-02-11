@@ -1,23 +1,23 @@
 """
 Deals with stuff with users... you know
 """
+from app.sc2.domain.season import lookup_current_season
 from app.utils import calculate_elo_rank
-from constants import Seasons
 from app.sc2.models.player import PlayerModel, PlayerRankModel
 
 
-def create_player(battle_net_name, real_name=None, vendasta_email=None, score=None, season=None):
+def create_player(battle_net_name, real_name=None, vendasta_email=None, score=None):
     """
     Creates a player from args provided.
     """
-    season = season or Seasons.CURRENT_SEASON
+    season_id = lookup_current_season().season_id
     key = PlayerModel.build_key(battle_net_name)
     if key.get():
         raise ValueError('Player "%s" already exists. Please create a new player.' % battle_net_name)
-    player = PlayerModel(key=key, name=real_name, vendasta_email=vendasta_email, seasons_participated=[season])
+    player = PlayerModel(key=key, name=real_name, vendasta_email=vendasta_email, seasons_participated=[season_id])
     player.put()
 
-    player_rank = PlayerRankModel.get_or_create(battle_net_name, Seasons.CURRENT_SEASON)
+    player_rank = PlayerRankModel.get_or_create(battle_net_name, season_id)
     player_rank.score = int(score)
     player_rank.put()
 
@@ -26,7 +26,7 @@ def create_player(battle_net_name, real_name=None, vendasta_email=None, score=No
 
 def update_player(battle_net_name, **kwargs):
     score = kwargs.pop('score', None)
-    season = kwargs.pop('season', Seasons.CURRENT_SEASON)
+    season_id = kwargs.pop('season_id', None) or lookup_current_season(id_only=True)
 
     player = PlayerModel.get_or_create(battle_net_name)
     for k, v in kwargs.iteritems():
@@ -34,7 +34,7 @@ def update_player(battle_net_name, **kwargs):
     player.put()
 
     if score:
-        player_rank = PlayerRankModel.get_or_create(battle_net_name, season)
+        player_rank = PlayerRankModel.get_or_create(battle_net_name, season_id)
         player_rank.score = int(score)
         player_rank.put()
 
@@ -60,18 +60,24 @@ def update_player_ranks(winning_player_ranks, losing_player_ranks):
         p_rank.put()
 
 
-def get_player_details(battle_net_name, season=None):
-    season = season or Seasons.CURRENT_SEASON
+def lookup_players_for_season(season_id=None):
+    season_id = season_id or lookup_current_season(id_only=True)
+    return PlayerModel.lookup_for_season(season_id=season_id)
+
+
+def get_player_details(battle_net_name, season_id=None):
+    season_id = season_id or lookup_current_season(id_only=True)
     player = PlayerModel.get_or_create(battle_net_name)
-    player_rank = PlayerRankModel.get_or_create(battle_net_name, season)
+    player_rank = PlayerRankModel.get_or_create(battle_net_name, season_id)
     return PlayerDetails(player, player_rank)
 
 
 def get_player_details_for_season():
-    players = PlayerModel.lookup_for_season()
+    season_id = lookup_current_season(id_only=True)
+    players = PlayerModel.lookup_for_season(season_id=season_id)
     all_player_details = []
     for player in players:
-        player_rank = PlayerRankModel.get_or_create(player.battle_net_name, Seasons.CURRENT_SEASON)
+        player_rank = PlayerRankModel.get_or_create(player.battle_net_name, season_id)
         player_details = PlayerDetails(player, player_rank)
         all_player_details.append(player_details)
     return sorted(all_player_details, key=lambda player_details: player_details.score, reverse=True)

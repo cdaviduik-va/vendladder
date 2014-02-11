@@ -1,0 +1,41 @@
+{% extends "sc2/global.html" %}
+
+{% block controls %}
+    <a class="btn btn-primary" href="{{ uri_for('sc2-admin-season-create') }}">Create Season</a>
+{% endblock %}
+
+{% block content %}
+    <h2>Seasons (admin)</h2>
+
+    {% if seasons %}
+
+        <form method="post" action="{{ uri_for('sc2-admin-season-close') }}" class="v-form">
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Start Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for season in seasons %}
+                        <tr>
+                            <td>{{ season.season_name }}</td>
+                            <td>{{ season.start_date }}</td>
+                            <td>
+                                {% if season.is_open %}
+                                    <button type="submit" class="btn btn-danger">Close Season</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    {% else %}
+        <p>No seasons created yet.</p>
+    {% endif %}
+
+{% endblock %}

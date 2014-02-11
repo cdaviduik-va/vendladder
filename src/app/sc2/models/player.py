@@ -3,7 +3,8 @@ Player model
 """
 from google.appengine.ext import ndb
 from app.sc2.models import BaseModel
-from constants import Seasons, Leagues
+from app.sc2.models.season import SeasonModel
+from constants import Leagues
 
 
 class PlayerModel(BaseModel):
@@ -14,7 +15,7 @@ class PlayerModel(BaseModel):
     name = ndb.StringProperty()
     vendasta_email = ndb.StringProperty()
     player_name = ndb.StringProperty()
-    seasons_participated = ndb.StringProperty(repeated=True, choices=Seasons.VALID_SEASONS)
+    seasons_participated = ndb.StringProperty(repeated=True)
 
     @classmethod
     def build_key(cls, battle_net_name):
@@ -24,16 +25,19 @@ class PlayerModel(BaseModel):
 
     @classmethod
     def get_or_create(cls, battle_net_name):
+        current_season = SeasonModel.lookup_open()
         key = cls.build_key(battle_net_name)
         player = key.get()
         if not player:
-            player = cls(key=key, seasons_participated=[Seasons.CURRENT_SEASON])
+            player = cls(key=key, seasons_participated=[current_season.season_id])
             player.put()
         return player
 
     @classmethod
-    def lookup_for_season(cls, season=Seasons.CURRENT_SEASON):
-        return cls.query(cls.seasons_participated == season).fetch()
+    def lookup_for_season(cls, season_id=None):
+        if not season_id:
+            raise ValueError('season_id is required.')
+        return cls.query(cls.seasons_participated == season_id).fetch()
 
     @classmethod
     def _get_kind(cls):
@@ -41,7 +45,7 @@ class PlayerModel(BaseModel):
 
 
 class PlayerRankModel(BaseModel):
-    season = ndb.ComputedProperty(lambda self: self.key.id())
+    season_id = ndb.ComputedProperty(lambda self: self.key.id())
     battle_net_name = ndb.ComputedProperty(lambda self: self.key.parent().id())
     league = ndb.ComputedProperty(lambda self: self.compute_league())
     ratio = ndb.ComputedProperty(lambda self: self.compute_ratio())
@@ -51,17 +55,17 @@ class PlayerRankModel(BaseModel):
     games_played = ndb.ComputedProperty(lambda self: self.compute_games_played())
 
     @classmethod
-    def build_key(cls, battle_net_name, season):
+    def build_key(cls, battle_net_name, season_id):
         if not battle_net_name:
             raise ValueError('battle_net_name is required.')
-        if not season:
-            raise ValueError('season is required.')
+        if not season_id:
+            raise ValueError('season_id is required.')
         parent = PlayerModel.build_key(battle_net_name)
-        return ndb.Key(cls._get_kind(), season, parent=parent)
+        return ndb.Key(cls._get_kind(), season_id, parent=parent)
 
     @classmethod
-    def get_or_create(cls, battle_net_name, season):
-        key = cls.build_key(battle_net_name, season)
+    def get_or_create(cls, battle_net_name, season_id):
+        key = cls.build_key(battle_net_name, season_id)
         player_rank = key.get()
         if not player_rank:
             player_rank = cls(key=key)
@@ -70,7 +74,12 @@ class PlayerRankModel(BaseModel):
 
     @classmethod
     def lookup_for_current_season(cls):
-        return cls.query(cls.season == Seasons.CURRENT_SEASON).fetch()
+        season_id = SeasonModel.lookup_open().season_id
+        return cls.query(cls.season_id == season_id).fetch()
+
+    @classmethod
+    def _get_kind(cls):
+        return "SCII_PlayerRankModel"
 
     def compute_league(self):
         if self.score < Leagues.SILVER_THRESHOLD:
