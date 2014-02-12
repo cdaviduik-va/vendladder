@@ -10,6 +10,10 @@
 
     <h2>Current Matches</h2>
 
+    <div class="well">
+        If your match doesn't appear here <a href="{{ uri_for('sc2-game-submit') }}">upload a replay</a> to create it.
+    </div>
+
     {% if current_matches %}
         <table class="table">
             <thead>
