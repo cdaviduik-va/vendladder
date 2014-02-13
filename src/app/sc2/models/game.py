@@ -37,7 +37,6 @@ class GameModel(BaseModel):
     release = ndb.StringProperty()
     players = ndb.StructuredProperty(PlayerStatsModel, repeated=True)
     type = ndb.StringProperty()
-    round = ndb.KeyProperty()
 
     @classmethod
     def _get_kind(cls):

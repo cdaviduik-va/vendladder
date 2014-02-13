@@ -16,7 +16,9 @@
                 <th>Played</th>
                 <th>Ratio</th>
                 <th>Score</th>
-                <th></th>
+                {% if is_admin %}
+                    <th></th>
+                {% endif %}
             </tr>
         </thead>
         <tbody data-bind="foreach: players">
@@ -31,7 +33,9 @@
                 <td data-bind="text:games_played"></td>
                 <td data-bind="text:ratio"></td>
                 <td data-bind="text:score"></td>
-                <td><a data-bind="attr:{href:edit_link}">Edit</a></td>
+                {% if is_admin %}
+                    <td><a data-bind="attr:{href:edit_link}">Edit</a></td>
+                {% endif %}
             </tr>
         </tbody>
     </table>
