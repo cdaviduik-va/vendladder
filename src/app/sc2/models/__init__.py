@@ -9,3 +9,7 @@ class BaseModel(ndb.Model):
 
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
+
+    @classmethod
+    def lookup_all(cls):
+        return cls.query().order(-cls.created).fetch()

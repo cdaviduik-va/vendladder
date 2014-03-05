@@ -5,6 +5,8 @@
 from google.appengine.api import users
 from webapp2 import RequestHandler, cached_property
 from webapp2_extras import jinja2
+from app.sc2.domain.season import lookup_current_season
+
 
 class UserView(RequestHandler):
 
@@ -13,7 +15,10 @@ class UserView(RequestHandler):
         return jinja2.get_jinja2(app=self.app)
 
     def render_response(self, template, **context):
-        """ Pass a template (html) and a dictionary :) """
+        """
+        Pass a template (html) and a dictionary :)
+        :param alerts: List of alert type (one of "error", "success", or "info") and corresponding text tuples
+        """
 
         if "logout" not in context.keys() or "login" not in context.keys():
             user = users.get_current_user()
@@ -24,11 +29,10 @@ class UserView(RequestHandler):
             else:
                 context["login"] = users.create_login_url("/")
         # Seasonal constants
-        season = "Winter"
-        season_number = "1"
-        year = "2014"
-        context["year"] = year
-        context["season"] = season
-        context["season_no"] = season_number
+        context['current_season'] = self.current_season
         content = self.jinja2.render_template(template, **context)
         self.response.write(content)
+
+    @cached_property
+    def current_season(self):
+        return lookup_current_season()

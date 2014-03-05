@@ -4,7 +4,7 @@ SC2 Game models.
 import hashlib
 from google.appengine.ext import ndb
 from app.sc2.models import BaseModel
-from constants import Seasons
+from app.sc2.models.match import MatchModel
 
 
 class PlayerStatsModel(BaseModel):
@@ -16,7 +16,7 @@ class PlayerStatsModel(BaseModel):
     was_random = ndb.BooleanProperty()
     handicap = ndb.IntegerProperty()
     won = ndb.BooleanProperty()
-    season = ndb.StringProperty(required=True, choices=Seasons.VALID_SEASONS)
+    season_id = ndb.StringProperty(required=True)
 
     @classmethod
     def _get_kind(cls):
@@ -27,6 +27,9 @@ class GameModel(BaseModel):
     """
     Models a single game within a match
     """
+    game_id = ndb.ComputedProperty(lambda self: self.key.id())
+    match_id = ndb.ComputedProperty(lambda self: self.key.parent().id())
+    season_id = ndb.ComputedProperty(lambda self: self.key.parent().parent().id())
     map_name = ndb.StringProperty()
     game_time = ndb.DateTimeProperty()
     game_length_seconds = ndb.IntegerProperty()
@@ -34,25 +37,26 @@ class GameModel(BaseModel):
     release = ndb.StringProperty()
     players = ndb.StructuredProperty(PlayerStatsModel, repeated=True)
     type = ndb.StringProperty()
-    round = ndb.KeyProperty()
-    game_id = ndb.ComputedProperty(lambda self: self.key.id())
 
     @classmethod
     def _get_kind(cls):
         return "SCII_GameModel"
 
     @classmethod
-    def generate_key(cls, game_time, player_names):
+    def generate_key(cls, game_time, player_names, match_id, season_id):
         """ Generate a unique key based on the time the game was played. """
         if not game_time:
-            raise ValueError('game_time required')
+            raise ValueError('game_time is required.')
         if not player_names:
-            raise ValueError('player_names required')
+            raise ValueError('player_names are required.')
+        if not match_id:
+            raise ValueError('match_id is required.')
 
         player_names = sorted(player_names)
         string_to_hash = str(game_time) + ''.join(player_names)
         key_name = hashlib.md5(string_to_hash).hexdigest()
-        return ndb.Key(cls._get_kind(), key_name)
+        parent = MatchModel.build_key(match_id, season_id)
+        return ndb.Key(cls._get_kind(), key_name, parent=parent)
 
     @classmethod
     def build_key(cls, game_id):
@@ -60,9 +64,13 @@ class GameModel(BaseModel):
         return ndb.Key(cls._get_kind(), game_id)
 
     @classmethod
-    def get_list(cls):
+    def lookup_for_match(cls, match_id):
+        return cls.query(cls.match_id == match_id).fetch()
+
+    @classmethod
+    def lookup_all(cls, limit=None):
         query = cls.query().order(-cls.game_time)
-        return query.fetch()
+        return query.fetch(limit=limit)
 
 
 class ReplayModel(BaseModel):

@@ -1,6 +1,45 @@
 {% extends "sc2/global.html" %}
 
+{% block controls %}
+    {% if is_admin %}
+        <a class="btn btn-primary" href="{{ uri_for('sc2-admin-match-create') }}">Create Match</a>
+    {% endif %}
+{% endblock %}
+
 {% block content %}
+
+    <h2>Current Matches</h2>
+
+    <div class="well">
+        If your match doesn't appear here <a href="{{ uri_for('sc2-game-submit') }}">upload a replay</a> to create it.
+    </div>
+
+    {% if current_matches %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Team 1</th>
+                    <th>Team 2</th>
+                    <th>Replay</th>
+                    <th>Close</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for match in current_matches %}
+                    <tr>
+                        <td>{{ match.team1_battle_net_names|join(', ') }}</td>
+                        <td>{{ match.team2_battle_net_names|join(', ') }}</td>
+                        <td><a class="btn btn-primary" href="{{ uri_for('sc2-game-submit', match_id=match.match_id) }}">Upload Replay</a></td>
+                        <td><a class="btn btn-danger close-match" href="{{ uri_for('sc2-match-close', match_id=match.match_id) }}">Close Match</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="well">
+            There are currently no matches taking place.
+        </div>
+    {% endif %}
 
 <h2>Game History</h2>
 <table class="table">
@@ -23,24 +62,24 @@
         </tr>
     </tbody>
 </table>
-<!--
-<h2>Current Match Schedule [Week 1 - January 13th 2014]</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Team 1</th>
-                    <th>Team 2</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-        </table>
--->
+
 {% endblock %}
 
 {% block script %}
 <script type="text/javascript" language="javascript">
     var games = {{games | safe}};
     var viewModel = null;
+
+    $('.close-match').click(function() {
+        var $this = $(this);
+        var url = $this.attr('href');
+        $.post(url, function() {
+            var $parent = $this.closest('tr').slideUp(function() {
+                $parent.remove();
+            });
+        });
+        return false;
+    });
 
     function PlayerPerformanceModel(data) {
         var self = this;

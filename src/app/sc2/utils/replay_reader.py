@@ -1,9 +1,11 @@
-from app.sc2.domain.player import update_player_ranks
+from app.sc2.domain.match import create_match
+from app.sc2.domain.season import lookup_current_season
 import sc2reader
 
-from constants import *
+from constants import Keys
 from app.sc2.models.player import PlayerModel, PlayerRankModel
 from app.sc2.models.game import PlayerStatsModel, GameModel, ReplayModel
+from app.sc2.domain.player import update_player_ranks
 
 
 class ReplayReader():
@@ -11,12 +13,14 @@ class ReplayReader():
     Class to extract useful information about a set of replay files
     """
     @classmethod
-    def ExtractGameInformation(cls, file_name):
+    def ExtractGameInformation(cls, file_name, match_id=None):
         """
-        Creates a Game object from a replay file
+        Creates a Game object from a replay file.
+        If match_id is not specified a new match will be created based on data from provided replay.
         """
         sc2reader.configure(debug=True)
         replay = sc2reader.load_replay(file_name, load_level=4)
+        season_id = lookup_current_season().season_id
 
         #Gather the player performance stats
         all_player_stats = []
@@ -30,26 +34,32 @@ class ReplayReader():
                 player_stats.race = replay_player.play_race
                 player_stats.won = replay_player.result.lower() == Keys.WIN
                 player_stats.handicap = replay_player.handicap
-                player_stats.season = Seasons.CURRENT_SEASON
+                player_stats.season_id = season_id
                 all_player_stats.append(player_stats)
 
                 # create player and rank for this season if one does not exist
                 PlayerModel.get_or_create(battle_net_name=replay_player.name)
-                player_rank = PlayerRankModel.get_or_create(player_stats.battle_net_name, Seasons.CURRENT_SEASON)
+                player_rank = PlayerRankModel.get_or_create(player_stats.battle_net_name, season_id)
                 if player_stats.won:
                     winning_player_ranks.append(player_rank)
                 else:
                     losing_player_ranks.append(player_rank)
                 print "Player: %s (%s) - %s" % (replay_player.name, replay_player.play_race, replay_player.result)
 
+        # if no match was provided then create a new one from replay information
+        if not match_id:
+            match = create_match([rank.battle_net_name for rank in winning_player_ranks],
+                                 [rank.battle_net_name for rank in losing_player_ranks])
+            match_id = match.match_id
+
         player_names = [player.name for player in replay.players]
-        game_key = GameModel.generate_key(replay.start_time, player_names)
+        game_key = GameModel.generate_key(replay.start_time, player_names, match_id, season_id)
         existing_game = game_key.get()
         if existing_game:
             raise ValueError('This game has already been uploaded.')
 
         #Gather the game stats
-        game = GameModel()
+        game = GameModel(key=game_key)
         game.game_length_seconds = replay.real_length.seconds
         game.game_time = replay.start_time
         game.release = replay.release_string
@@ -57,7 +67,6 @@ class ReplayReader():
         game.speed = replay.speed
         game.players = all_player_stats
         game.type = replay.real_type
-        game.key = GameModel.generate_key(game.game_time, player_names)
         game.put()
 
         replay_entity = ReplayModel()

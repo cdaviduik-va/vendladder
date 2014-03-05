@@ -5,7 +5,6 @@ import json
 from app.sc2.domain.player import create_player, get_player_details, update_player
 from app.sc2.utils import jsonDateTimeHandler
 from app.sc2.views import UserView
-from constants import Seasons
 import constants
 
 
@@ -19,8 +18,7 @@ class PlayerCreateView(UserView):
         """
         data = {
             'playerJson': json.dumps({
-                'score': constants.DEFAULT_SCORE,
-                'season': Seasons.CURRENT_SEASON
+                'score': constants.DEFAULT_SCORE
             })
         }
         return self.render_response('/sc2/admin/player/create_or_update.html', **data)
@@ -36,10 +34,9 @@ class PlayerCreateView(UserView):
         real_name = self.request.POST["real_name"]
         vendasta_email = self.request.POST.get("vendasta_email")
         score = self.request.POST.get("score")
-        season = self.request.POST.get("season") or Seasons.CURRENT_SEASON
 
         try:
-            create_player(battle_net_name, real_name=real_name, vendasta_email=vendasta_email, score=score, season=season)
+            create_player(battle_net_name, real_name=real_name, vendasta_email=vendasta_email, score=score)
         except ValueError, e:
             return self.abort(400, e.message)
 

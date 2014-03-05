@@ -2,13 +2,43 @@
 
 {% block content %}
 <h2>Game Submission</h2>
-<p>
-    Players do not submit scores for the games this season.  Instead they upload the replays from the games played.  As
-    per the previous season rules, failure to submit matches before the deadline will result in a loss for both teams.
-</p>
+<div class="well">
+    <p>
+        Players do not submit scores for the games this season.  Instead they upload the replays from the games played.
+    </p>
+    <p>
+        <strong>Make sure you select your match when uploading the replay.</strong>
+    </p>
+    <p>
+        If your match is not listed then it will be created when you upload your first replay.
+    </p>
+</div>
 
-<form method="post" action="{{ uri_for('sc2-game-submit') }}" enctype="multipart/form-data">
-    <label for="replay">Replay File:</label><input id="replay" name="replay" type="file"/><br />
-    <input type="submit" name="Submit" />
-</form>
+{% if current_season %}
+
+    <form method="post" action="{{ uri_for('sc2-game-submit') }}" enctype="multipart/form-data">
+        <div class="control-group">
+            <label class="control-label" for="match_id">Match</label>
+            <select id="match_id" name="match_id">
+                <option value="">New Match</option>
+                {% for match in current_matches %}
+                    <option value="{{ match.match_id }}" {% if match_id == match.match_id %}selected{% endif %}>
+                        {{ match.team1_battle_net_names|join(', ') }} vs
+                        {{ match.team2_battle_net_names|join(', ') }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="replay">Replay File</label>
+            <input id="replay" name="replay" type="file"/>
+        </div>
+
+        <input class="btn btn-primary" type="submit" name="Submit" />
+    </form>
+
+{% else %}
+    <div class="alert alert-warning">You must start the season before you can submit replays.</div>
+{% endif %}
+
 {% endblock %}

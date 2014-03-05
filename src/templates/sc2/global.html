@@ -8,22 +8,27 @@
 {% endblock %}
 
 {% block title %}VendAsta Starcraft 2 Ladder{% endblock %}
-{% block home_page_url %}/sc2{% endblock %}
+{% block home_page_url %}{{ uri_for('sc2-home') }}{% endblock %}
 {% block menu_heading %}VendAsta Starcraft 2 Ladder{% endblock %}
-{% block heading %}Vendasta {{ year }} {{ season }} StarCraft II - Season {{ season_no }}{% endblock %}
+
+{% block heading %}Vendasta StarCraft II
+    {% if current_season %}
+        - {{ current_season.season_name }}
+    {% endif %}
+{% endblock %}
 
 {% block nav_items %}
     <ul class="nav">
         {% if logout %}
-            <li><a href="/sc2/game/submit/">Submit a Game Result</a></li>
+            <li><a href="{{ uri_for('sc2-game-submit') }}">Submit a Game Result</a></li>
         {% endif %}
 
         <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">Ladder
             <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                <li><a href="#">View Match History</a></li>
-                <li><a href="/sc2/player/">View Player Rankings</a></li>
+                <li><a href="{{ uri_for('sc2-match-history') }}">View Matches</a></li>
+                <li><a href="{{ uri_for('sc2-player') }}">View Player Rankings</a></li>
             </ul>
         </li>
     {% if is_admin %}
@@ -32,10 +37,9 @@
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">Admin
                 <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                <li><a href="/sc2/admin/season/create">New Season</a></li>
-                <li><a href="/sc2/admin/round/create">Create Rounds</a></li>
-                <li><a href="/sc2/admin/player/create">Add Players</a></li>
-                <li><a href="/sc2/admin/match/create">Set up Matches</a></li>
+                <li><a href="{{ uri_for('sc2-admin-season') }}">List Seasons</a></li>
+                <li><a href="{{ uri_for('sc2-admin-player-create') }}">Create Players</a></li>
+                <li><a href="{{ uri_for('sc2-admin-match-create') }}">Create Match</a></li>
             </ul>
         </li>
     {% endif %}
@@ -49,6 +53,15 @@
 {% endblock%}
 
 {% block page_content %}
+    {% for alert_type, alert_text in alerts %}
+        <div class="alert alert-{{ alert_type }}">
+            {{ alert_text }}
+        </div>
+    {% endfor %}
+    <div class="controls">
+        {% block controls %}
+        {% endblock %}
+    </div>
     {% block content %}{% endblock %}
 {% endblock %}
 
