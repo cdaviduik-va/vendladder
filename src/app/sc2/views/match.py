@@ -12,9 +12,11 @@ class MatchHistoryView(UserView):
         """
         See above
         """
+        limit = self.request.GET.get('limit', 10)
+        limit = int(limit)
         data = {
             'current_matches': lookup_open_matches(),
-            'games': json.dumps([game.to_dict() for game in lookup_games(limit=10)], default=jsonDateTimeHandler)
+            'games': json.dumps([game.to_dict() for game in lookup_games(limit=limit)], default=jsonDateTimeHandler)
         }
         self.render_response('sc2/match/history.html', **data)
 

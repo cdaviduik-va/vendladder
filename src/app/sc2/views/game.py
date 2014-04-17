@@ -56,7 +56,12 @@ class GameDownloadView(UserView):
         Handles the display of the match submission form
         """
         game_id = self.request.GET.get('id')
-        game = GameModel.get_by_id(game_id)
+        match_id = self.request.GET.get('matchId')
+        season_id = self.request.GET.get('seasonId')
+        game = GameModel.build_key(game_id, match_id, season_id).get()
+        if not game:
+            raise ValueError('Game with id "%s" match id "%s" and season id "%s" not found.' % game_id, match_id, season_id)
+
         filename = game.game_time.date().isoformat() + ' ' + ' '.join([player.battle_net_name for player in game.players]) + '.replay'
         replay = ReplayModel.get_by_game_id(game_id)
         self.response.headers['Content-Type'] = 'application/binary'
