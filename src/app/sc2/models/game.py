@@ -59,9 +59,10 @@ class GameModel(BaseModel):
         return ndb.Key(cls._get_kind(), key_name, parent=parent)
 
     @classmethod
-    def build_key(cls, game_id):
+    def build_key(cls, game_id, match_id, season_id):
         """ Build a key from a previously generated game id key name. """
-        return ndb.Key(cls._get_kind(), game_id)
+        parent = MatchModel.build_key(match_id, season_id)
+        return ndb.Key(cls._get_kind(), game_id, parent=parent)
 
     @classmethod
     def lookup_for_match(cls, match_id):

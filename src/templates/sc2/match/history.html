@@ -92,6 +92,8 @@
         var self = this;
 
         self.game_id = ko.observable(data.game_id);
+        self.match_id = ko.observable(data.match_id);
+        self.season_id = ko.observable(data.season_id);
         self.map_name = ko.observable(data.map_name);
         self.game_time = ko.observable(data.game_time);
         self.playerPerformances = ko.observableArray();
@@ -119,7 +121,7 @@
         });
 
         self.download_replay_link = ko.computed(function() {
-            return "/sc2/game/download/?id=" + self.game_id();
+            return "/sc2/game/download/?id=" + self.game_id() + "&matchId=" + self.match_id() + "&seasonId=" + self.season_id();
         });
 
         //Initialization
@@ -135,7 +137,7 @@
         self.games = ko.observableArray();
 
         //Initialization
-        for(var i=0; i<gamesData.length; i++) {
+        for(var i=0; i< gamesData.length; i++) {
             var game = new GameModel(gamesData[i]);
             self.games.push(game);
         }
