@@ -2,9 +2,9 @@
 
 {% block content %}
 <h2>Create a Season (admin)</h2>
-<p>
-    Create a season during which people can compete!
-</p>
+<div class="well">
+    Creating a new Season will close the one that is currently open and transfer over the players and their ranks.
+</div>
 <h3>Season Creation</h3>
 <form method="post" action="{{ uri_for('sc2-admin-season-create') }}" class="v-form">
     <div class="control-group">
