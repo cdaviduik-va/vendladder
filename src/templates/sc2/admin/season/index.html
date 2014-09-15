@@ -1,7 +1,7 @@
 {% extends "sc2/global.html" %}
 
 {% block controls %}
-    <a class="btn btn-primary" href="{{ uri_for('sc2-admin-season-create') }}">Create Season</a>
+    <a class="btn btn-primary" href="{{ uri_for('sc2-admin-season-create') }}">Start New Season</a>
 {% endblock %}
 
 {% block content %}
@@ -26,7 +26,7 @@
                             <td>{{ season.start_date }}</td>
                             <td>
                                 {% if season.is_open %}
-                                    <button type="submit" class="btn btn-danger">Close Season</button>
+                                    <span class="badge">Current Season</span>
                                 {% endif %}
                             </td>
                         </tr>

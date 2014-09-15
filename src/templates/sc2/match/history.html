@@ -8,60 +8,66 @@
 
 {% block content %}
 
-    <h2>Current Matches</h2>
+    <h2>Matches</h2>
 
     <div class="well">
         If your match doesn't appear here <a href="{{ uri_for('sc2-game-submit') }}">upload a replay</a> to create it.
     </div>
 
-    {% if current_matches %}
+    {% if matches %}
         <table class="table">
             <thead>
                 <tr>
                     <th>Team 1</th>
                     <th>Team 2</th>
-                    <th>Replay</th>
+                    <th>Result</th>
+                    <th>Upload</th>
                     <th>Close</th>
                 </tr>
             </thead>
             <tbody>
-                {% for match in current_matches %}
+                {% for match in matches %}
                     <tr>
-                        <td>{{ match.team1_battle_net_names|join(', ') }}</td>
-                        <td>{{ match.team2_battle_net_names|join(', ') }}</td>
-                        <td><a class="btn btn-primary" href="{{ uri_for('sc2-game-submit', match_id=match.match_id) }}">Upload Replay</a></td>
-                        <td><a class="btn btn-danger close-match" href="{{ uri_for('sc2-match-close', match_id=match.match_id) }}">Close Match</a></td>
+                        <td>{{ match.team1_names|join(', ') }}</td>
+                        <td>{{ match.team2_names|join(', ') }}</td>
+                        <td>{{ match.team1_wins|default(0, true) }} vs. {{ match.team2_wins|default(0, true) }}</td>
+                        <td>
+                            {% if match.is_open %}
+                                <a class="btn btn-primary" href="{{ uri_for('sc2-game-submit', match_id=match.match_id) }}">Upload Replay</a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if match.is_open %}
+                                <a class="btn btn-danger close-match" href="{{ uri_for('sc2-match-close', match_id=match.match_id) }}">Close Match</a>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-    {% else %}
-        <div class="well">
-            There are currently no matches taking place.
-        </div>
     {% endif %}
 
-<h2>Game History</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Winning Team</th>
-            <th>Losing Team</th>
-            <th>Map</th>
-            <th>Date</th>
-            <th>Replay</th>
-        </tr>
-    </thead>
-    <tbody data-bind="foreach: games">
-        <tr>
-            <td data-bind="text:winningTeam"></td>
-            <td data-bind="text:losingTeam"></td>
-            <td data-bind="text:map_name"></td>
-            <td data-bind="text:game_time"></td>
-            <td><a data-bind="attr:{href:download_replay_link}">Download</a></td>
-        </tr>
-    </tbody>
-</table>
+    <h2>Game History</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Winning Team</th>
+                <th>Losing Team</th>
+                <th>Map</th>
+                <th>Date</th>
+                <th>Replay</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: games">
+            <tr>
+                <td data-bind="text:winningTeam"></td>
+                <td data-bind="text:losingTeam"></td>
+                <td data-bind="text:map_name"></td>
+                <td data-bind="text:game_time"></td>
+                <td><a data-bind="attr:{href:download_replay_link}">Download</a></td>
+            </tr>
+        </tbody>
+    </table>
 
 {% endblock %}
 

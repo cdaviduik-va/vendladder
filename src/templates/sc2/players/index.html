@@ -56,7 +56,7 @@
         self.games_won = playerData.games_won;
         self.games_lost = playerData.games_lost;
         self.games_played = playerData.games_played;
-        self.ratio = playerData.ratio;
+        self.ratio = playerData.ratio.toFixed(2);
         self.league = playerData.league;
 
         self.edit_link = ko.computed(function() {

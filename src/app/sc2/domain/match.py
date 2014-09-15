@@ -37,28 +37,36 @@ def close_match(match_id):
     key = MatchModel.build_key(match_id, season_id)
     match = key.get()
     match.is_open = False
-    match.games_played = 0
-    match.team1_wins = 0
-    match.team2_wins = 0
 
-    # update the match with some basic stats from the games played
-    games = GameModel.lookup_for_match(match_id)
-    for game in games:
-        match.games_played += 1
-        winning_battle_net_names = [player.battle_net_name for player in game.players if player.won]
+    ### NOTE: Match stats are now calculated when games are uploaded instead of when match is closed.
+    # Want to hang on to this code for a bit yet though in case a bug is found.
 
-        if any([bnet_name for bnet_name in match.team1_battle_net_names if bnet_name in winning_battle_net_names]):
-            # team 1 win
-            match.team1_wins += 1
-        elif any([bnet_name for bnet_name in match.team2_battle_net_names if bnet_name in winning_battle_net_names]):
-            # team 2 win
-            match.team2_wins += 1
+    # match.games_played = 0
+    # match.team1_wins = 0
+    # match.team2_wins = 0
+    #
+    # # update the match with some basic stats from the games played
+    # games = GameModel.lookup_for_match(match_id)
+    # for game in games:
+    #     match.games_played += 1
+    #     winning_battle_net_names = [player.battle_net_name for player in game.players if player.won]
+    #
+    #     if any([bnet_name for bnet_name in match.team1_battle_net_names if bnet_name in winning_battle_net_names]):
+    #         # team 1 win
+    #         match.team1_wins += 1
+    #     elif any([bnet_name for bnet_name in match.team2_battle_net_names if bnet_name in winning_battle_net_names]):
+    #         # team 2 win
+    #         match.team2_wins += 1
 
     match.put()
 
 
-def lookup_matches():
-    return MatchModel.lookup_for_season()
+def get_match(match_id, season_id):
+    return MatchModel.build_key(match_id, season_id).get()
+
+
+def lookup_matches(limit=None):
+    return MatchModel.lookup_for_season(limit=limit)
 
 
 def lookup_open_matches():

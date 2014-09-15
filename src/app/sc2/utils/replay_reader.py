@@ -1,4 +1,4 @@
-from app.sc2.domain.match import create_match
+from app.sc2.domain.match import create_match, get_match
 from app.sc2.domain.season import lookup_current_season
 import sc2reader
 
@@ -32,6 +32,8 @@ class ReplayReader():
                 player_stats.battle_net_name = replay_player.name
                 player_stats.was_random = replay_player.pick_race.lower() == Keys.RANDOM
                 player_stats.race = replay_player.play_race
+                if not replay_player.result:
+                    raise ValueError('Replay must be uploaded by winning player(s).')
                 player_stats.won = replay_player.result.lower() == Keys.WIN
                 player_stats.handicap = replay_player.handicap
                 player_stats.season_id = season_id
@@ -47,13 +49,14 @@ class ReplayReader():
                 print "Player: %s (%s) - %s" % (replay_player.name, replay_player.play_race, replay_player.result)
 
         # if no match was provided then create a new one from replay information
-        if not match_id:
+        if match_id:
+            match = get_match(match_id, season_id)
+        else:
             match = create_match([rank.battle_net_name for rank in winning_player_ranks],
                                  [rank.battle_net_name for rank in losing_player_ranks])
-            match_id = match.match_id
 
         player_names = [player.name for player in replay.players]
-        game_key = GameModel.generate_key(replay.start_time, player_names, match_id, season_id)
+        game_key = GameModel.generate_key(replay.start_time, player_names, match.match_id, season_id)
         existing_game = game_key.get()
         if existing_game:
             raise ValueError('This game has already been uploaded.')
@@ -76,6 +79,14 @@ class ReplayReader():
         replay_entity.put()
 
         update_player_ranks(winning_player_ranks, losing_player_ranks)
+
+        match.games_played += 1
+        winning_battle_net_names = [player.battle_net_name for player in game.players if player.won]
+        if any([bnet_name for bnet_name in match.team1_battle_net_names if bnet_name in winning_battle_net_names]):
+            match.team1_wins += 1
+        elif any([bnet_name for bnet_name in match.team2_battle_net_names if bnet_name in winning_battle_net_names]):
+            match.team2_wins += 1
+        match.put()
 
         #Return the game model
         return game
