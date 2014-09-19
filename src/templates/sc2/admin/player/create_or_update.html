@@ -33,6 +33,12 @@
         <label class="control-label" for="score">Score (edit with caution):</label>
         <input type="text" id="score" name="score" data-bind="value:score" required/>
     </div>
+    <div class="checkbox control-group">
+        <label>
+            <input type="checkbox" id="is_participating" name="is_participating" data-bind="checked:is_participating"/>
+            Is Participating In Current Season?
+        </label>
+    </div>
     <input type="submit"/>
 </form>
 <br style="clear:both">
@@ -50,6 +56,7 @@
         self.vendasta_email = playerData.vendasta_email;
         self.battle_net_name = playerData.battle_net_name;
         self.score = playerData.score;
+        self.is_participating = playerData.is_participating;
     }
 
     $(function() {

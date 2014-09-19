@@ -57,7 +57,8 @@ class PlayerEditView(UserView):
         kwargs = {
             'name': self.request.POST["real_name"],
             'vendasta_email': self.request.POST.get("vendasta_email"),
-            'score': self.request.POST.get("score")
+            'score': self.request.POST.get("score"),
+            'is_participating': self.request.POST.get("is_participating") == 'on'
         }
         update_player(battle_net_name, **kwargs)
 
