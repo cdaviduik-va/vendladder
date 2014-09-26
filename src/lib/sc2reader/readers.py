@@ -95,6 +95,7 @@ class InitDataReader(object):
                     ai_build=data.read_bits(7) if replay.base_build >= 23925 else None,
                     handicap=data.read_bits(7),
                     observe=data.read_bits(2),
+                    logo_index=data.read_uint32() if replay.base_build >= 32283 else None,
                     working_set_slot_id=data.read_uint8() if replay.base_build >= 24764 and data.read_bool() else None,
                     rewards=[data.read_uint32() for i in range(data.read_bits(6 if replay.base_build >= 24764 else 5))],
                     toon_handle=data.read_aligned_string(data.read_bits(7)) if replay.base_build >= 17266 else None,
@@ -199,7 +200,7 @@ class MessageEventsReader(object):
 
             elif flag == 2:  # Loading progress message
                 progress = data.read_uint32()-2147483648
-                packets.append(PacketEvent(frame, pid, progress))
+                packets.append(ProgressEvent(frame, pid, progress))
 
             elif flag == 3:  # Server ping message
                 pass
@@ -1329,7 +1330,7 @@ class GameEventsReader_24247(GameEventsReader_HotSBeta):
             21: (None, self.save_game_event),                     # New
             22: (None, self.save_game_done_event),                # Override
             23: (None, self.load_game_done_event),                # Override
-            43: (None, self.hijack_replay_game_event),            # New
+            43: (HijackReplayGameEvent, self.hijack_replay_game_event),  # New
             62: (None, self.trigger_target_mode_update_event),    # New
             101: (PlayerLeaveEvent, self.game_user_leave_event),  # New
             102: (None, self.game_user_join_event),               # New
@@ -1359,7 +1360,7 @@ class GameEventsReader_24247(GameEventsReader_HotSBeta):
     def hijack_replay_game_event(self, data):
         return dict(
             user_infos=[dict(
-                game_unit_id=data.read_bits(4),
+                game_user_id=data.read_bits(4),
                 observe=data.read_bits(2),
                 name=data.read_aligned_string(data.read_uint8()),
                 toon_handle=data.read_aligned_string(data.read_bits(7)) if data.read_bool() else None,

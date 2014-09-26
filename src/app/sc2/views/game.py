@@ -2,6 +2,7 @@
 Handlers for sc2 games.
 """
 import json
+import logging
 from app.sc2.domain.match import lookup_open_matches
 from app.sc2.models.game import ReplayModel, GameModel
 from app.sc2.utils import jsonDateTimeHandler
@@ -37,6 +38,7 @@ class GameSubmitView(UserView):
         try:
             game = ReplayReader.ExtractGameInformation(uploaded_file.file, match_id)
         except ValueError, e:
+            logging.exception('Failed to upload replay.')
             return self.abort(400, e.message)
 
         data['game'] = json.dumps(game.to_dict(exclude=['replay']), default=jsonDateTimeHandler, indent=2)
