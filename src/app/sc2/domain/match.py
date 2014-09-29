@@ -87,6 +87,9 @@ def get_suggested_matches(team_size=2, exclude_players=None):
     if not player_ranks:
         return []
 
+    # filter out non-participants here since it is a pain to filter query on
+    player_ranks = [pr for pr in player_ranks if pr.is_participating]
+
     exclude_players = exclude_players or []
     open_matches = lookup_open_matches()
     for match in open_matches:
