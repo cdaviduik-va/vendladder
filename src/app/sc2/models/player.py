@@ -54,6 +54,7 @@ class PlayerRankModel(BaseModel):
     games_lost = ndb.IntegerProperty(default=0)
     games_played = ndb.ComputedProperty(lambda self: self.compute_games_played())
     is_participating = ndb.BooleanProperty(default=True)
+    last_game_played = ndb.DateTimeProperty()
 
     @classmethod
     def build_key(cls, battle_net_name, season_id):

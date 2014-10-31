@@ -42,6 +42,7 @@ class ReplayReader():
                 # create player and rank for this season if one does not exist
                 PlayerModel.get_or_create(battle_net_name=replay_player.name)
                 player_rank = PlayerRankModel.get_or_create(player_stats.battle_net_name, season_id)
+                player_rank.last_game_played = replay.start_time
                 if player_stats.won:
                     winning_player_ranks.append(player_rank)
                 else:
