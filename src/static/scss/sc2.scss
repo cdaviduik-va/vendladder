@@ -19,9 +19,13 @@ form {
   text-align: right;
 }
 
-.thumbnail img {
-  max-height: 150px;
-  max-width: 150px;
+.thumbnail {
+  text-align: center;
+
+  img {
+    max-height: 150px;
+    max-width: 150px;
+  }
 }
 
 #create-match-form {
