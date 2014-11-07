@@ -1,0 +1,65 @@
+{% extends "sc2/global.html" %}
+
+{% block heading %}
+    Vendasta StarCraft II - Player Details
+{% endblock %}
+
+{% block content %}
+
+    <div class="media">
+      <img class="pull-left img-circle" src="http://www.vendasta.com/__v509/static/images/team/chris-daviduik.jpeg"/>
+      <div class="media-body">
+        <h2>
+            {{ details.player.battle_net_name }}
+            {% if details.player.name %}
+                // {{ details.player.name }}
+            {% endif %}
+        </h2>
+        <p><small>Joined {{ details.player.created }}</small></p>
+
+        <p class="pull-left">rank</p>
+        <h1>{{ player_rank }}</h1>
+        <p class="pull-left">score</p>
+        <h1>{{ details.score }}</h1>
+
+      </div>
+    </div>
+
+    <h3>Game Stats</h3>
+    <div class="row">
+        <div class="span6">
+            <dl class="dl-horizontal">
+                <dt>League</dt>
+                <dd>{{ details.player_rank.league }}</dd>
+                <dt>Games Won</dt>
+                <dd>{{ details.player_rank.games_won }}</dd>
+                <dt>Games Lost</dt>
+                <dd>{{ details.player_rank.games_lost }}</dd>
+                <dt>Games Played</dt>
+                <dd>{{ details.player_rank.games_played }}</dd>
+                <dt>Ratio</dt>
+                <dd>{{ '%0.02f'|format(details.player_rank.ratio) }}</dd>
+            </dl>
+        </div>
+        <div class="span6">
+            <dl class="dl-horizontal">
+                <dt>Average Game Length</dt>
+                <dd>{{ game_stats.average_game_length }}</dd>
+                <dt>Most Played Map</dt>
+                <dd>{{ game_stats.most_played_map }}</dd>
+                <dt>Map With Most Wins</dt>
+                <dd>{{ game_stats.favourite_map }}</dd>
+                <dt>Favourite Race</dt>
+                <dd>{{ game_stats.favourite_race }}</dd>
+            </dl>
+        </div>
+    </div>
+
+    <h3>Seasons Participated</h3>
+    <ul>
+        {% for season in details.seasons_participated %}
+            <li>{{ season.season_name }}</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

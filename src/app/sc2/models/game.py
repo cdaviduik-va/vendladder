@@ -34,8 +34,10 @@ class GameModel(BaseModel):
     game_time = ndb.DateTimeProperty()
     game_length_seconds = ndb.IntegerProperty()
     speed = ndb.StringProperty()
+    # sc2 version
     release = ndb.StringProperty()
     players = ndb.StructuredProperty(PlayerStatsModel, repeated=True)
+    # 1v1, 2v2, etc.
     type = ndb.StringProperty()
 
     @classmethod
@@ -72,6 +74,10 @@ class GameModel(BaseModel):
     def lookup_all(cls, limit=None):
         query = cls.query().order(-cls.game_time)
         return query.fetch(limit=limit)
+
+    @classmethod
+    def lookup_for_player(cls, battle_net_name, limit=None):
+        return cls.query(cls.players.battle_net_name == battle_net_name).order(-cls.game_time).fetch(limit=limit)
 
 
 class ReplayModel(BaseModel):

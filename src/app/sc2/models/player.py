@@ -15,6 +15,7 @@ class PlayerModel(BaseModel):
     name = ndb.StringProperty()
     vendasta_email = ndb.StringProperty()
     player_name = ndb.StringProperty()
+    image_url = ndb.StringProperty()
     seasons_participated = ndb.StringProperty(repeated=True)
 
     @classmethod
