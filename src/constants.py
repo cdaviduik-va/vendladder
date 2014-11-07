@@ -5,13 +5,13 @@ class Leagues():
     """
     Corresponds to: http://en.wikipedia.org/wiki/Elo_rating_system#United_States_Chess_Federation_ratings
     """
-    BRONZE = 'Bronze'
-    SILVER = 'Silver'
-    GOLD = 'Gold'
-    PLATINUM = 'Platinum'
-    DIAMOND = 'Diamond'
+    BRONZE = 'Recruit'
+    SILVER = 'Corporal'
+    GOLD = 'Sergeant'
+    PLATINUM = 'Captain'
+    DIAMOND = 'Commander'
     MASTER = 'Master'
-    GRAND_MASTER = 'Grand Master'
+    GRAND_MASTER = 'Executor'
 
     SILVER_THRESHOLD = 500
     GOLD_THRESHOLD = 800
