@@ -15,8 +15,17 @@ form {
 }
 
 .controls {
-  float: right;
-  margin-right: 10px;
+  margin-bottom: 20px;
+  text-align: right;
+}
+
+.thumbnail {
+  text-align: center;
+
+  img {
+    max-height: 150px;
+    max-width: 150px;
+  }
 }
 
 #create-match-form {
