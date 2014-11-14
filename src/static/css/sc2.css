@@ -17,23 +17,33 @@ form label {
 
 /* line 17, ../scss/sc2.scss */
 .controls {
-  float: right;
-  margin-right: 10px;
+  margin-bottom: 20px;
+  text-align: right;
 }
 
-/* line 23, ../scss/sc2.scss */
+/* line 22, ../scss/sc2.scss */
+.thumbnail {
+  text-align: center;
+}
+/* line 25, ../scss/sc2.scss */
+.thumbnail img {
+  max-height: 150px;
+  max-width: 150px;
+}
+
+/* line 32, ../scss/sc2.scss */
 #create-match-form .sc2-team-selection {
   float: left;
   margin-right: 20px;
 }
-/* line 28, ../scss/sc2.scss */
+/* line 37, ../scss/sc2.scss */
 #create-match-form .vs {
   float: left;
   margin-left: 40px;
   margin-right: 60px;
   margin-top: 100px;
 }
-/* line 35, ../scss/sc2.scss */
+/* line 44, ../scss/sc2.scss */
 #create-match-form .btn {
   clear: both;
   float: left;
