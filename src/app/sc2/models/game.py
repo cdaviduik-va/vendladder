@@ -5,6 +5,7 @@ import hashlib
 from google.appengine.ext import ndb
 from app.sc2.models import BaseModel
 from app.sc2.models.match import MatchModel
+from app.sc2.models.season import SeasonModel
 
 
 class PlayerStatsModel(BaseModel):
@@ -76,8 +77,18 @@ class GameModel(BaseModel):
         return query.fetch(limit=limit)
 
     @classmethod
+    def lookup_for_player_query(cls, battle_net_name):
+        return cls.query(cls.players.battle_net_name == battle_net_name).order(-cls.game_time)
+
+    @classmethod
     def lookup_for_player(cls, battle_net_name, limit=None):
-        return cls.query(cls.players.battle_net_name == battle_net_name).order(-cls.game_time).fetch(limit=limit)
+        return cls.lookup_for_player_query(battle_net_name).fetch(limit=limit)
+
+    @classmethod
+    def lookup_for_player_for_season(cls, battle_net_name, season_id=None):
+        season_id = season_id or SeasonModel.lookup_open().season_id
+        query = cls.lookup_for_player_query(battle_net_name)
+        return query.filter(cls.season_id == season_id).fetch()
 
 
 class ReplayModel(BaseModel):

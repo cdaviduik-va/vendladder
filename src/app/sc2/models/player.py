@@ -80,6 +80,10 @@ class PlayerRankModel(BaseModel):
         return cls.query(cls.season_id == season_id).fetch()
 
     @classmethod
+    def lookup_for_battle_net_name(cls, battle_net_name):
+        return cls.query(cls.battle_net_name == battle_net_name).fetch()
+
+    @classmethod
     def _get_kind(cls):
         return "SCII_PlayerRankModel"
 

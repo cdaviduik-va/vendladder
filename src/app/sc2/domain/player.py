@@ -1,9 +1,7 @@
 """
 Deals with stuff with users... you know
 """
-from google.appengine.ext import ndb
 from app.sc2.domain.season import lookup_current_season
-from app.sc2.models.season import SeasonModel
 from app.utils import calculate_elo_rank
 from app.sc2.models.player import PlayerModel, PlayerRankModel
 
@@ -87,8 +85,8 @@ def get_player_details(battle_net_name, season_id=None):
     return PlayerDetails(player, player_rank, is_participating=is_participating)
 
 
-def get_player_details_for_season():
-    season_id = lookup_current_season(id_only=True)
+def get_all_player_details_for_season(season_id=None):
+    season_id = season_id or lookup_current_season(id_only=True)
     players = PlayerModel.lookup_for_season(season_id=season_id)
     all_player_details = []
     for player in players:
@@ -107,11 +105,6 @@ class PlayerDetails(object):
         self.player_rank = player_rank
         self.score = self.player_rank.score
         self.is_participating = is_participating
-
-    @property
-    def seasons_participated(self):
-        season_keys = [SeasonModel.build_key(season_id) for season_id in self.player.seasons_participated]
-        return ndb.get_multi(season_keys)
 
     def to_dict(self):
         player_dict = self.player.to_dict()
