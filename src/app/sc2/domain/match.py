@@ -1,6 +1,7 @@
 """
 Match domain module
 """
+import time
 import itertools
 from app.sc2.domain.season import lookup_current_season
 from app.sc2.models.game import GameModel
@@ -96,7 +97,7 @@ def get_suggested_matches(team_size=2, exclude_players=None):
         exclude_players += match.team1_battle_net_names
         exclude_players += match.team2_battle_net_names
 
-    player_ranks = sorted(player_ranks, key=lambda player_rank: (player_rank.games_played, player_rank.score), reverse=True)
+    player_ranks = sorted(player_ranks, key=lambda player_rank: player_rank.last_game_played)
     all_teams = [team for team in itertools.combinations(player_ranks, team_size)]
     all_matches = [match for match in itertools.combinations(all_teams, 2)]
     potential_matches = []
@@ -114,7 +115,7 @@ def get_suggested_matches(team_size=2, exclude_players=None):
         match = SuggestedMatch([player_rank for player_rank in team1], [player_rank for player_rank in team2])
         potential_matches.append(match)
 
-    potential_matches = sorted(potential_matches, key=lambda match: (match.average_games_played, match.score_diff))
+    potential_matches = sorted(potential_matches, key=lambda match: (match.average_time_since_last_game, match.score_diff))
     return potential_matches
 
 
@@ -129,6 +130,7 @@ class SuggestedMatch(object):
         self.team2_average_score = sum([player_rank.score for player_rank in self.team2]) / len(self.team1)
         self.average_games_played = sum([player_rank.games_played for player_rank in self.team1 + self.team2]) / len(self.team1 + self.team2)
         self.score_diff = abs(self.team1_average_score - self.team2_average_score)
+        self.average_time_since_last_game = sum([time.mktime(player_rank.last_game_played.timetuple()) for player_rank in self.team1 + self.team2]) / len(self.team1 + self.team2)
 
     def to_dict(self):
         return {
