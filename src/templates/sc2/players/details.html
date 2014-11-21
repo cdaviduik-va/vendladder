@@ -7,20 +7,25 @@
 {% block content %}
 
     <div class="media">
-      <img class="pull-left img-circle" src="http://www.vendasta.com/__v509/static/images/team/chris-daviduik.jpeg"/>
-      <div class="media-body">
-        <h2>
-            {{ stats.battle_net_name }}
-            {% if stats.player.name %}
-                // {{ stats.player.name }}
+        <div class="pull-left thumbnail">
+            <h3>{{ stats.player_rank.league }}</h3>
+            {% if stats.player.image_url %}
+                <img class="img-circle" src="{{ stats.player.image_url }}"/>
             {% endif %}
-        </h2>
-        <p><small>Joined {{ stats.player.created }}</small></p>
+            <h3 class="caption">
+                {{ stats.battle_net_name }}
+                {% if stats.player.name %}
+                    // {{ stats.player.name }}
+                {% endif %}
+            </h3>
+        </div>
 
+      <div class="media-body">
         <p class="pull-left">rank</p>
         <h1>{{ stats.rank }}</h1>
         <p class="pull-left">score</p>
         <h1>{{ stats.score }}</h1>
+        <p><small>Joined {{ stats.player.created|dateformat }}</small></p>
 
       </div>
     </div>

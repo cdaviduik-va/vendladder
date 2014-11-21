@@ -30,6 +30,10 @@
         <input type="email" id="vendasta_email" name="vendasta_email" data-bind="value:vendasta_email"/>
     </div>
     <div class="control-group">
+        <label class="control-label" for="image_url">Image Url:</label>
+        <input type="text" id="image_url" name="image_url" data-bind="value:image_url"/>
+    </div>
+    <div class="control-group">
         <label class="control-label" for="score">Score (edit with caution):</label>
         <input type="text" id="score" name="score" data-bind="value:score" required/>
     </div>
@@ -55,6 +59,7 @@
         self.name = playerData.name;
         self.vendasta_email = playerData.vendasta_email;
         self.battle_net_name = playerData.battle_net_name;
+        self.image_url = playerData.image_url;
         self.score = playerData.score;
         self.is_participating = playerData.is_participating;
     }

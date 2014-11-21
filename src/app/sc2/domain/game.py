@@ -62,6 +62,8 @@ class PlayerGameStats(object):
     @property
     def most_played_map(self):
         map_names = [game.map_name for game in self.games]
+        if not map_names:
+            return None
         return max(set(map_names), key=map_names.count)
 
     @property
@@ -70,6 +72,8 @@ class PlayerGameStats(object):
         for game in self.games:
             if [ps for ps in game.players if ps.battle_net_name == self.battle_net_name and ps.won]:
                 won_maps.append(game.map_name)
+        if not won_maps:
+            return None
         return max(set(won_maps), key=won_maps.count)
 
     @property
@@ -80,6 +84,8 @@ class PlayerGameStats(object):
             if len(player_won_stats):
                 player_stats = player_won_stats[0]
                 won_race.append(player_stats.race)
+        if not won_race:
+            return None
         return max(set(won_race), key=won_race.count)
 
     @property
@@ -115,4 +121,6 @@ class PlayerGameStats(object):
             for winner in winners:
                 player_games_lost_map[winner] += 1
 
+        if not player_games_lost_map:
+            return None
         return max(player_games_lost_map, key=player_games_lost_map.get)
