@@ -26,12 +26,13 @@ ROUTES = [
     RedirectRoute('/sc2/match/', handler='app.sc2.views.match.MatchHistoryView', name='sc2-match-history', strict_slash=True),
     RedirectRoute('/sc2/match/close/<match_id>/', handler='app.sc2.views.match.CloseMatchView', name='sc2-match-close', strict_slash=True),
     RedirectRoute('/sc2/player/', handler='app.sc2.views.player.PlayerIndex', name='sc2-player', strict_slash=True),
+    RedirectRoute('/sc2/player/<battle_net_name>/', handler='app.sc2.views.player.PlayerDetails', name='sc2-player-details', strict_slash=True),
     RedirectRoute('/sc2/game/download/', handler='app.sc2.views.game.GameDownloadView', name='sc2-game-download', strict_slash=True),
 
     # SC2 Admin routes
     RedirectRoute('/sc2/admin/season/', handler='app.sc2.views.admin.season.ListSeasonsView', name='sc2-admin-season', strict_slash=True),
     RedirectRoute('/sc2/admin/season/create/', handler='app.sc2.views.admin.season.SeasonCreateView', name='sc2-admin-season-create', strict_slash=True),
-    RedirectRoute('/sc2/admin/season/clsoe/', handler='app.sc2.views.admin.season.SeasonCloseView', name='sc2-admin-season-close', strict_slash=True),
+    RedirectRoute('/sc2/admin/season/close/', handler='app.sc2.views.admin.season.SeasonCloseView', name='sc2-admin-season-close', strict_slash=True),
     RedirectRoute('/sc2/admin/match/create/', handler='app.sc2.views.admin.match.MatchCreateView', name='sc2-admin-match-create', strict_slash=True),
     RedirectRoute('/sc2/admin/player/create/', handler='app.sc2.views.admin.player.PlayerCreateView', name='sc2-admin-player-create', strict_slash=True),
     RedirectRoute('/sc2/admin/player/edit/<battle_net_name>/', handler='app.sc2.views.admin.player.PlayerEditView', name='sc2-admin-player-edit', strict_slash=True),

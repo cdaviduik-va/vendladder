@@ -26,7 +26,9 @@
                 <td data-bind="text:$index() + 1"></td>
                 <td data-bind="text:name"></td>
                 <td data-bind="text:vendasta_email"></td>
-                <td data-bind="text:battle_net_name"></td>
+                <td>
+                    <a data-bind="attr: {href: details_link}, text: battle_net_name"></a>
+                </td>
                 <td data-bind="text:league"></td>
                 <td data-bind="text:games_won"></td>
                 <td data-bind="text:games_lost"></td>
@@ -60,7 +62,11 @@
         self.league = playerData.league;
 
         self.edit_link = ko.computed(function() {
-            return "/sc2/admin/player/edit/" + self.battle_net_name + '/';
+            return "/sc2/admin/player/edit/" + self.battle_net_name + "/";
+        });
+
+        self.details_link = ko.computed(function() {
+            return "/sc2/player/" + self.battle_net_name + "/"
         });
     }
 

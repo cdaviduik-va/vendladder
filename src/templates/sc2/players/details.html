@@ -1,0 +1,74 @@
+{% extends "sc2/global.html" %}
+
+{% block heading %}
+    Vendasta StarCraft II - Player Details
+{% endblock %}
+
+{% block content %}
+
+    <div class="media">
+        <div class="pull-left thumbnail">
+            <h3>{{ stats.player_rank.league }}</h3>
+            {% if stats.player.image_url %}
+                <img class="img-circle" src="{{ stats.player.image_url }}"/>
+            {% endif %}
+            <h3 class="caption">
+                {{ stats.battle_net_name }}
+                {% if stats.player.name %}
+                    // {{ stats.player.name }}
+                {% endif %}
+            </h3>
+        </div>
+
+      <div class="media-body">
+        <p class="pull-left">rank</p>
+        <h1>{{ stats.rank }}</h1>
+        <p class="pull-left">score</p>
+        <h1>{{ stats.score }}</h1>
+        <p><small>Joined {{ stats.player.created|dateformat }}</small></p>
+
+      </div>
+    </div>
+
+    <h3>Season Stats</h3>
+    <div class="row">
+        <div class="span6">
+            <dl class="dl-horizontal">
+                <dt>League</dt>
+                <dd>{{ stats.player_rank.league }}</dd>
+                <dt>Games Won</dt>
+                <dd>{{ stats.player_rank.games_won }}</dd>
+                <dt>Games Lost</dt>
+                <dd>{{ stats.player_rank.games_lost }}</dd>
+                <dt>Games Played</dt>
+                <dd>{{ stats.player_rank.games_played }}</dd>
+                <dt>Ratio</dt>
+                <dd>{{ '%0.02f'|format(stats.player_rank.ratio) }}</dd>
+                <dt>Longest Win Streak</dt>
+                <dd>{{ stats.longest_win_streak }}</dd>
+            </dl>
+        </div>
+        <div class="span6">
+            <dl class="dl-horizontal">
+                <dt>Average Game Length</dt>
+                <dd>{{ stats.average_game_length }}</dd>
+                <dt>Most Played Map</dt>
+                <dd>{{ stats.most_played_map }}</dd>
+                <dt>Map With Most Wins</dt>
+                <dd>{{ stats.favourite_map }}</dd>
+                <dt>Favourite Race</dt>
+                <dd>{{ stats.favourite_race }}</dd>
+                <dt>Nemesis</dt>
+                <dd>{{ stats.nemesis }}</dd>
+            </dl>
+        </div>
+    </div>
+
+    <h3>Seasons Participated</h3>
+    <ul>
+        {% for season in stats.seasons_participated %}
+            <li>{{ season.season_name }}</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

@@ -20,11 +20,18 @@ form {
 }
 
 .thumbnail {
+  min-width: 200px;
   text-align: center;
 
   img {
     max-height: 150px;
     max-width: 150px;
+  }
+}
+
+.media-body {
+  h1 {
+    margin: 0;
   }
 }
 

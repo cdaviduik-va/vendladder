@@ -15,6 +15,7 @@ class PlayerModel(BaseModel):
     name = ndb.StringProperty()
     vendasta_email = ndb.StringProperty()
     player_name = ndb.StringProperty()
+    image_url = ndb.StringProperty()
     seasons_participated = ndb.StringProperty(repeated=True)
 
     @classmethod
@@ -78,6 +79,10 @@ class PlayerRankModel(BaseModel):
     def lookup_for_current_season(cls):
         season_id = SeasonModel.lookup_open().season_id
         return cls.query(cls.season_id == season_id).fetch()
+
+    @classmethod
+    def lookup_for_battle_net_name(cls, battle_net_name):
+        return cls.query(cls.battle_net_name == battle_net_name).fetch()
 
     @classmethod
     def _get_kind(cls):

@@ -85,8 +85,8 @@ def get_player_details(battle_net_name, season_id=None):
     return PlayerDetails(player, player_rank, is_participating=is_participating)
 
 
-def get_player_details_for_season():
-    season_id = lookup_current_season(id_only=True)
+def get_all_player_details_for_season(season_id=None):
+    season_id = season_id or lookup_current_season(id_only=True)
     players = PlayerModel.lookup_for_season(season_id=season_id)
     all_player_details = []
     for player in players:

@@ -57,6 +57,7 @@ class PlayerEditView(UserView):
         kwargs = {
             'name': self.request.POST["real_name"],
             'vendasta_email': self.request.POST.get("vendasta_email"),
+            'image_url': self.request.POST.get("image_url"),
             'score': self.request.POST.get("score"),
             'is_participating': self.request.POST.get("is_participating") == 'on'
         }
