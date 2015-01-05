@@ -32,7 +32,7 @@ ROUTES = [
     # SC2 Admin routes
     RedirectRoute('/sc2/admin/season/', handler='app.sc2.views.admin.season.ListSeasonsView', name='sc2-admin-season', strict_slash=True),
     RedirectRoute('/sc2/admin/season/create/', handler='app.sc2.views.admin.season.SeasonCreateView', name='sc2-admin-season-create', strict_slash=True),
-    RedirectRoute('/sc2/admin/season/clsoe/', handler='app.sc2.views.admin.season.SeasonCloseView', name='sc2-admin-season-close', strict_slash=True),
+    RedirectRoute('/sc2/admin/season/close/', handler='app.sc2.views.admin.season.SeasonCloseView', name='sc2-admin-season-close', strict_slash=True),
     RedirectRoute('/sc2/admin/match/create/', handler='app.sc2.views.admin.match.MatchCreateView', name='sc2-admin-match-create', strict_slash=True),
     RedirectRoute('/sc2/admin/player/create/', handler='app.sc2.views.admin.player.PlayerCreateView', name='sc2-admin-player-create', strict_slash=True),
     RedirectRoute('/sc2/admin/player/edit/<battle_net_name>/', handler='app.sc2.views.admin.player.PlayerEditView', name='sc2-admin-player-edit', strict_slash=True),
