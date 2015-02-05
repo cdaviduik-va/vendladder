@@ -4,6 +4,10 @@ This is the code repository for the site found at http://foosball.vendasta.com.
 It uses Google's App Engine and Python, with Jinja2 templating.
 
 # VendAsta SC2 Ladder
+foos-8-1
+- score only calculated after closing match
+- now only taking into account 2v2 games when considering last game played during match making algorithm
+
 foos-8
 - Added player details page
 
