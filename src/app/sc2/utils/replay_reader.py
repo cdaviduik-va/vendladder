@@ -1,11 +1,10 @@
-from app.sc2.domain.match import create_match, get_match
-from app.sc2.domain.season import lookup_current_season
 import sc2reader
 
 from constants import Keys
 from app.sc2.models.player import PlayerModel, PlayerRankModel
 from app.sc2.models.game import PlayerStatsModel, GameModel, ReplayModel
-from app.sc2.domain.player import update_player_ranks
+from app.sc2.domain.match import create_match, get_match
+from app.sc2.domain.season import lookup_current_season
 
 
 class ReplayReader():
@@ -26,28 +25,36 @@ class ReplayReader():
         all_player_stats = []
         winning_player_ranks = []
         losing_player_ranks = []
-        for replay_player in replay.players:
-            if replay_player.is_human and not replay_player.is_observer and not replay_player.is_referee:
-                player_stats = PlayerStatsModel()
-                player_stats.battle_net_name = replay_player.name
-                player_stats.was_random = replay_player.pick_race.lower() == Keys.RANDOM
-                player_stats.race = replay_player.play_race
-                if not replay_player.result:
-                    raise ValueError('Replay must be uploaded by winning player(s).')
-                player_stats.won = replay_player.result.lower() == Keys.WIN
-                player_stats.handicap = replay_player.handicap
-                player_stats.season_id = season_id
-                all_player_stats.append(player_stats)
 
-                # create player and rank for this season if one does not exist
-                PlayerModel.get_or_create(battle_net_name=replay_player.name)
-                player_rank = PlayerRankModel.get_or_create(player_stats.battle_net_name, season_id)
-                player_rank.last_game_played = replay.start_time
-                if player_stats.won:
-                    winning_player_ranks.append(player_rank)
-                else:
-                    losing_player_ranks.append(player_rank)
-                print "Player: %s (%s) - %s" % (replay_player.name, replay_player.play_race, replay_player.result)
+        # compile list of players while filtering out ai/observers/referees
+        replay_players = [replay_player for replay_player in replay.players
+                          if replay_player.is_human and not replay_player.is_observer and not replay_player.is_referee]
+
+        for replay_player in replay_players:
+            player_stats = PlayerStatsModel()
+            player_stats.battle_net_name = replay_player.name
+            player_stats.was_random = replay_player.pick_race.lower() == Keys.RANDOM
+            player_stats.race = replay_player.play_race
+            if not replay_player.result:
+                raise ValueError('Replay must be uploaded by winning player(s).')
+            player_stats.won = replay_player.result.lower() == Keys.WIN
+            player_stats.handicap = replay_player.handicap
+            player_stats.season_id = season_id
+            all_player_stats.append(player_stats)
+
+            # create player and rank for this season if one does not exist
+            PlayerModel.get_or_create(battle_net_name=replay_player.name)
+            player_rank = PlayerRankModel.get_or_create(player_stats.battle_net_name, season_id)
+            player_rank.last_game_played = replay.start_time
+
+            if len(replay_players) == 4:
+                player_rank.last_2v2_game_played = replay.start_time
+
+            if player_stats.won:
+                winning_player_ranks.append(player_rank)
+            else:
+                losing_player_ranks.append(player_rank)
+            print "Player: %s (%s) - %s" % (replay_player.name, replay_player.play_race, replay_player.result)
 
         # if no match was provided then create a new one from replay information
         if match_id:
@@ -79,7 +86,7 @@ class ReplayReader():
         replay_entity.key = ReplayModel.build_key(game.game_id)
         replay_entity.put()
 
-        update_player_ranks(winning_player_ranks, losing_player_ranks)
+        # update_player_ranks(winning_player_ranks, losing_player_ranks)
 
         match.games_played += 1
         winning_battle_net_names = [player.battle_net_name for player in game.players if player.won]

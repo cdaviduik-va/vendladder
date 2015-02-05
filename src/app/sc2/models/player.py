@@ -56,6 +56,7 @@ class PlayerRankModel(BaseModel):
     games_played = ndb.ComputedProperty(lambda self: self.compute_games_played())
     is_participating = ndb.BooleanProperty(default=True)
     last_game_played = ndb.DateTimeProperty()
+    last_2v2_game_played = ndb.DateTimeProperty()
 
     @classmethod
     def build_key(cls, battle_net_name, season_id):
@@ -110,3 +111,9 @@ class PlayerRankModel(BaseModel):
 
     def compute_games_played(self):
         return self.games_won + self.games_lost
+
+    def get_last_game_played(self, team_size=2):
+        last_game_played = self.last_game_played
+        if team_size == 2 and self.last_2v2_game_played:
+            last_game_played = self.last_2v2_game_played
+        return last_game_played

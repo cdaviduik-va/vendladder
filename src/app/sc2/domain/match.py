@@ -3,6 +3,7 @@ Match domain module
 """
 import time
 import itertools
+from app.sc2.domain.player import update_player_ranks
 from app.sc2.domain.season import lookup_current_season
 from app.sc2.models.game import GameModel
 from app.sc2.models.match import MatchModel
@@ -38,6 +39,21 @@ def close_match(match_id):
     key = MatchModel.build_key(match_id, season_id)
     match = key.get()
     match.is_open = False
+
+    if match.team2_wins != match.team1_wins:
+        # do not update rank if match was a tie
+        team1_player_ranks = [PlayerRankModel.build_key(bnet_name, match.season_id).get()
+                              for bnet_name in match.team1_battle_net_names]
+        team2_player_ranks = [PlayerRankModel.build_key(bnet_name, match.season_id).get()
+                              for bnet_name in match.team2_battle_net_names]
+
+        winning_player_ranks = team1_player_ranks
+        losing_player_ranks = team2_player_ranks
+        if match.team2_wins > match.team1_wins:
+            winning_player_ranks = team2_player_ranks
+            losing_player_ranks = team1_player_ranks
+
+        update_player_ranks(winning_player_ranks, losing_player_ranks)
 
     ### NOTE: Match stats are now calculated when games are uploaded instead of when match is closed.
     # Want to hang on to this code for a bit yet though in case a bug is found.
@@ -97,7 +113,7 @@ def get_suggested_matches(team_size=2, exclude_players=None):
         exclude_players += match.team1_battle_net_names
         exclude_players += match.team2_battle_net_names
 
-    player_ranks = sorted(player_ranks, key=lambda player_rank: player_rank.last_game_played)
+    player_ranks = sorted(player_ranks, key=lambda player_rank: player_rank.get_last_game_played(team_size=team_size))
     all_teams = [team for team in itertools.combinations(player_ranks, team_size)]
     all_matches = [match for match in itertools.combinations(all_teams, 2)]
     potential_matches = []
