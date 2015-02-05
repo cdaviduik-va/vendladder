@@ -42,9 +42,9 @@ def close_match(match_id):
 
     if match.team2_wins != match.team1_wins:
         # do not update rank if match was a tie
-        team1_player_ranks = [PlayerRankModel.build_key(bnet_name, match.season_id)
+        team1_player_ranks = [PlayerRankModel.build_key(bnet_name, match.season_id).get()
                               for bnet_name in match.team1_battle_net_names]
-        team2_player_ranks = [PlayerRankModel.build_key(bnet_name, match.season_id)
+        team2_player_ranks = [PlayerRankModel.build_key(bnet_name, match.season_id).get()
                               for bnet_name in match.team2_battle_net_names]
 
         winning_player_ranks = team1_player_ranks
