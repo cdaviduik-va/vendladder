@@ -19,9 +19,9 @@ class UserView(RequestHandler):
         Pass a template (html) and a dictionary :)
         :param alerts: List of alert type (one of "error", "success", or "info") and corresponding text tuples
         """
-
+        user = users.get_current_user()
+        context['user'] = user
         if "logout" not in context.keys() or "login" not in context.keys():
-            user = users.get_current_user()
             if user:
                 if users.is_current_user_admin():
                     context["is_admin"] = True

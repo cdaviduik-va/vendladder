@@ -68,12 +68,12 @@
                         <td>{{ match.team2_names|join(', ') }}</td>
                         <td>{{ match.team1_wins|default(0, true) }} vs. {{ match.team2_wins|default(0, true) }}</td>
                         <td>
-                            {% if match.is_open %}
+                            {% if user and match.is_open %}
                                 <a class="btn btn-primary" href="{{ uri_for('sc2-game-submit', match_id=match.match_id) }}">Upload Replay</a>
                             {% endif %}
                         </td>
                         <td>
-                            {% if match.is_open %}
+                            {% if user and match.is_open %}
                                 <a class="btn btn-danger close-match" href="{{ uri_for('sc2-match-close', match_id=match.match_id) }}">Close Match</a>
                             {% endif %}
                         </td>
