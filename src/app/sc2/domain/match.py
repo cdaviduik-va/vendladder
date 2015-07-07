@@ -146,7 +146,10 @@ class SuggestedMatch(object):
         self.team2_average_score = sum([player_rank.score for player_rank in self.team2]) / len(self.team1)
         self.average_games_played = sum([player_rank.games_played for player_rank in self.team1 + self.team2]) / len(self.team1 + self.team2)
         self.score_diff = abs(self.team1_average_score - self.team2_average_score)
-        self.average_time_since_last_game = sum([time.mktime(player_rank.last_game_played.timetuple()) for player_rank in self.team1 + self.team2]) / len(self.team1 + self.team2)
+        last_games_played = [player_rank.last_game_played for player_rank in self.team1 + self.team2 if player_rank.last_game_played]
+        self.average_time_since_last_game = 0
+        if len(last_games_played) > 0:
+            self.average_time_since_last_game = sum([time.mktime(last_game_played.timetuple()) for last_game_played in last_games_played]) / len(last_games_played)
 
     def to_dict(self):
         return {
