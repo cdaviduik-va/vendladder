@@ -3,6 +3,7 @@ Match domain module
 """
 import time
 import itertools
+import logging
 from app.sc2.domain.player import update_player_ranks
 from app.sc2.domain.season import lookup_current_season
 from app.sc2.models.game import GameModel
@@ -114,8 +115,13 @@ def get_suggested_matches(team_size=2, exclude_players=None):
         exclude_players += match.team2_battle_net_names
 
     player_ranks = sorted(player_ranks, key=lambda player_rank: player_rank.get_last_game_played(team_size=team_size))
+    for player_rank in player_ranks:
+        logging.debug('Player rank last game played')
+        logging.debug(player_rank.last_2v2_game_played)
     all_teams = [team for team in itertools.combinations(player_ranks, team_size)]
+    logging.debug('Number of teams: %d', len(all_teams))
     all_matches = [match for match in itertools.combinations(all_teams, 2)]
+    logging.debug('Number of matches: %d', len(all_matches))
     potential_matches = []
     for team1, team2 in all_matches:
         team1_names = [player_rank.battle_net_name for player_rank in team1]
@@ -132,6 +138,7 @@ def get_suggested_matches(team_size=2, exclude_players=None):
         potential_matches.append(match)
 
     potential_matches = sorted(potential_matches, key=lambda match: (match.average_time_since_last_game, match.score_diff))
+    logging.debug('Number of potential matches: %d', len(potential_matches))
     return potential_matches
 
 

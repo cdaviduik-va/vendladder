@@ -1,3 +1,4 @@
+import logging
 import sc2reader
 
 from constants import Keys
@@ -47,14 +48,16 @@ class ReplayReader():
             player_rank = PlayerRankModel.get_or_create(player_stats.battle_net_name, season_id)
             player_rank.last_game_played = replay.start_time
 
-            if len(replay_players) == 4:
+            if replay.real_type == '2v2':
                 player_rank.last_2v2_game_played = replay.start_time
 
             if player_stats.won:
                 winning_player_ranks.append(player_rank)
             else:
                 losing_player_ranks.append(player_rank)
-            print "Player: %s (%s) - %s" % (replay_player.name, replay_player.play_race, replay_player.result)
+            logging.debug("Player: %s (%s) - %s" % (replay_player.name, replay_player.play_race, replay_player.result))
+
+            player_rank.put()
 
         # if no match was provided then create a new one from replay information
         if match_id:
