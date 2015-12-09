@@ -4,6 +4,9 @@ This is the code repository for the site found at http://foosball.vendasta.com.
 It uses Google's App Engine and Python, with Jinja2 templating.
 
 # VendAsta SC2 Ladder
+foos 9-1
+- added support for uploading replays from Legacy of the Void yay!
+
 foos 8-2
 - fixed bug where could not calculate average last game played if player rank did not have last game played
 
