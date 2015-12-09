@@ -20,12 +20,20 @@ class ReplayReader():
         """
         sc2reader.configure(debug=True)
         replay = sc2reader.load_replay(file_name, load_level=4)
+
+        # TODO: delete this logging
+        logging.info('Game Type: ' + replay.game_type)
+        logging.info('Category: ' + replay.category)
+        for rplayer in replay.players:
+            logging.info('Archon Leader Id: ' + str(rplayer.archon_leader_id))
+
         season_id = lookup_current_season().season_id
 
         #Gather the player performance stats
         all_player_stats = []
         winning_player_ranks = []
         losing_player_ranks = []
+        is_archon_mode = False
 
         # compile list of players while filtering out ai/observers/referees
         replay_players = [replay_player for replay_player in replay.players
@@ -48,7 +56,7 @@ class ReplayReader():
             player_rank = PlayerRankModel.get_or_create(player_stats.battle_net_name, season_id)
             player_rank.last_game_played = replay.start_time
 
-            if replay.real_type == '2v2':
+            if replay.game_type == '2v2':
                 player_rank.last_2v2_game_played = replay.start_time
 
             if player_stats.won:
@@ -56,6 +64,10 @@ class ReplayReader():
             else:
                 losing_player_ranks.append(player_rank)
             logging.debug("Player: %s (%s) - %s" % (replay_player.name, replay_player.play_race, replay_player.result))
+
+            if replay_player.archon_leader_id:
+                # if one of the players is an archon leader than game was played in archon mode
+                is_archon_mode = True
 
             player_rank.put()
 
@@ -81,6 +93,7 @@ class ReplayReader():
         game.speed = replay.speed
         game.players = all_player_stats
         game.type = replay.real_type
+        game.is_archon_mode = is_archon_mode
         game.put()
 
         replay_entity = ReplayModel()

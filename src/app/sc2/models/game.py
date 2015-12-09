@@ -40,6 +40,7 @@ class GameModel(BaseModel):
     players = ndb.StructuredProperty(PlayerStatsModel, repeated=True)
     # 1v1, 2v2, etc.
     type = ndb.StringProperty()
+    is_archon_mode = ndb.BooleanProperty()
 
     @classmethod
     def _get_kind(cls):
