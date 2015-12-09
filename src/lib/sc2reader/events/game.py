@@ -93,7 +93,7 @@ class UserOptionsEvent(GameEvent):
         self.use_ai_beacons = data['use_ai_beacons']
 
         #: Are workers sent to auto-mine on game start
-        self.starting_rally = data['starting_rally']
+        self.starting_rally = data.get('starting_rally', 1)  # missing around build 38749. Assume true
 
         #:
         self.debug_pause_enabled = data['debug_pause_enabled']
@@ -410,7 +410,10 @@ def create_control_group_event(frame, pid, data):
     elif update_type == 2:
         return GetControlGroupEvent(frame, pid, data)
     elif update_type == 3:
-        # TODO: What could this be?!?
+        return ControlGroupEvent(frame, pid, data)
+    else:
+        # No idea what this is but we're seeing update_types of 4 and 5 in 3.0
+        # diverging from ggtracker/sc2reader because I do not have this type
         return ControlGroupEvent(frame, pid, data)
 
 

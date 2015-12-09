@@ -23,7 +23,7 @@ from sc2reader.constants import GAME_SPEED_FACTOR, LOBBY_PROPERTIES
 class Resource(object):
     def __init__(self, file_object, filename=None, factory=None, **options):
         self.factory = factory
-        self.opt = utils.AttributeDict(options)
+        self.opt = options
         self.logger = log_utils.get_logger(self.__class__)
         self.filename = filename or getattr(file_object, 'name', 'Unavailable')
 
@@ -137,7 +137,7 @@ class Replay(Resource):
 
     #: A dual key dict mapping player names and numbers to
     #: :class:`Player` objects
-    player = utils.PersonDict()
+    player = dict()
 
     #: A list of :class:`Observer` objects from the game
     observers = list()
@@ -148,7 +148,7 @@ class Replay(Resource):
 
     #: A dual key dict mapping :class:`Person` object to their
     #: person id's and names
-    person = utils.PersonDict()
+    person = dict()
 
     #: A list of :class:`Person` objects from the game representing
     #: only the human players from the :attr:`people` list
@@ -214,11 +214,11 @@ class Replay(Resource):
         self.events = list()
         self.teams, self.team = list(), dict()
 
-        self.player = utils.PersonDict()
-        self.observer = utils.PersonDict()
-        self.human = utils.PersonDict()
-        self.computer = utils.PersonDict()
-        self.entity = utils.PersonDict()
+        self.player = dict()
+        self.observer = dict()
+        self.human = dict()
+        self.computer = dict()
+        self.entity = dict()
 
         self.players = list()
         self.observers = list()  # Unordered list of Observer
@@ -309,6 +309,17 @@ class Replay(Resource):
             engine.run(self)
 
     def load_details(self):
+        if 'replay.initData' in self.raw_data:
+            initData = self.raw_data['replay.initData']
+            options = initData['game_description']['game_options']
+            self.amm = options['amm']
+            self.ranked = options['ranked']
+            self.competitive = options['competitive']
+            self.practice = options['practice']
+            self.cooperative = options['cooperative']
+            self.battle_net = options['battle_net']
+            self.hero_duplicates_allowed = options['hero_duplicates_allowed']
+
         if 'replay.attributes.events' in self.raw_data:
             # Organize the attribute data to be useful
             self.attributes = defaultdict(dict)
@@ -337,7 +348,9 @@ class Replay(Resource):
                 self.region = 'sea'
 
             dependency_hashes = [d.hash for d in details['cache_handles']]
-            if hashlib.sha256('Standard Data: Swarm.SC2Mod'.encode('utf8')).hexdigest() in dependency_hashes:
+            if hashlib.sha256('Standard Data: Void.SC2Mod'.encode('utf8')).hexdigest() in dependency_hashes:
+                self.expansion = 'LotV'
+            elif hashlib.sha256('Standard Data: Swarm.SC2Mod'.encode('utf8')).hexdigest() in dependency_hashes:
                 self.expansion = 'HotS'
             elif hashlib.sha256('Standard Data: Liberty.SC2Mod'.encode('utf8')).hexdigest() in dependency_hashes:
                 self.expansion = 'WoL'
@@ -493,6 +506,7 @@ class Replay(Resource):
             return
 
         self.game_events = self.raw_data['replay.game.events']
+        self.game_events = [event for event in self.game_events if event is not None]
         self.events = sorted(self.events+self.game_events, key=lambda e: e.frame)
 
         # hideous hack for HotS 2.0.0.23925, see https://github.com/GraylinKim/sc2reader/issues/87
@@ -564,7 +578,12 @@ class Replay(Resource):
         self.register_reader('replay.game.events', readers.GameEventsReader_23260(), lambda r: 23260 <= r.base_build < 24247)
         self.register_reader('replay.game.events', readers.GameEventsReader_24247(), lambda r: 24247 <= r.base_build < 26490)
         self.register_reader('replay.game.events', readers.GameEventsReader_26490(), lambda r: 26490 <= r.base_build < 27950)
-        self.register_reader('replay.game.events', readers.GameEventsReader_27950(), lambda r: 27950 <= r.base_build)
+        self.register_reader('replay.game.events', readers.GameEventsReader_27950(), lambda r: 27950 <= r.base_build < 34784)
+        self.register_reader('replay.game.events', readers.GameEventsReader_34784(), lambda r: 34784 <= r.base_build < 36442)
+        self.register_reader('replay.game.events', readers.GameEventsReader_36442(), lambda r: 36442 <= r.base_build < 38215)
+        self.register_reader('replay.game.events', readers.GameEventsReader_38215(), lambda r: 38215 <= r.base_build < 38749)
+        self.register_reader('replay.game.events', readers.GameEventsReader_38749(), lambda r: 38749 <= r.base_build < 38996)
+        self.register_reader('replay.game.events', readers.GameEventsReader_38996(), lambda r: 38996 <= r.base_build)
         self.register_reader('replay.game.events', readers.GameEventsReader_HotSBeta(), lambda r: r.versions[1] == 2 and r.build < 24247)
 
     def register_default_datapacks(self):
@@ -575,10 +594,13 @@ class Replay(Resource):
         self.register_datapack(datapacks['WoL']['19458'], lambda r: r.expansion == 'WoL' and 19458 <= r.build < 22612)
         self.register_datapack(datapacks['WoL']['22612'], lambda r: r.expansion == 'WoL' and 22612 <= r.build < 24944)
         self.register_datapack(datapacks['WoL']['24944'], lambda r: r.expansion == 'WoL' and 24944 <= r.build)
+
         self.register_datapack(datapacks['HotS']['base'], lambda r: r.expansion == 'HotS' and r.build < 23925)
         self.register_datapack(datapacks['HotS']['23925'], lambda r: r.expansion == 'HotS' and 23925 <= r.build < 24247)
         self.register_datapack(datapacks['HotS']['24247'], lambda r: r.expansion == 'HotS' and 24247 <= r.build <= 24764)
         self.register_datapack(datapacks['HotS']['24764'], lambda r: r.expansion == 'HotS' and 24764 <= r.build)
+
+        self.register_datapack(datapacks['LotV']['base'], lambda r: r.expansion == 'LotV' and 34784 <= r.build)
 
     # Internal Methods
     def _get_reader(self, data_file):
@@ -599,7 +621,7 @@ class Replay(Resource):
         data = utils.extract_data_file(data_file, self.archive)
         if data:
             self.raw_data[data_file] = reader(data, self)
-        elif self.opt.debug and data_file not in ['replay.message.events', 'replay.tracker.events']:
+        elif self.opt['debug'] and data_file not in ['replay.message.events', 'replay.tracker.events']:
             raise ValueError("{0} not found in archive".format(data_file))
 
     def __getstate__(self):
@@ -612,17 +634,20 @@ class Replay(Resource):
 class Map(Resource):
     url_template = 'http://{0}.depot.battle.net:1119/{1}.s2ma'
 
-    #: The localized (only enUS supported right now) map name
-    name = str()
-
-    #: The map's author
-    author = str()
-
-    #: The map description as written by author
-    description = str()
-
     def __init__(self, map_file, filename=None, region=None, map_hash=None, **options):
         super(Map, self).__init__(map_file, filename, **options)
+
+        #: The localized (only enUS supported right now) map name.
+        self.name = str()
+
+        #: The localized (only enUS supported right now) map author.
+        self.author = str()
+
+        #: The localized (only enUS supported right now) map description.
+        self.description = str()
+
+        #: The localized (only enUS supported right now) map website.
+        self.website = str()
 
         #: The unique hash used to identify this map on bnet's depots.
         self.hash = map_hash
@@ -643,9 +668,9 @@ class Map(Resource):
         # Clearly this isn't a great solution but we can't be throwing exceptions
         # just because US English wasn't a concern of the map author.
         # TODO: Make this work regardless of the localizations available.
-        game_strings = self.archive.read_file('enUS.SC2Data\LocalizedData\GameStrings.txt').decode('utf8')
-        if game_strings:
-            for line in game_strings.split('\r\n'):
+        game_strings_file = self.archive.read_file('enUS.SC2Data\LocalizedData\GameStrings.txt')
+        if game_strings_file:
+            for line in game_strings_file.decode('utf8').split('\r\n'):
                 if len(line) == 0:
                     continue
 
@@ -660,21 +685,26 @@ class Map(Resource):
                     self.website = value
 
         #: A reference to the map's :class:`~sc2reader.objects.MapInfo` object
-        self.map_info = MapInfo(self.archive.read_file('MapInfo'))
+        self.map_info = None
+        map_info_file = self.archive.read_file('MapInfo')
+        if map_info_file:
+            self.map_info = MapInfo(map_info_file)
 
-        doc_info = ElementTree.fromstring(self.archive.read_file('DocumentInfo').decode('utf8'))
+        doc_info_file = self.archive.read_file('DocumentInfo')
+        if doc_info_file:
+            doc_info = ElementTree.fromstring(doc_info_file.decode('utf8'))
 
-        icon_path_node = doc_info.find('Icon/Value')
-        #: (Optional) The path to the icon for the map, relative to the archive root
-        self.icon_path = icon_path_node.text if icon_path_node is not None else None
+            icon_path_node = doc_info.find('Icon/Value')
+            #: (Optional) The path to the icon for the map, relative to the archive root
+            self.icon_path = icon_path_node.text if icon_path_node is not None else None
 
-        #: (Optional) The icon image for the map in tga format
-        self.icon = self.archive.read_file(self.icon_path) if self.icon_path is not None else None
+            #: (Optional) The icon image for the map in tga format
+            self.icon = self.archive.read_file(self.icon_path) if self.icon_path is not None else None
 
-        #: A list of module names this map depends on
-        self.dependencies = list()
-        for dependency_node in doc_info.findall('Dependencies/Value'):
-            self.dependencies.append(dependency_node.text)
+            #: A list of module names this map depends on
+            self.dependencies = list()
+            for dependency_node in doc_info.findall('Dependencies/Value'):
+                self.dependencies.append(dependency_node.text)
 
     @classmethod
     def get_url(cls, region, map_hash):
@@ -854,7 +884,7 @@ class GameSummary(Resource):
         self.lang_sheets = dict()
         self.translations = dict()
         for lang, files in self.localization_urls.items():
-            if lang != self.opt.lang:
+            if lang != self.opt['lang']:
                 continue
 
             sheets = list()
@@ -865,9 +895,9 @@ class GameSummary(Resource):
             for uid, (sheet, item) in self.id_map.items():
                 if sheet < len(sheets) and item in sheets[sheet]:
                     translation[uid] = sheets[sheet][item]
-                elif self.opt.debug:
+                elif self.opt['debug']:
                     msg = "No {0} translation for sheet {1}, item {2}"
-                    raise SC2ReaderLocalizationError(msg.format(self.opt.lang, sheet, item))
+                    raise SC2ReaderLocalizationError(msg.format(self.opt['lang'], sheet, item))
                 else:
                     translation[uid] = "Unknown"
 
@@ -875,7 +905,7 @@ class GameSummary(Resource):
             self.translations[lang] = translation
 
     def load_map_info(self):
-        map_strings = self.lang_sheets[self.opt.lang][-1]
+        map_strings = self.lang_sheets[self.opt['lang']][-1]
         self.map_name = map_strings[1]
         self.map_description = map_strings[2]
         self.map_tileset = map_strings[3]
@@ -934,7 +964,7 @@ class GameSummary(Resource):
             activated[(prop.id, player)] = use
             return use
 
-        translation = self.translations[self.opt.lang]
+        translation = self.translations[self.opt['lang']]
         for uid, prop in properties.items():
             name = translation.get(uid, "Unknown")
             if prop.is_lobby:
@@ -948,7 +978,7 @@ class GameSummary(Resource):
                         self.player_settings[index][name] = translation[(uid, value)]
 
     def load_player_stats(self):
-        translation = self.translations[self.opt.lang]
+        translation = self.translations[self.opt['lang']]
 
         stat_items = sum([p[0] for p in self.parts[3:]], [])
 

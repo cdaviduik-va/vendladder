@@ -3,6 +3,9 @@
     sc2reader
     ~~~~~~~~~~~
 
+    *** This is a fork of the original sc2reader lib with support added for lotv ***
+    https://github.com/StoicLoofah/sc2reader/tree/lotv
+
     A library for loading data from Starcraft II game resources.
 
     SC2Factory methods called on the package will be delegated to the default
@@ -20,7 +23,7 @@
 """
 from __future__ import absolute_import, print_function, unicode_literals, division
 
-__version__ = "0.6.4"
+__version__ = "0.7.0-pre"
 
 import os
 import sys
