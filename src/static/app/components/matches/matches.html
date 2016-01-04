@@ -1,0 +1,24 @@
+<div ng-if="matchesCtrl.matches == null" layout="row" layout-sm="column" layout-align="space-around">
+    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+</div>
+
+<md-list>
+    <md-list-item class="md-2-line" ng-repeat="m in matchesCtrl.matches"">
+        <div class="md-list-item-text" layout="column">
+            <h3>
+                {{ m.team1_battle_net_names.join(' & ') }}
+                vs.
+                {{ m.team2_battle_net_names.join(' & ') }}
+            </h3>
+            <h4>{{ m.team1_wins }} vs. {{ m.team2_wins }}</h4>
+            <div class="md-secondary" ng-if="m.is_open && !m.isClosing">
+                <md-button class="md-primary md-raised" ui-sref="nav.upload">Upload Replay</md-button>
+                <md-button class="md-warn md-raised" href ng-click="matchesCtrl.close($event, m)">Close</md-button>
+            </div>
+            <div ng-if="m.isClosing" class="md-secondary">
+                <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            </div>
+        </div>
+        <md-divider></md-divider>
+    </md-list-item>
+</md-list>

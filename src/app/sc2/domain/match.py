@@ -26,7 +26,7 @@ def create_match(team1, team2):
             sorted(team1) == sorted(match.team1_battle_net_names) or \
             sorted(team2) == sorted(match.team1_battle_net_names) or \
             sorted(team2) == sorted(match.team2_battle_net_names):
-            raise ValueError('A match already exists with this team.')
+            raise ValueError('A match already exists with the team: ' + '& '.join(match.team1_battle_net_names) + ' vs. ' + '& '.join(match.team2_battle_net_names))
 
     season_id = lookup_current_season(id_only=True)
     key = MatchModel.generate_key(all_players, season_id)

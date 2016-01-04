@@ -1,0 +1,16 @@
+header {
+  text-align: center;
+}
+
+.md-sidenav-left {
+  //background-color: #333;
+  height: 100%;
+
+  .selected {
+    background-color: #eee;
+  }
+
+  a {
+    margin: 0;
+  }
+}

@@ -15,7 +15,6 @@ class MatchHistoryView(UserView):
         limit = self.request.GET.get('limit', 10)
         limit = int(limit)
         data = {
-            'current_matches': lookup_open_matches(),
             'games': json.dumps([game.to_dict() for game in lookup_games(limit=limit)], default=jsonDateTimeHandler),
             'matches': lookup_matches(limit=10)
         }

@@ -25,3 +25,9 @@ class ErrorView(UserView):
         """
         path = self.request.path_qs[1:]
         self.render_response("sc2/error.html", error_message=path)
+
+
+class AngularView(UserView):
+
+    def get(self):
+        self.render_response("sc2/ng/index.html")

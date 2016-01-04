@@ -37,6 +37,17 @@ ROUTES = [
     RedirectRoute('/sc2/admin/player/create/', handler='app.sc2.views.admin.player.PlayerCreateView', name='sc2-admin-player-create', strict_slash=True),
     RedirectRoute('/sc2/admin/player/edit/<battle_net_name>/', handler='app.sc2.views.admin.player.PlayerEditView', name='sc2-admin-player-edit', strict_slash=True),
 
+    # SC2 Angular
+    RedirectRoute('/sc2/ng/', handler='app.sc2.views.main.AngularView'),
+
+    # SC2 Apis
+    Route('/sc2/api/match/lookup/', handler='app.sc2.views.api.LookupMatchesView'),
+    Route('/sc2/api/match/lookupOpen/', handler='app.sc2.views.api.LookupOpenMatchesView'),
+    Route('/sc2/api/match/close/', handler='app.sc2.views.api.CloseMatchView'),
+    Route('/sc2/api/game/submit/', handler='app.sc2.views.api.SubmitGameView'),
+    Route('/sc2/api/user/getAuthLinks/', handler='app.sc2.views.api.GetUserAuthLinksView'),
+    Route('/sc2/api/user/get/', handler='app.sc2.views.api.GetUserView'),
+
     #General
     SimpleRoute('/sc2.+', handler='app.sc2.views.main.ErrorView'),
     SimpleRoute('/.+', handler='app.views.errorHandler'),

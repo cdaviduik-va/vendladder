@@ -1,0 +1,17 @@
+/* line 1, ../scss/sc2ng.scss */
+header {
+  text-align: center;
+}
+
+/* line 5, ../scss/sc2ng.scss */
+.md-sidenav-left {
+  height: 100%;
+}
+/* line 9, ../scss/sc2ng.scss */
+.md-sidenav-left .selected {
+  background-color: #eee;
+}
+/* line 13, ../scss/sc2ng.scss */
+.md-sidenav-left a {
+  margin: 0;
+}

@@ -1,0 +1,54 @@
+<div layout="row">
+    <md-sidenav class="md-sidenav-left md-whiteframe-z1" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
+        <header>
+            <a href="#/">
+                <img src="/static/img/starcraft2.png"/>
+            </a>
+            <h1>VendAsta Ladder</h1>
+        </header>
+        <md-list>
+            <md-subheader ng-if="navCtrl.user" class="md-no-sticky">Welcome {{ navCtrl.user.nickname }}</md-subheader>
+            <md-list-item ui-sref="nav.matches" ui-sref-active="selected">
+                <p>MATCHES</p>
+            </md-list-item>
+            <md-list-item ui-sref="nav.upload" ui-sref-active="selected">
+                <p>UPLOAD A REPLAY</p>
+            </md-list-item>
+            <md-divider></md-divider>
+            <md-list-item ui-sref="nav.ladder" ui-sref-active="selected">
+                <p>LADDER</p>
+            </md-list-item>
+            <md-list-item ui-sref="nav.history" ui-sref-active="selected">
+                <p>MATCH HISTORY</p>
+            </md-list-item>
+            <md-divider></md-divider>
+            <div ng-if="navCtrl.user && navCtrl.user.is_admin">
+                <md-subheader class="md-no-sticky">Admin</md-subheader>
+                <md-list-item ui-sref="nav.adminCreateMatch" ui-sref-active="selected">
+                    <p>CREATE MATCH</p>
+                </md-list-item>
+                <md-list-item ui-sref="nav.adminCreatePlayer" ui-sref-active="selected">
+                    <p>CREATE PLAYER</p>
+                </md-list-item>
+                <md-list-item ui-sref="nav.adminSeasons" ui-sref-active="selected">
+                    <p>SEASONS</p>
+                </md-list-item>
+            </div>
+        </md-list>
+    </md-sidenav>
+    <div layout="column" ng-cloak flex>
+
+        <md-toolbar layout="row" class="md-whiteframe-z1" ng-cloak>
+            <h1 class="md-toolbar-tools">{{ navCtrl.pageTitle }}</h1>
+            <span flex></span>
+            <md-button class="md-raised" ng-if="!navCtrl.user" ng-click="navCtrl.navigateTo(navCtrl.authLinks.login)">Login</md-button>
+            <md-button ng-if="navCtrl.user" ng-click="navCtrl.navigateTo(navCtrl.authLinks.logout)">Logout</md-button>
+        </md-toolbar>
+        <md-content>
+            <div layout="column" layout-padding layout-align="top left">
+                <ui-view></ui-view>
+            </div>
+        </md-content>
+
+    </div>
+</div>

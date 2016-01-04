@@ -1,0 +1,86 @@
+<div ng-if="uploadCtrl.matches == null" layout="row" layout-sm="column" layout-align="space-around">
+    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+</div>
+
+<div ng-if="uploadCtrl.matches && !uploadCtrl.game">
+    <h1 class="md-no-sticky md-display-1">Select Match</h1>
+    <md-radio-group ng-model="uploadCtrl.selectedMatch">
+        <md-radio-button class="md-primary">
+            New Match
+        </md-radio-button>
+        <md-radio-button class="md-primary" ng-repeat="m in uploadCtrl.matches" ng-value="m">
+            {{ m.team1_battle_net_names.join(' & ') }}
+            vs.
+            {{ m.team2_battle_net_names.join(' & ') }}
+        </md-radio-button>
+    </md-radio-group>
+
+    <div flex="50" flex-sm="100" flex-xs="100" layout="column">
+        <md-card ng-if="uploadCtrl.replay">
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">{{ uploadCtrl.replay.name }}</span>
+                    <span class="md-subhead">
+                        {{ uploadCtrl.replay.lastModified | date:'medium' }}
+                    </span>
+                </md-card-title-text>
+                <md-card-title-media>
+                    <div class="md-media-sm card-media"></div>
+                </md-card-title-media>
+            </md-card-title>
+            <md-card-actions ng-if="!uploadCtrl.isUploading" layout="row" layout-align="end center">
+                <md-button class="md-primary" ng-click="uploadCtrl.upload()">Upload</md-button>
+                <md-button class="md-warn" ngf-select ng-model="uploadCtrl.replay">Replace</md-button>
+            </md-card-actions>
+            <div ng-if="uploadCtrl.isUploading" layout="row" layout-align="end center">
+                <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            </div>
+        </md-card>
+    </div>
+
+    <md-button class="md-primary md-raised" ng-if="!uploadCtrl.replay" ngf-select ng-model="uploadCtrl.replay">
+        Select Replay
+    </md-button>
+</div>
+
+<div ng-if="uploadCtrl.game">
+    <h1 class="md-no-sticky md-display-1">Replay Uploaded</h1>
+
+    <md-button class="md-primary md-raised" ng-click="uploadCtrl.reset()">
+        Upload Another Replay
+    </md-button>
+
+    <md-button class="md-warn md-raised" ng-click="uploadCtrl.close($event, uploadCtrl.selectedMatch)">
+        Close Match
+    </md-button>
+
+    <p>
+        TODO: Show games won vs lose here if possible so it's easier to tell if I should close the match
+    </p>
+
+    <md-list>
+        <md-list-item class="md-2-line">
+            <div class="md-list-item-text" layout="column">
+                <h3>Winning Team</h3>
+                <h4>{{ uploadCtrl.winningTeam.join(' & ') }}</h4>
+            </div>
+        </md-list-item>
+        <md-list-item class="md-2-line">
+            <div class="md-list-item-text" layout="column">
+                <h3>Losing Team</h3>
+                <h4>{{ uploadCtrl.losingTeam.join(' & ') }}</h4>
+            </div>
+        </md-list-item>
+    </md-list>
+
+    <md-card ng-if="uploadCtrl.game">
+        <md-card-title>
+            <md-card-title-text>
+                <span class="md-headline">Game Data</span>
+            </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+            <pre>{{ uploadCtrl.game }}</pre>
+        </md-card-content>
+    </md-card>
+</div>

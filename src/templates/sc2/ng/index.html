@@ -1,0 +1,33 @@
+<html lang="en">
+<head>
+    <!-- Angular Material style sheet -->
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
+    <link href="/static/css/sc2ng.css" rel="stylesheet" media="screen">
+</head>
+<body ng-app="starcraft2">
+
+    <ui-view></ui-view>
+
+    <!-- Angular Material requires Angular.js Libraries -->
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
+
+    <script src="/static/lib/ui-router/release/angular-ui-router.js"></script>
+
+    <!-- Angular Material Library -->
+    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+
+    <script src="/static/lib/ng-file-upload/ng-file-upload.min.js"></script>
+
+    <!-- Your application bootstrap  -->
+    <script src="/static/app/app.js"></script>
+    <script src="/static/app/components/navigation/navigationController.js"></script>
+    <script src="/static/app/components/matches/matchesController.js"></script>
+    <script src="/static/app/components/upload/uploadController.js"></script>
+    <script src="/static/app/services/matchService.js"></script>
+    <script src="/static/app/services/userService.js"></script>
+
+</body>
+</html>

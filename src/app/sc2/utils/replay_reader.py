@@ -82,7 +82,7 @@ class ReplayReader():
         game_key = GameModel.generate_key(replay.start_time, player_names, match.match_id, season_id)
         existing_game = game_key.get()
         if existing_game:
-            raise ValueError('This game has already been uploaded.')
+            raise ValueError('This replay has already been uploaded.')
 
         #Gather the game stats
         game = GameModel(key=game_key)
