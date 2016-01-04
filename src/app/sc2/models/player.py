@@ -1,6 +1,7 @@
 """
 Player model
 """
+from datetime import datetime
 from google.appengine.ext import ndb
 from app.sc2.models import BaseModel
 from app.sc2.models.season import SeasonModel
@@ -116,4 +117,4 @@ class PlayerRankModel(BaseModel):
         last_game_played = self.last_game_played
         if team_size == 2 and self.last_2v2_game_played:
             last_game_played = self.last_2v2_game_played
-        return last_game_played
+        return last_game_played or datetime.now()
