@@ -1,0 +1,30 @@
+<md-table-container>
+    <table md-table md-progress="ladderCtrl.promise">
+        <thead md-head>
+        <tr md-row>
+            <th md-column md-numeric>Rank</th>
+            <th md-column>Player</th>
+            <th md-column>League</th>
+            <th md-column md-numeric>Wins</th>
+            <th md-column md-numeric>Losses</th>
+            <th md-column md-numeric>Played</th>
+            <th md-column md-numeric>Ratio</th>
+            <th md-column md-numeric>Score</th>
+        </tr>
+        </thead>
+        <tbody md-body>
+        <tr md-row ng-repeat="player in ladderCtrl.players">
+            <td md-cell>{{ $index + 1 }}</td>
+            <td md-cell>
+                <sc-player players="player"></sc-player>
+            </td>
+            <td md-cell>{{ player.league }}</td>
+            <td md-cell>{{ player.games_won }}</td>
+            <td md-cell>{{ player.games_lost }}</td>
+            <td md-cell>{{ player.games_played }}</td>
+            <td md-cell>{{ player.ratio | number:2 }}</td>
+            <td md-cell>{{ player.score }}</td>
+        </tr>
+        </tbody>
+    </table>
+</md-table-container>

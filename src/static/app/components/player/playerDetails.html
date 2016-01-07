@@ -1,0 +1,99 @@
+<div ng-if="pdCtrl.player == null" layout="row" layout-sm="column" layout-align="space-around">
+    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+</div>
+
+<div ng-if="pdCtrl.player" layout="row">
+    <div flex="30" flex-sm="100" flex-xs="100" layout="column">
+        <md-card>
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">{{ pdCtrl.player.battle_net_name }}</span>
+                    <span class="md-subhead">{{ pdCtrl.player.name }}</span>
+                </md-card-title-text>
+                <md-card-title-media>
+                    <div class="md-media-lg card-media">
+                        <img src="{{ pdCtrl.player.image_url }}">
+                    </div>
+                </md-card-title-media>
+            </md-card-title>
+            <md-card-content>
+                <md-list-item>
+                    <p>Score</p>
+                    <div class="md-secondary">{{ pdCtrl.player.score }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Joined</p>
+                    <div class="md-secondary">{{ pdCtrl.player.created | date:"mediumDate" }}</div>
+                </md-list-item>
+            </md-card-content>
+        </md-card>
+    </div>
+    <div flex="30" flex-sm="100" flex-xs="100" layout="column">
+        <md-card>
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">Game Stats</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <md-list-item>
+                    <p>League</p>
+                    <div class="md-secondary">{{ pdCtrl.player.league }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Games Won</p>
+                    <div class="md-secondary">{{ pdCtrl.player.games_won }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Games Lost</p>
+                    <div class="md-secondary">{{ pdCtrl.player.games_lost }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Games Lost</p>
+                    <div class="md-secondary">{{ pdCtrl.player.games_played }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Ratio</p>
+                    <div class="md-secondary">{{ pdCtrl.player.ratio | number:2 }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Longest Win Streak</p>
+                    <div class="md-secondary">{{ pdCtrl.player.stats.longest_streak }} games</div>
+                </md-list-item>
+            </md-card-content>
+        </md-card>
+    </div>
+    <div flex="40" flex-sm="100" flex-xs="100" layout="column">
+        <md-card>
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">Player Stats</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <md-list-item>
+                    <p>Average Game Length</p>
+                    <div class="md-secondary">{{ pdCtrl.player.stats.average_game_length }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Most Played Map</p>
+                    <div class="md-secondary">{{ pdCtrl.player.stats.most_played_map }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Map With Most Wins</p>
+                    <div class="md-secondary">{{ pdCtrl.player.stats.favourite_map }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Race With Most Wins</p>
+                    <div class="md-secondary">{{ pdCtrl.player.stats.favourite_race }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Nemesis</p>
+                    <div class="md-secondary">
+                        <sc-player players="pdCtrl.player.stats.nemesis"></sc-player>
+                    </div>
+                </md-list-item>
+            </md-card-content>
+        </md-card>
+    </div>
+</div>

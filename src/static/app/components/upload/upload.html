@@ -9,9 +9,11 @@
             New Match
         </md-radio-button>
         <md-radio-button class="md-primary" ng-repeat="m in uploadCtrl.matches" ng-value="m">
-            {{ m.team1_battle_net_names.join(' & ') }}
-            vs.
-            {{ m.team2_battle_net_names.join(' & ') }}
+            <div layout="row">
+                <sc-player players="m.team1_players"></sc-player>
+                <strong layout="column" layout-align="space-around">VS</strong>
+                <sc-player players="m.team2_players"></sc-player>
+            </div>
         </md-radio-button>
     </md-radio-group>
 
@@ -50,13 +52,9 @@
         Upload Another Replay
     </md-button>
 
-    <md-button class="md-warn md-raised" ng-click="uploadCtrl.close($event, uploadCtrl.selectedMatch)">
-        Close Match
-    </md-button>
-
-    <p>
-        TODO: Show games won vs lose here if possible so it's easier to tell if I should close the match
-    </p>
+    <!--<md-button class="md-warn md-raised" ng-click="uploadCtrl.close($event, uploadCtrl.selectedMatch)">-->
+        <!--Close Match-->
+    <!--</md-button>-->
 
     <md-list>
         <md-list-item class="md-2-line">

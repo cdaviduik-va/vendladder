@@ -1,7 +1,13 @@
 """
 Deals with stuff with users... you know
 """
+import datetime
+from collections import defaultdict
+from google.appengine.ext import ndb
+
 from app.sc2.domain.season import lookup_current_season
+from app.sc2.models.game import GameModel
+from app.sc2.models.season import SeasonModel
 from app.utils import calculate_elo_rank
 from app.sc2.models.player import PlayerModel, PlayerRankModel
 
@@ -95,6 +101,76 @@ def get_all_player_details_for_season(season_id=None):
         player_details = PlayerDetails(player, player_rank, is_participating=is_participating)
         all_player_details.append(player_details)
     return sorted(all_player_details, key=lambda player_details: player_details.score, reverse=True)
+
+
+def get_players_for_battle_net_names(bnet_names, season_id):
+    return [get_player_details(bnet_name, season_id=season_id) for bnet_name in bnet_names]
+
+
+def get_player_stats(battle_net_name, season_id=None):
+    player_details = get_player_details(battle_net_name, season_id=season_id)
+    player_details_data = player_details.to_dict()
+
+    season_id = season_id or player_details.player_rank.season_id
+
+    games = GameModel.lookup_for_player_for_season(battle_net_name, season_id=season_id)
+
+    season_keys = [SeasonModel.build_key(season_id) for season_id in player_details.player.seasons_participated]
+    seasons = ndb.get_multi(season_keys)
+
+    seconds = sum([game.game_length_seconds for game in games]) / len(games)
+    average_game_length = str(datetime.timedelta(seconds=seconds))
+
+    won_maps = []
+    won_race = []
+    map_names = []
+    favourite_map = None
+    favourite_race = None
+    most_played_map = None
+    streak = 0
+    longest_streak = 0
+    player_games_lost_map = defaultdict(int)
+    nemesis = None
+    for game in games:
+        map_names.append(game.map_name)
+        player_won_stats = [ps for ps in game.players if ps.battle_net_name == battle_net_name and ps.won]
+        winners = [player.battle_net_name for player in game.players if player.won]
+
+        if player_won_stats:
+            player_stats = player_won_stats[0]
+            won_maps.append(game.map_name)
+            won_race.append(player_stats.race)
+            streak += 1
+        else:
+            longest_streak = max(longest_streak, streak)
+            streak = 0
+
+        if battle_net_name in winners:
+            # if player won then skip because we don't care
+            continue
+
+        for winner in winners:
+            player_games_lost_map[winner] += 1
+
+    if won_maps:
+        favourite_map = max(set(won_maps), key=won_maps.count)
+    if won_race:
+        favourite_race = max(set(won_race), key=won_race.count)
+    if map_names:
+        most_played_map = max(set(map_names), key=map_names.count)
+    if player_games_lost_map:
+        nemesis = get_player_details(max(player_games_lost_map, key=player_games_lost_map.get), season_id=season_id)
+
+    player_details_data['stats'] = {
+        'seasons_participated': seasons,
+        'average_game_length': str(average_game_length),
+        'favourite_map': favourite_map,
+        'favourite_race': favourite_race,
+        'most_played_map': most_played_map,
+        'longest_streak': longest_streak,
+        'nemesis': nemesis,
+    }
+    return player_details_data
 
 
 class PlayerDetails(object):

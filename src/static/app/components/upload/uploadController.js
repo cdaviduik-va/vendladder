@@ -5,11 +5,12 @@ angular.module('starcraft2')
     self.isUploading = false;
     self.selectedMatch = null;
 
-    MatchService.lookupOpen().then(function(data) {
-        self.matches = data;
-        console.log('matches')
-        console.log(self.matches)
-    });
+    self.lookupMatches = function() {
+        self.matches = null;
+        MatchService.lookupOpen().then(function(data) {
+            self.matches = data;
+        });
+    };
 
     self.upload = function() {
         self.isUploading = true;
@@ -52,6 +53,7 @@ angular.module('starcraft2')
         self.game = null;
         self.winningTeam = null;
         self.losingTeam = null;
+        self.lookupMatches();
     };
 
     self.close = function(ev, match) {
@@ -72,5 +74,7 @@ angular.module('starcraft2')
             .clickOutsideToClose(true)
             .ok(okText);
         $mdDialog.show(confirm)
-    }
+    };
+
+    self.lookupMatches();
 });

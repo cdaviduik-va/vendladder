@@ -1,9 +1,11 @@
 'use strict';
 
 angular.module('starcraft2', [
+        'ngResource',
         'ui.router',
         'ngMaterial',
-        'ngFileUpload'
+        'ngFileUpload',
+        'md.data.table'
     ])
     .config(function($stateProvider, $urlRouterProvider, $mdThemingProvider) {
 
@@ -22,9 +24,15 @@ angular.module('starcraft2', [
             })
             .state('nav.ladder', {
                 url: '/ladder',
-                templateUrl: '/static/app/components/matches/matches.html',
-                controller: 'MatchesController as matchesCtrl',
+                templateUrl: '/static/app/components/ladder/ladder.html',
+                controller: 'LadderController as ladderCtrl',
                 title: 'Ladder'
+            })
+            .state('nav.playerDetails', {
+                url: '/player/{battleNetName}',
+                templateUrl: '/static/app/components/player/playerDetails.html',
+                controller: 'PlayerDetailsController as pdCtrl',
+                title: 'Player Details'
             })
             .state('nav.upload', {
                 url: '/upload',

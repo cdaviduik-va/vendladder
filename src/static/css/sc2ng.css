@@ -15,3 +15,28 @@ header {
 .md-sidenav-left a {
   margin: 0;
 }
+
+/* line 18, ../scss/sc2ng.scss */
+md-list-item.md-2-line .md-list-item-text p {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+/* line 22, ../scss/sc2ng.scss */
+.md-table md-list-item {
+  padding: 0;
+}
+
+/* line 26, ../scss/sc2ng.scss */
+md-card md-card-title {
+  flex: none !important;
+}
+
+/* line 30, ../scss/sc2ng.scss */
+md-list-item.md-2-line, md-list-item.md-2-line > .md-no-style {
+  min-height: auto;
+}
+
+/* line 34, ../scss/sc2ng.scss */
+md-radio-group.md-default-theme.md-primary .md-checked:not([disabled]) .md-ink-ripple, md-radio-group.md-primary .md-checked:not([disabled]) .md-ink-ripple, md-radio-group.md-default-theme .md-checked:not([disabled]).md-primary .md-ink-ripple, md-radio-group .md-checked:not([disabled]).md-primary .md-ink-ripple {
+  color: rgba(33, 150, 243, 0.87);
+}

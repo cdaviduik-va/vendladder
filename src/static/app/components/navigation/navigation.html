@@ -9,18 +9,18 @@
         <md-list>
             <md-subheader ng-if="navCtrl.user" class="md-no-sticky">Welcome {{ navCtrl.user.nickname }}</md-subheader>
             <md-list-item ui-sref="nav.matches" ui-sref-active="selected">
+                <md-icon>group</md-icon>
                 <p>MATCHES</p>
             </md-list-item>
             <md-list-item ui-sref="nav.upload" ui-sref-active="selected">
+                <md-icon>backup</md-icon>
                 <p>UPLOAD A REPLAY</p>
             </md-list-item>
-            <md-divider></md-divider>
             <md-list-item ui-sref="nav.ladder" ui-sref-active="selected">
+                <md-icon>list</md-icon>
                 <p>LADDER</p>
             </md-list-item>
-            <md-list-item ui-sref="nav.history" ui-sref-active="selected">
-                <p>MATCH HISTORY</p>
-            </md-list-item>
+            <!--
             <md-divider></md-divider>
             <div ng-if="navCtrl.user && navCtrl.user.is_admin">
                 <md-subheader class="md-no-sticky">Admin</md-subheader>
@@ -34,6 +34,7 @@
                     <p>SEASONS</p>
                 </md-list-item>
             </div>
+            -->
         </md-list>
     </md-sidenav>
     <div layout="column" ng-cloak flex>

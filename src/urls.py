@@ -47,6 +47,8 @@ ROUTES = [
     Route('/sc2/api/game/submit/', handler='app.sc2.views.api.SubmitGameView'),
     Route('/sc2/api/user/getAuthLinks/', handler='app.sc2.views.api.GetUserAuthLinksView'),
     Route('/sc2/api/user/get/', handler='app.sc2.views.api.GetUserView'),
+    Route('/sc2/api/player', handler='app.sc2.views.api.PlayerView'),
+    Route('/sc2/api/player/<battle_net_name>', handler='app.sc2.views.api.PlayerView'),
 
     #General
     SimpleRoute('/sc2.+', handler='app.sc2.views.main.ErrorView'),
