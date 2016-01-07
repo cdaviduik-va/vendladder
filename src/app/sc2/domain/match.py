@@ -118,10 +118,13 @@ def get_suggested_matches(team_size=2, exclude_players=None):
     for player_rank in player_ranks:
         logging.debug('Player rank last game played')
         logging.debug(player_rank.last_2v2_game_played)
+
+    # TODO: should remove as many players as possible before performing this (expensive) operation
     all_teams = [team for team in itertools.combinations(player_ranks, team_size)]
     logging.debug('Number of teams: %d', len(all_teams))
     all_matches = [match for match in itertools.combinations(all_teams, 2)]
     logging.debug('Number of matches: %d', len(all_matches))
+
     potential_matches = []
     for team1, team2 in all_matches:
         team1_names = [player_rank.battle_net_name for player_rank in team1]
