@@ -1,5 +1,5 @@
 application: vendladder
-version: foos-9-2
+version: foos-10
 runtime: python27
 api_version: 1
 threadsafe: false

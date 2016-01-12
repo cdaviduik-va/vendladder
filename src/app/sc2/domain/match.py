@@ -48,11 +48,26 @@ def close_match(match_id):
         team2_player_ranks = [PlayerRankModel.build_key(bnet_name, match.season_id).get()
                               for bnet_name in match.team2_battle_net_names]
 
+        # assume team1 won by default
+        winning_team_games_won = match.team1_wins
+        losing_team_games_won = match.team2_wins
         winning_player_ranks = team1_player_ranks
         losing_player_ranks = team2_player_ranks
         if match.team2_wins > match.team1_wins:
+            # actually team2 won
+            winning_team_games_won = match.team2_wins
+            losing_team_games_won = match.team1_wins
             winning_player_ranks = team2_player_ranks
             losing_player_ranks = team1_player_ranks
+
+        # update number of games won/lost
+        for p_rank in winning_player_ranks:
+            p_rank.games_won += winning_team_games_won
+            p_rank.games_lost += losing_team_games_won
+
+        for p_rank in losing_player_ranks:
+            p_rank.games_won += losing_team_games_won
+            p_rank.games_lost += winning_team_games_won
 
         update_player_ranks(winning_player_ranks, losing_player_ranks)
 

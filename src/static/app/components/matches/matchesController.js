@@ -4,7 +4,7 @@ angular.module('starcraft2')
     var self = this;
     self.matches = null;
 
-    self.promise = MatchService.lookup().then(function(data) {
+    self.promise = MatchService.lookupOpen().then(function(data) {
         self.matches = data;
     });
 

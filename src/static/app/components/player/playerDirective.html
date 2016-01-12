@@ -1,4 +1,4 @@
-<div ng-if="players" layout="row">
+<div ng-if="players">
     <md-list-item class="md-2-line" ng-click="goToDetails(player)" ng-repeat="player in playerList" layout="column">
         <img ng-if="player.image_url" ng-src="{{ player.image_url }}" class="md-avatar" alt="{{ player.name }}" />
         <div class="md-list-item-text compact">

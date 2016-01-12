@@ -56,24 +56,21 @@ def update_player(battle_net_name, **kwargs):
     player_rank.put()
 
 
-
 def update_player_ranks(winning_player_ranks, losing_player_ranks):
     average_winning_score = sum([w_rank.score for w_rank in winning_player_ranks])
     average_losing_score = sum([l_rank.score for l_rank in losing_player_ranks])
 
-    new_winning_score, new_losing_score = calculate_elo_rank(average_winning_score,
-                                                                         average_losing_score)
-
+    new_winning_score, new_losing_score = calculate_elo_rank(average_winning_score, average_losing_score)
     win_diff = new_winning_score - average_winning_score
     lose_diff = new_losing_score - average_losing_score
 
     for p_rank in winning_player_ranks:
-        p_rank.games_won += 1
+        # p_rank.games_won += 1
         p_rank.score += int(win_diff)
         p_rank.put()
 
     for p_rank in losing_player_ranks:
-        p_rank.games_lost += 1
+        # p_rank.games_lost += 1
         p_rank.score += int(lose_diff)
         p_rank.put()
 
@@ -118,9 +115,6 @@ def get_player_stats(battle_net_name, season_id=None):
     season_keys = [SeasonModel.build_key(season_id) for season_id in player_details.player.seasons_participated]
     seasons = ndb.get_multi(season_keys)
 
-    seconds = sum([game.game_length_seconds for game in games]) / len(games)
-    average_game_length = str(datetime.timedelta(seconds=seconds))
-
     won_maps = []
     won_race = []
     map_names = []
@@ -130,6 +124,7 @@ def get_player_stats(battle_net_name, season_id=None):
     streak = 0
     longest_streak = 0
     player_games_lost_map = defaultdict(int)
+    average_game_length = 0
     nemesis = None
     for game in games:
         map_names.append(game.map_name)
@@ -152,6 +147,7 @@ def get_player_stats(battle_net_name, season_id=None):
         for winner in winners:
             player_games_lost_map[winner] += 1
 
+    longest_streak = max(longest_streak, streak)
     if won_maps:
         favourite_map = max(set(won_maps), key=won_maps.count)
     if won_race:
@@ -160,6 +156,9 @@ def get_player_stats(battle_net_name, season_id=None):
         most_played_map = max(set(map_names), key=map_names.count)
     if player_games_lost_map:
         nemesis = get_player_details(max(player_games_lost_map, key=player_games_lost_map.get), season_id=season_id)
+    if games:
+        seconds = sum([game.game_length_seconds for game in games]) / len(games)
+        average_game_length = str(datetime.timedelta(seconds=seconds))
 
     player_details_data['stats'] = {
         'seasons_participated': seasons,
