@@ -52,7 +52,7 @@
             <md-button class="md-raised" ng-if="!navCtrl.user" ng-click="navCtrl.navigateTo(navCtrl.authLinks.login)">Login</md-button>
             <md-button ng-if="navCtrl.user" ng-click="navCtrl.navigateTo(navCtrl.authLinks.logout)">Logout</md-button>
         </md-toolbar>
-        <md-content>
+        <md-content md-scroll-y flex>
             <div layout="column" layout-padding layout-align="top left">
                 <ui-view></ui-view>
             </div>
