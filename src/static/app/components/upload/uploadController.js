@@ -1,6 +1,6 @@
 angular.module('starcraft2')
 
-.controller('UploadController', function($mdToast, $mdDialog, MatchService, Upload) {
+.controller('UploadController', function($mdToast, $mdDialog, MatchFactory, Upload) {
     var self = this;
     self.isUploading = false;
     self.selectedMatch = null;
@@ -8,9 +8,9 @@ angular.module('starcraft2')
 
     self.lookupMatches = function() {
         self.matches = null;
-        self.promise = MatchService.lookupOpen().then(function(data) {
+        self.promise = MatchFactory.query({isOpen: true}, function(data) {
             self.matches = data;
-        });
+        }).$promise;
     };
 
     self.onSelect = function(item, key) {
@@ -62,16 +62,6 @@ angular.module('starcraft2')
         self.winningTeam = null;
         self.losingTeam = null;
         self.lookupMatches();
-    };
-
-    self.close = function(ev, match) {
-        match.isClosing = true;
-        MatchService.close(match.match_id, ev).then(function() {
-            match.isClosing = false;
-            match.is_open = false;
-        }, function() {
-            match.isClosing = false;
-        });
     };
 
     self.showMessage = function(message, title, okText) {

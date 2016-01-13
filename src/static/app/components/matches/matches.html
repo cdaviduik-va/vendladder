@@ -1,39 +1,5 @@
-<md-table-container>
-    <table md-table md-progress="matchesCtrl.promise">
-        <thead md-head>
-        <tr md-row>
-            <th md-column>Team 1</th>
-            <th md-column>Team 2</th>
-            <th md-column>Result</th>
-            <th md-column>Created</th>
-            <th md-column>Upload Replay</th>
-            <th md-column>Close Match</th>
-        </tr>
-        </thead>
-        <tbody md-body>
-        <tr md-row ng-repeat="m in matchesCtrl.matches">
-            <td md-cell>
-                <sc-player players="m.team1_players"></sc-player>
-            </td>
-            <td md-cell>
-                <sc-player players="m.team2_players"></sc-player>
-            </td>
-            <td md-cell>{{ m.team1_wins }} vs. {{ m.team2_wins }}</td>
-            <td md-cell>{{ m.created | date:'mediumDate' }}</td>
-            <td md-cell>
-                <md-button ng-if="m.is_open && !m.isClosing" class="md-primary md-icon-button" ui-sref="nav.upload">
-                    <md-icon>backup</md-icon>
-                </md-button>
-            </td>
-            <td md-cell>
-                <md-button ng-if="m.is_open && !m.isClosing" class="md-warn md-icon-button" ng-click="matchesCtrl.close($event, m)">
-                    <md-icon>clear</md-icon>
-                </md-button>
-                <div ng-if="m.isClosing">
-                    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</md-table-container>
+<h1 class="md-no-sticky md-display-1">Open Matches</h1>
+<sc-matches promise="matchesCtrl.pMatches" matches="matchesCtrl.matches"></sc-matches>
+
+<h1 class="md-no-sticky md-display-1">Match History</h1>
+<sc-matches promise="matchesCtrl.pClosedMatches" matches="matchesCtrl.closedMatches"></sc-matches>

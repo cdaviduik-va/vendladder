@@ -4,9 +4,10 @@ from google.appengine.api import users
 from webapp2 import RequestHandler, cached_property
 from webob.multidict import MultiDict
 
-from app.sc2.domain.match import lookup_matches, close_match, lookup_open_matches
+from app.sc2.domain.match import close_match
 from app.sc2.domain.player import get_all_player_details_for_season, get_players_for_battle_net_names,\
     get_player_stats
+from app.sc2.models.match import MatchModel
 from app.sc2.utils import jsonDateTimeHandler
 from app.sc2.utils.replay_reader import ReplayReader
 
@@ -41,43 +42,6 @@ class BaseAjaxView(RequestHandler):
 class BaseAuthAjaxView(BaseAjaxView):
     # TODO: check for auth in dispatch method
     pass
-
-
-class BaseMatchView(BaseAjaxView):
-
-    def serialize_data(self, data):
-        match_data = super(BaseMatchView, self).serialize_data(data)
-        if isinstance(match_data, list):
-            for md in match_data:
-                self._add_players_to_match_data(md)
-        else:
-            self._add_players_to_match_data(match_data)
-        return match_data
-
-    def _add_players_to_match_data(self, md):
-        md['team1_players'] = get_players_for_battle_net_names(md['team1_battle_net_names'], md['season_id'])
-        md['team2_players'] = get_players_for_battle_net_names(md['team2_battle_net_names'], md['season_id'])
-        return md
-
-
-class LookupMatchesView(BaseMatchView):
-
-    def get(self):
-        limit = self.request_data.get('limit', 10)
-        self.render_response(lookup_matches(limit=limit))
-
-
-class LookupOpenMatchesView(BaseMatchView):
-
-    def get(self):
-        self.render_response(lookup_open_matches())
-
-
-class CloseMatchView(BaseAuthAjaxView):
-
-    def post(self):
-        match_id = self.request_data['matchId']
-        close_match(match_id)
 
 
 class SubmitGameView(BaseAuthAjaxView):
@@ -129,7 +93,35 @@ class GetUserView(BaseAjaxView):
         }
 
 
-class PlayerView(BaseAjaxView):
+class MatchResource(BaseAjaxView):
+
+    def get(self, match_id=None):
+        if not match_id:
+            is_open = self.request.get('isOpen')
+            if is_open is not None:
+                is_open = is_open == 'true'
+            return self.render_response(MatchModel.lookup_for_season(is_open=is_open))
+
+    def post(self, match_id):
+        if self.request.get('close'):
+            close_match(match_id)
+
+    def serialize_data(self, data):
+        match_data = super(MatchResource, self).serialize_data(data)
+        if isinstance(match_data, list):
+            for md in match_data:
+                self._add_players_to_match_data(md)
+        else:
+            self._add_players_to_match_data(match_data)
+        return match_data
+
+    def _add_players_to_match_data(self, md):
+        md['team1_players'] = get_players_for_battle_net_names(md['team1_battle_net_names'], md['season_id'])
+        md['team2_players'] = get_players_for_battle_net_names(md['team2_battle_net_names'], md['season_id'])
+        return md
+
+
+class PlayerResource(BaseAjaxView):
 
     def get(self, battle_net_name=None):
         if not battle_net_name:
