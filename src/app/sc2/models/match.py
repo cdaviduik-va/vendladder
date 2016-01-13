@@ -48,15 +48,20 @@ class MatchModel(BaseModel):
         return ndb.Key(cls._get_kind(), key_name, parent=parent)
 
     @classmethod
-    def lookup_for_season(cls, season_id=None, limit=None):
+    def lookup_for_season(cls, season_id=None, is_open=None, limit=None):
         season_id = season_id or SeasonModel.lookup_open().season_id
         if not season_id:
             raise ValueError('season_id is required')
-        return cls.query(cls.season_id == season_id).order(-cls.created).fetch(limit=limit)
+
+        query = cls.query(cls.season_id == season_id)
+        if is_open is not None:
+            query = query.filter(cls.is_open == is_open)
+
+        return query.order(-cls.created).fetch(limit=limit)
 
     @classmethod
     def lookup_open(cls):
-        return cls.query(cls.is_open == True).fetch()
+        return cls.lookup_for_season(is_open=True)
 
     @classmethod
     def _get_kind(cls):

@@ -12,14 +12,17 @@
                 <md-icon>group</md-icon>
                 <p>MATCHES</p>
             </md-list-item>
-            <md-list-item ui-sref="nav.upload" ui-sref-active="selected">
-                <md-icon>backup</md-icon>
-                <p>UPLOAD A REPLAY</p>
-            </md-list-item>
             <md-list-item ui-sref="nav.ladder" ui-sref-active="selected">
                 <md-icon>list</md-icon>
                 <p>LADDER</p>
             </md-list-item>
+            <md-divider></md-divider>
+            <div ng-if="navCtrl.user">
+                <md-list-item ui-sref="nav.upload" ui-sref-active="selected">
+                    <md-icon>backup</md-icon>
+                    <p>UPLOAD A REPLAY</p>
+                </md-list-item>
+            </div>
             <!--
             <md-divider></md-divider>
             <div ng-if="navCtrl.user && navCtrl.user.is_admin">

@@ -4,12 +4,20 @@ angular.module('starcraft2')
     var self = this;
     self.isUploading = false;
     self.selectedMatch = null;
+    self.selectedMatches = [];
 
     self.lookupMatches = function() {
         self.matches = null;
-        MatchService.lookupOpen().then(function(data) {
+        self.promise = MatchService.lookupOpen().then(function(data) {
             self.matches = data;
         });
+    };
+
+    self.onSelect = function(item, key) {
+        if (self.selectedMatches.length >= 2) {
+            self.selectedMatches.shift();
+        }
+        self.selectedMatch = self.selectedMatches.length > 0 ? self.selectedMatches[0] : null;
     };
 
     self.upload = function() {

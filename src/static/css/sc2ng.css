@@ -40,3 +40,8 @@ md-list-item.md-2-line, md-list-item.md-2-line > .md-no-style {
 md-radio-group.md-default-theme.md-primary .md-checked:not([disabled]) .md-ink-ripple, md-radio-group.md-primary .md-checked:not([disabled]) .md-ink-ripple, md-radio-group.md-default-theme .md-checked:not([disabled]).md-primary .md-ink-ripple, md-radio-group .md-checked:not([disabled]).md-primary .md-ink-ripple {
   color: rgba(33, 150, 243, 0.87);
 }
+
+/* line 38, ../scss/sc2ng.scss */
+.md-table .md-head md-checkbox {
+  display: none;
+}

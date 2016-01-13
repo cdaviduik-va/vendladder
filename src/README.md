@@ -4,6 +4,12 @@ This is the code repository for the site found at http://foosball.vendasta.com.
 It uses Google's App Engine and Python, with Jinja2 templating.
 
 # VendAsta SC2 Ladder
+foos 10-1
+- Open matches now displayed in chronological order.
+- Match now removed after being closed.
+- Upload nav item now only displayed if user logged in.
+- Selecting match to upload now displayed in table.
+
 foos 10
 - added new site based on angularjs material UI
 

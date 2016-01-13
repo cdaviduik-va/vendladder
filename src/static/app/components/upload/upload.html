@@ -1,21 +1,30 @@
-<div ng-if="uploadCtrl.matches == null" layout="row" layout-sm="column" layout-align="space-around">
-    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
-</div>
-
-<div ng-if="uploadCtrl.matches && !uploadCtrl.game">
+<div ng-if="!uploadCtrl.game">
     <h1 class="md-no-sticky md-display-1">Select Match</h1>
-    <md-radio-group ng-model="uploadCtrl.selectedMatch">
-        <md-radio-button class="md-primary">
-            New Match
-        </md-radio-button>
-        <md-radio-button class="md-primary" ng-repeat="m in uploadCtrl.matches" ng-value="m">
-            <div layout="row">
-                <sc-player players="m.team1_players"></sc-player>
-                <strong layout="column" layout-align="space-around">VS</strong>
-                <sc-player players="m.team2_players"></sc-player>
-            </div>
-        </md-radio-button>
-    </md-radio-group>
+    <p>If no match is selected a new one will be created.</p>
+    <md-table-container>
+        <table md-table md-row-select ng-model="uploadCtrl.selectedMatches" md-progress="uploadCtrl.promise">
+            <thead md-head>
+                <tr md-row>
+                    <th md-column>Team 1</th>
+                    <th md-column>Team 2</th>
+                    <th md-column>Result</th>
+                    <th md-column>Created</th>
+                </tr>
+            </thead>
+            <tbody md-body>
+                <tr md-row md-select="m" md-on-select="uploadCtrl.onSelect" ng-repeat="m in uploadCtrl.matches">
+                    <td md-cell>
+                        <sc-player players="m.team1_players"></sc-player>
+                    </td>
+                    <td md-cell>
+                        <sc-player players="m.team2_players"></sc-player>
+                    </td>
+                    <td md-cell>{{ m.team1_wins }} vs. {{ m.team2_wins }}</td>
+                    <td md-cell>{{ m.created | date:'mediumDate' }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </md-table-container>
 
     <div flex="50" flex-sm="100" flex-xs="100" layout="column">
         <md-card ng-if="uploadCtrl.replay">

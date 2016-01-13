@@ -13,6 +13,8 @@ angular.module('starcraft2')
         MatchService.close(match.match_id, ev).then(function() {
             match.isClosing = false;
             match.is_open = false;
+            // remove match from list
+            self.matches.splice(self.matches.indexOf(match), 1);
 
             var confirm = $mdDialog.alert()
                 .title('Success')

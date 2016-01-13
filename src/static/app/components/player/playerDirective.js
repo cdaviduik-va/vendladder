@@ -3,7 +3,8 @@ angular.module('starcraft2')
 .directive('scPlayer', function($state) {
     return {
         scope: {
-            players: '='
+            players: '=',
+            disabled: '='
         },
         templateUrl: '/static/app/components/player/playerDirective.html',
         restrict: 'E',
