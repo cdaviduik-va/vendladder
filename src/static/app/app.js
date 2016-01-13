@@ -16,6 +16,12 @@ angular.module('starcraft2', [
                 templateUrl: '/static/app/components/navigation/navigation.html',
                 controller: 'NavigationController as navCtrl'
             })
+            .state('nav.koth', {
+                url: '/koth',
+                templateUrl: '/static/app/components/ladder/koth.html',
+                controller: 'KothController as kothCtrl',
+                title: 'King of the Hill'
+            })
             .state('nav.matches', {
                 url: '/matches',
                 templateUrl: '/static/app/components/matches/matches.html',

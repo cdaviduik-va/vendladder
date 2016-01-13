@@ -1,0 +1,27 @@
+<div ng-if="!player.$resolved" layout="row" layout-sm="column" layout-align="space-around">
+    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+</div>
+
+<md-card class="player-details" ng-if="player.$resolved">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">{{ player.battle_net_name }}</span>
+            <span class="md-subhead">{{ player.name }}</span>
+        </md-card-title-text>
+        <md-card-title-media>
+            <div class="md-media-lg card-media">
+                <img src="{{ player.image_url }}">
+            </div>
+        </md-card-title-media>
+    </md-card-title>
+    <md-card-content>
+        <md-list-item>
+            <p>Score</p>
+            <div class="md-secondary">{{ player.score }}</div>
+        </md-list-item>
+        <md-list-item>
+            <p>Joined</p>
+            <div class="md-secondary">{{ player.created | date:"mediumDate" }}</div>
+        </md-list-item>
+    </md-card-content>
+</md-card>

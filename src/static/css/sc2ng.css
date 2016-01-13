@@ -45,3 +45,8 @@ md-radio-group.md-default-theme.md-primary .md-checked:not([disabled]) .md-ink-r
 .md-table .md-head md-checkbox {
   display: none;
 }
+
+/* line 42, ../scss/sc2ng.scss */
+.koth-heading {
+  text-align: center;
+}

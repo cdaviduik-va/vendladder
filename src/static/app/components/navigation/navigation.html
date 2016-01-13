@@ -8,6 +8,10 @@
         </header>
         <md-list>
             <md-subheader ng-if="navCtrl.user" class="md-no-sticky">Welcome {{ navCtrl.user.nickname }}</md-subheader>
+            <md-list-item ui-sref="nav.koth" ui-sref-active="selected">
+                <md-icon>star</md-icon>
+                <p>King of the Hill</p>
+            </md-list-item>
             <md-list-item ui-sref="nav.matches" ui-sref-active="selected">
                 <md-icon>group</md-icon>
                 <p>MATCHES</p>
