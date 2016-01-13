@@ -9,7 +9,7 @@ from app.sc2.domain.season import lookup_current_season
 from app.sc2.models.game import GameModel
 from app.sc2.models.season import SeasonModel
 from app.utils import calculate_elo_rank
-from app.sc2.models.player import PlayerModel, PlayerRankModel
+from app.sc2.models.player import PlayerModel, PlayerRankModel, DEFAULT_IMAGE_URL
 
 
 def create_player(battle_net_name, real_name=None, vendasta_email=None, score=None):
@@ -177,6 +177,7 @@ class PlayerDetails(object):
 
     def __init__(self, player, player_rank, is_participating=True):
         self.player = player
+        self.player.image_url = self.player.image_url or DEFAULT_IMAGE_URL
         self.player_rank = player_rank
         self.score = self.player_rank.score
         self.is_participating = is_participating

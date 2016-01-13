@@ -7,6 +7,8 @@ from app.sc2.models import BaseModel
 from app.sc2.models.season import SeasonModel
 from constants import Leagues
 
+DEFAULT_IMAGE_URL = 'https://www.vendasta.com/__v965/static/images/team/user-icon.jpg'
+
 
 class PlayerModel(BaseModel):
     """
@@ -16,7 +18,7 @@ class PlayerModel(BaseModel):
     name = ndb.StringProperty()
     vendasta_email = ndb.StringProperty()
     player_name = ndb.StringProperty()
-    image_url = ndb.StringProperty()
+    image_url = ndb.StringProperty(default=DEFAULT_IMAGE_URL)
     seasons_participated = ndb.StringProperty(repeated=True)
 
     @classmethod
