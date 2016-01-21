@@ -1,5 +1,5 @@
-<div layout="row">
-    <md-sidenav class="md-sidenav-left md-whiteframe-z1" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
+<div layout="row" flex>
+    <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-sm')">
         <header>
             <a href="#/">
                 <img src="/static/img/starcraft2.png"/>
@@ -44,19 +44,18 @@
             -->
         </md-list>
     </md-sidenav>
-    <div layout="column" ng-cloak flex>
-
-        <md-toolbar layout="row" class="md-whiteframe-z1" ng-cloak>
+    <div layout="column" flex>
+        <md-toolbar layout="row" class="md-whiteframe-z1">
+            <md-button class="md-icon-button" ng-click="navCtrl.toggleMenu()" hide-gt-sm aria-label="Toggle Menu">
+                <md-icon>menu</md-icon>
+            </md-button>
             <h1 class="md-toolbar-tools">{{ navCtrl.pageTitle }}</h1>
             <span flex></span>
             <md-button class="md-raised" ng-if="!navCtrl.user" ng-click="navCtrl.navigateTo(navCtrl.authLinks.login)">Login</md-button>
             <md-button ng-if="navCtrl.user" ng-click="navCtrl.navigateTo(navCtrl.authLinks.logout)">Logout</md-button>
         </md-toolbar>
-        <md-content md-scroll-y flex>
-            <div layout="column" layout-padding layout-align="top left">
-                <ui-view></ui-view>
-            </div>
+        <md-content md-scroll-y layout="column" flex flex-sm="noshrink" flex-xs="noshrink">
+            <ui-view layout-padding flex="noshrink"></ui-view>
         </md-content>
-
     </div>
 </div>

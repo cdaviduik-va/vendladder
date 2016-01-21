@@ -1,6 +1,6 @@
 angular.module('starcraft2')
 
-.controller('NavigationController', function($window, $state, $rootScope, UserService) {
+.controller('NavigationController', function($window, $state, $rootScope, $mdSidenav, UserService) {
     var self = this;
     self.pageTitle = $state.current.title;
     self.user = null;
@@ -16,6 +16,10 @@ angular.module('starcraft2')
 
     self.navigateTo = function(link) {
         $window.location = link;
+    };
+
+    self.toggleMenu = function() {
+        $mdSidenav('left').toggle();
     };
 
     $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
