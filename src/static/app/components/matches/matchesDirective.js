@@ -1,6 +1,6 @@
 angular.module('starcraft2')
 
-.directive('scMatches', function($mdDialog, MatchFactory) {
+.directive('scMatches', function($mdDialog) {
     return {
         scope: {
             promise: '=',
@@ -35,7 +35,7 @@ angular.module('starcraft2')
                     .targetEvent(ev)
                     .ok('Close Match')
                     .cancel('Cancel');
-            }
+            };
 
             var getAlertDialog = function(ev) {
                 return $mdDialog.alert()
@@ -44,7 +44,7 @@ angular.module('starcraft2')
                     .clickOutsideToClose(true)
                     .targetEvent(ev)
                     .ok('Okay');
-            }
+            };
         }
     }
 });

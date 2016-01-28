@@ -4,7 +4,7 @@ from google.appengine.api import users
 from webapp2 import RequestHandler, cached_property
 from webob.multidict import MultiDict
 
-from app.sc2.domain.match import close_match
+from app.sc2.domain.match import close_match, get_suggested_matches, create_match
 from app.sc2.domain.player import get_all_player_details_for_season, get_players_for_battle_net_names,\
     get_player_stats
 from app.sc2.models.match import MatchModel
@@ -95,16 +95,31 @@ class GetUserView(BaseAjaxView):
 
 class MatchResource(BaseAjaxView):
 
-    def get(self, match_id=None):
-        if not match_id:
+    def get(self, action=None):
+        if action == 'suggested':
+            # lookup suggested matches
+            ignore_open = self.request.get('ignoreOpen') == 'true'
+            include_players = self.request.get_all('includePlayers')
+            exclude_players = self.request.get_all('excludePlayers')
+            match_data = get_suggested_matches(include_players=include_players, exclude_players=exclude_players, ignore_open=ignore_open)
+        else:
             is_open = self.request.get('isOpen')
             if is_open is not None:
                 is_open = is_open == 'true'
-            return self.render_response(MatchModel.lookup_for_season(is_open=is_open))
+            match_data = MatchModel.lookup_for_season(is_open=is_open)
 
-    def post(self, match_id):
-        if self.request.get('close'):
+        return self.render_response(match_data)
+
+    def post(self, action=None):
+        if action == 'close':
+            match_id = self.request.get('matchId')
             close_match(match_id)
+        elif action == 'create':
+            match = self.request_data.get('match')
+            logging.debug('Creating match with teams...')
+            logging.debug(match['team1'])
+            logging.debug(match['team2'])
+            create_match(match['team1'], match['team2'])
 
     def serialize_data(self, data):
         match_data = super(MatchResource, self).serialize_data(data)

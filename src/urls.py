@@ -47,7 +47,7 @@ ROUTES = [
 
     # SC2 match resource
     Route('/sc2/api/match', handler='app.sc2.views.api.MatchResource'),
-    Route('/sc2/api/match/<match_id>', handler='app.sc2.views.api.MatchResource'),
+    Route('/sc2/api/match/<action>', handler='app.sc2.views.api.MatchResource'),
 
     # SC2 player resource
     Route('/sc2/api/player', handler='app.sc2.views.api.PlayerResource'),

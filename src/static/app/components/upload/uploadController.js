@@ -6,7 +6,7 @@ angular.module('starcraft2')
     self.selectedMatch = null;
     self.selectedMatches = [];
 
-    self.lookupMatches = function() {
+    self.queryMatches = function() {
         self.matches = null;
         self.promise = MatchFactory.query({isOpen: true}, function(data) {
             self.matches = data;
@@ -61,7 +61,7 @@ angular.module('starcraft2')
         self.game = null;
         self.winningTeam = null;
         self.losingTeam = null;
-        self.lookupMatches();
+        self.queryMatches();
     };
 
     self.showMessage = function(message, title, okText) {
@@ -74,5 +74,5 @@ angular.module('starcraft2')
         $mdDialog.show(confirm)
     };
 
-    self.lookupMatches();
+    self.queryMatches();
 });

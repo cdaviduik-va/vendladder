@@ -1,5 +1,5 @@
 <div ng-if="players">
-    <md-list-item class="md-2-line" ng-disabled="disabled" ng-click="goToDetails(player)" ng-repeat="player in playerList" layout="column">
+    <md-list-item class="md-2-line" ng-click="!disabled && goToDetails(player)" ng-repeat="player in playerList" layout="column">
         <img ng-if="player.image_url" ng-src="{{ player.image_url }}" class="md-avatar" alt="{{ player.name }}" />
         <div class="md-list-item-text compact">
             <h3>{{ player.battle_net_name }}</h3>

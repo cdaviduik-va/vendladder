@@ -45,6 +45,12 @@ angular.module('starcraft2', [
                 templateUrl: '/static/app/components/upload/upload.html',
                 controller: 'UploadController as uploadCtrl',
                 title: 'Upload A Replay'
+            })
+            .state('nav.adminCreateMatch', {
+                url: '/admin/createMatch',
+                templateUrl: '/static/app/components/admin/createMatch.html',
+                controller: 'AdminCreateMatchController as cmCtrl',
+                title: 'Create Match'
             });
 
         $urlRouterProvider.otherwise('/matches');
