@@ -1,5 +1,19 @@
+$BACKGROUND_COLOR: #f2f2f2;
+$BACKGROUND_FONT_COLOR: #616161;
+$MAIN_FONT_COLOR: #212121;
+$MAIN_BACKGROUND_COLOR: #fff;
+
+body {
+  color: #616161;
+}
+
 header {
   text-align: center;
+}
+
+ui-view {
+  background-color: $BACKGROUND_COLOR;
+  color: $BACKGROUND_FONT_COLOR;
 }
 
 .md-sidenav-left {
@@ -23,8 +37,12 @@ md-list-item.md-2-line .md-list-item-text p {
   padding: 0;
 }
 
-md-card md-card-title {
-  flex: none !important;
+md-card {
+  color: $MAIN_FONT_COLOR;
+
+  md-card-title {
+    flex: none !important;
+  }
 }
 
 md-list-item.md-2-line, md-list-item.md-2-line>.md-no-style {
@@ -35,10 +53,19 @@ md-radio-group.md-default-theme.md-primary .md-checked:not([disabled]) .md-ink-r
   color: rgba(33,150,243,0.87);
 }
 
-.md-table .md-head md-checkbox {
-  display: none;
+.md-table {
+  background: $MAIN_BACKGROUND_COLOR;
+
+  .md-head md-checkbox {
+    display: none;
+  }
 }
 
 .koth-heading {
+  color: $MAIN_FONT_COLOR;
   text-align: center;
+}
+
+sc-matches {
+  padding: 0 !important;
 }

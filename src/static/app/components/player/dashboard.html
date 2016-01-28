@@ -1,0 +1,19 @@
+<div ng-if="ctrl.player == null" layout="row" layout-sm="column" layout-align="space-around">
+    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+</div>
+
+<h4>Display...</h4>
+<ul>
+    <li>Open matches</li>
+    <li>Their player stats (you're above the average score! or something)</li>
+    <li>Suggested matchups</li>
+    <li>Who their nemesis is</li>
+    <li>Allow to find/create match</li>
+    <li>Who they should play for King of the Hill</li>
+</ul>
+
+<div ng-if="ctrl.player" layout="row">
+    <div flex="30" flex-sm="100" flex-xs="100" layout="column">
+        <sc-player-details player="ctrl.player"></sc-player-details>
+    </div>
+</div>

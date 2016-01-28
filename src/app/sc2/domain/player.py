@@ -81,11 +81,7 @@ def lookup_players_for_season(season_id=None):
 
 
 def get_player_details(battle_net_name, season_id=None):
-    season_id = season_id or lookup_current_season(id_only=True)
-    player = PlayerModel.get_or_create(battle_net_name)
-    player_rank = PlayerRankModel.get_or_create(battle_net_name, season_id)
-    is_participating = season_id in player.seasons_participated
-    return PlayerDetails(player, player_rank, is_participating=is_participating)
+    return PlayerDetails.get_for_battle_net_name(battle_net_name)
 
 
 def get_all_player_details_for_season(season_id=None):
@@ -102,6 +98,10 @@ def get_all_player_details_for_season(season_id=None):
 
 def get_players_for_battle_net_names(bnet_names, season_id):
     return [get_player_details(bnet_name, season_id=season_id) for bnet_name in bnet_names]
+
+
+def get_player_for_email(email):
+    return PlayerDetails.get_for_email(email)
 
 
 def get_player_stats(battle_net_name, season_id=None):
@@ -187,3 +187,22 @@ class PlayerDetails(object):
         player_dict.update(self.player_rank.to_dict())
         player_dict['is_participating'] = self.is_participating
         return player_dict
+
+    @classmethod
+    def get_for_battle_net_name(cls, battle_net_name, season_id=None):
+        player = PlayerModel.get_or_create(battle_net_name)
+        return cls.get_for_player(player, season_id=season_id)
+
+    @classmethod
+    def get_for_email(cls, email, season_id=None):
+        player = PlayerModel.get_for_email(email)
+        if not player:
+            return None
+        return cls.get_for_player(player, season_id=season_id)
+
+    @classmethod
+    def get_for_player(cls, player, season_id=None):
+        season_id = season_id or lookup_current_season(id_only=True)
+        player_rank = PlayerRankModel.get_or_create(player.battle_net_name, season_id)
+        is_participating = season_id in player.seasons_participated
+        return PlayerDetails(player, player_rank, is_participating=is_participating)

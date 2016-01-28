@@ -38,6 +38,10 @@ class PlayerModel(BaseModel):
         return player
 
     @classmethod
+    def get_for_email(cls, email):
+        return cls.query(cls.vendasta_email == email).get()
+
+    @classmethod
     def lookup_for_season(cls, season_id=None):
         if not season_id:
             raise ValueError('season_id is required.')

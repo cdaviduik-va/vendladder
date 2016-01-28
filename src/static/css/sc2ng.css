@@ -1,52 +1,77 @@
-/* line 1, ../scss/sc2ng.scss */
+/* line 6, ../scss/sc2ng.scss */
+body {
+  color: #616161;
+}
+
+/* line 10, ../scss/sc2ng.scss */
 header {
   text-align: center;
 }
 
-/* line 5, ../scss/sc2ng.scss */
+/* line 14, ../scss/sc2ng.scss */
+ui-view {
+  background-color: #f2f2f2;
+  color: #616161;
+}
+
+/* line 19, ../scss/sc2ng.scss */
 .md-sidenav-left {
   height: 100%;
 }
-/* line 9, ../scss/sc2ng.scss */
+/* line 23, ../scss/sc2ng.scss */
 .md-sidenav-left .selected {
   background-color: #eee;
 }
-/* line 13, ../scss/sc2ng.scss */
+/* line 27, ../scss/sc2ng.scss */
 .md-sidenav-left a {
   margin: 0;
 }
 
-/* line 18, ../scss/sc2ng.scss */
+/* line 32, ../scss/sc2ng.scss */
 md-list-item.md-2-line .md-list-item-text p {
   color: rgba(0, 0, 0, 0.54);
 }
 
-/* line 22, ../scss/sc2ng.scss */
+/* line 36, ../scss/sc2ng.scss */
 .md-table md-list-item {
   padding: 0;
 }
 
-/* line 26, ../scss/sc2ng.scss */
+/* line 40, ../scss/sc2ng.scss */
+md-card {
+  color: #212121;
+}
+/* line 43, ../scss/sc2ng.scss */
 md-card md-card-title {
   flex: none !important;
 }
 
-/* line 30, ../scss/sc2ng.scss */
+/* line 48, ../scss/sc2ng.scss */
 md-list-item.md-2-line, md-list-item.md-2-line > .md-no-style {
   min-height: auto;
 }
 
-/* line 34, ../scss/sc2ng.scss */
+/* line 52, ../scss/sc2ng.scss */
 md-radio-group.md-default-theme.md-primary .md-checked:not([disabled]) .md-ink-ripple, md-radio-group.md-primary .md-checked:not([disabled]) .md-ink-ripple, md-radio-group.md-default-theme .md-checked:not([disabled]).md-primary .md-ink-ripple, md-radio-group .md-checked:not([disabled]).md-primary .md-ink-ripple {
   color: rgba(33, 150, 243, 0.87);
 }
 
-/* line 38, ../scss/sc2ng.scss */
+/* line 56, ../scss/sc2ng.scss */
+.md-table {
+  background: #fff;
+}
+/* line 59, ../scss/sc2ng.scss */
 .md-table .md-head md-checkbox {
   display: none;
 }
 
-/* line 42, ../scss/sc2ng.scss */
+/* line 64, ../scss/sc2ng.scss */
 .koth-heading {
+  color: #212121;
   text-align: center;
+}
+
+/* line 69, ../scss/sc2ng.scss */
+sc-matches {
+  padding: 0 !important;
 }

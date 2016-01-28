@@ -6,7 +6,7 @@ from webob.multidict import MultiDict
 
 from app.sc2.domain.match import close_match, get_suggested_matches, create_match
 from app.sc2.domain.player import get_all_player_details_for_season, get_players_for_battle_net_names,\
-    get_player_stats
+    get_player_stats, get_player_for_email
 from app.sc2.models.match import MatchModel
 from app.sc2.utils import jsonDateTimeHandler
 from app.sc2.utils.replay_reader import ReplayReader
@@ -144,3 +144,13 @@ class PlayerResource(BaseAjaxView):
 
         player_stats = get_player_stats(battle_net_name)
         return self.render_response(player_stats)
+
+    def get_authed(self):
+        user = users.get_current_user()
+        if not user:
+            return self.abort(404)
+
+        player = get_player_for_email(user.email())
+        if not player:
+            return self.abort(404)
+        return self.render_response(player)

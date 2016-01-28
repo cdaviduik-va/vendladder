@@ -1,10 +1,12 @@
 angular.module('starcraft2')
 
-.controller('NavigationController', function($window, $state, $rootScope, $mdSidenav, UserService) {
+.controller('NavigationController', function($window, $state, $rootScope, $mdSidenav, UserService, PlayerFactory) {
     var self = this;
     self.pageTitle = $state.current.title;
     self.user = null;
+    self.player = null;
     self.authLinks = null;
+
     UserService.getAuthLinks().then(function(data) {
         self.authLinks = data;
     });
@@ -12,6 +14,10 @@ angular.module('starcraft2')
         console.log('user')
         console.log(data)
         self.user = data;
+    });
+
+    PlayerFactory.getAuthed(function(player) {
+        self.player = player;
     });
 
     self.navigateTo = function(link) {

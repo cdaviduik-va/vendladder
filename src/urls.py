@@ -51,6 +51,7 @@ ROUTES = [
 
     # SC2 player resource
     Route('/sc2/api/player', handler='app.sc2.views.api.PlayerResource'),
+    Route('/sc2/api/player/getAuthed', handler='app.sc2.views.api.PlayerResource:get_authed', methods=['GET']),
     Route('/sc2/api/player/<battle_net_name>', handler='app.sc2.views.api.PlayerResource'),
 
     #General
