@@ -25,6 +25,20 @@ indexes:
   - name: created
     direction: desc
 
+- kind: SCII_MatchModel
+  properties:
+  - name: is_open
+  - name: team1_battle_net_names
+  - name: created
+    direction: desc
+
+- kind: SCII_MatchModel
+  properties:
+  - name: is_open
+  - name: team2_battle_net_names
+  - name: created
+    direction: desc
+
 - kind: SCII_GameModel
   properties:
   - name: players.battle_net_name

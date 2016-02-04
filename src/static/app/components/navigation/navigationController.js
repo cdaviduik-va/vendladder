@@ -28,12 +28,11 @@ angular.module('starcraft2')
         $mdSidenav('left').toggle();
     };
 
-    $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
+    self.goToPlayerDetails = function(player) {
+        $state.transitionTo('nav.playerDetails', {battleNetName: player.battle_net_name});
+    };
+
+    $rootScope.$on("$stateChangeStart", function(event, toState) {
         self.pageTitle = toState.title;
-        //if (toState.authenticate && !AuthService.isAuthenticated()){
-        //    // User isn’t authenticated
-        //    $state.transitionTo("login");
-        //    event.preventDefault();
-        //}
     });
 });

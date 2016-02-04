@@ -1,12 +1,18 @@
 'use strict';
 
-angular.module('starcraft2', [
+angular
+    .module('starcraft2', [
         'ngResource',
         'ui.router',
         'ngMaterial',
         'ngFileUpload',
         'md.data.table'
     ])
+    .constant('KingOfTheHill', {
+        sergeant: 'Edindya',
+        corporal: 'FutureNights',
+        recruit: 'Ferrous'
+    })
     .config(function($stateProvider, $urlRouterProvider, $mdThemingProvider) {
 
         $stateProvider
@@ -43,7 +49,7 @@ angular.module('starcraft2', [
             .state('nav.playerDetails', {
                 url: '/player/{battleNetName}',
                 templateUrl: '/static/app/components/player/playerDetails.html',
-                controller: 'PlayerDetailsController as pdCtrl',
+                controller: 'PlayerDetailsController as ctrl',
                 title: 'Player Details'
             })
             .state('nav.upload', {
@@ -63,6 +69,6 @@ angular.module('starcraft2', [
 
         $mdThemingProvider.theme('default')
             .primaryPalette('blue')
-            .accentPalette('green');
+            .accentPalette('blue-grey');
 
     });

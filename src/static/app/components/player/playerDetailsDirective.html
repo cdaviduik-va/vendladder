@@ -2,7 +2,7 @@
     <md-progress-circular md-mode="indeterminate"></md-progress-circular>
 </div>
 
-<md-card class="player-details" ng-if="player.$resolved">
+<md-card class="player-details" ng-if="player.$resolved" ng-click="goToDetails(player)">
     <md-card-title>
         <md-card-title-text>
             <span class="md-headline">{{ player.battle_net_name }}</span>
@@ -18,10 +18,6 @@
         <md-list-item>
             <p>Score</p>
             <div class="md-secondary">{{ player.score }}</div>
-        </md-list-item>
-        <md-list-item>
-            <p>Joined</p>
-            <div class="md-secondary">{{ player.created | date:"mediumDate" }}</div>
         </md-list-item>
     </md-card-content>
 </md-card>

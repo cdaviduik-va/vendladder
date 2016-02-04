@@ -1,8 +1,8 @@
 angular.module('starcraft2')
 
-.controller('KothController', function(PlayerFactory) {
+.controller('KothController', function(KingOfTheHill, PlayerFactory) {
     var self = this;
-    self.sergeant = PlayerFactory.get({battleNetName: 'Edindya'});
-    self.corporal = PlayerFactory.get({battleNetName: 'FutureNights'});
-    self.recruit = PlayerFactory.get({battleNetName: 'Ferrous'});
+    self.sergeant = PlayerFactory.get({battleNetName: KingOfTheHill.sergeant});
+    self.corporal = PlayerFactory.get({battleNetName: KingOfTheHill.corporal});
+    self.recruit = PlayerFactory.get({battleNetName: KingOfTheHill.recruit});
 });

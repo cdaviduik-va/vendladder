@@ -60,6 +60,13 @@ class MatchModel(BaseModel):
         return query.order(-cls.created).fetch(limit=limit)
 
     @classmethod
+    def lookup_for_battle_net_name(cls, battle_net_name):
+        query = cls.query(ndb.OR(cls.team1_battle_net_names == battle_net_name,
+                                 cls.team2_battle_net_names == battle_net_name))
+        query = query.filter(cls.is_open == True)
+        return query.order(-cls.created).fetch()
+
+    @classmethod
     def lookup_open(cls):
         return cls.lookup_for_season(is_open=True)
 

@@ -7,11 +7,11 @@
             <h1>VendAsta Ladder</h1>
         </header>
         <md-list>
-            <md-subheader ng-if="navCtrl.player" class="md-no-sticky">Welcome {{ navCtrl.player.battle_net_name }}</md-subheader>
-            <!--<md-list-item ui-sref="nav.dashboard" ui-sref-active="selected">-->
-                <!--<md-icon>dashboard</md-icon>-->
-                <!--<p>Dashboard</p>-->
-            <!--</md-list-item>-->
+            <sc-player ng-if="navCtrl.player" players="navCtrl.player"></sc-player>
+            <md-list-item ui-sref="nav.dashboard" ui-sref-active="selected">
+                <md-icon>dashboard</md-icon>
+                <p>Dashboard</p>
+            </md-list-item>
             <md-list-item ui-sref="nav.koth" ui-sref-active="selected">
                 <md-icon>star</md-icon>
                 <p>King of the Hill</p>
@@ -48,7 +48,7 @@
             </md-button>
             <h1 class="md-toolbar-tools">{{ navCtrl.pageTitle }}</h1>
             <span flex></span>
-            <md-button class="md-raised" ng-if="!navCtrl.user" ng-click="navCtrl.navigateTo(navCtrl.authLinks.login)">Login</md-button>
+            <md-button ng-if="!navCtrl.user" ng-click="navCtrl.navigateTo(navCtrl.authLinks.login)">Login</md-button>
             <md-button ng-if="navCtrl.user" ng-click="navCtrl.navigateTo(navCtrl.authLinks.logout)">Logout</md-button>
         </md-toolbar>
         <md-content md-scroll-y layout="column" flex flex-sm="noshrink" flex-xs="noshrink">

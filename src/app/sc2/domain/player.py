@@ -80,6 +80,13 @@ def lookup_players_for_season(season_id=None):
     return PlayerModel.lookup_for_season(season_id=season_id)
 
 
+def lookup_players_with_similar_score(battle_net_name, season_id=None, limit=5):
+    target_player = get_player_details(battle_net_name)
+    all_players = get_all_player_details_for_season()
+    sorted_players = sorted([ap for ap in all_players if ap.battle_net_name != target_player.battle_net_name], key=lambda player: abs(target_player.score - player.score))
+    return sorted_players[:limit]
+
+
 def get_player_details(battle_net_name, season_id=None):
     return PlayerDetails.get_for_battle_net_name(battle_net_name)
 
@@ -178,6 +185,7 @@ class PlayerDetails(object):
     def __init__(self, player, player_rank, is_participating=True):
         self.player = player
         self.player.image_url = self.player.image_url or DEFAULT_IMAGE_URL
+        self.battle_net_name = self.player.battle_net_name
         self.player_rank = player_rank
         self.score = self.player_rank.score
         self.is_participating = is_participating

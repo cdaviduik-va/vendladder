@@ -10,6 +10,7 @@ from app.sc2.models.game import GameModel
 from app.sc2.models.match import MatchModel
 from app.sc2.models.player import PlayerRankModel
 
+DEFAULT_TEAM_SIZE = 2
 
 def create_match(team1, team2):
     """
@@ -111,7 +112,7 @@ def lookup_games(limit=None):
     return GameModel.lookup_all(limit=limit)
 
 
-def get_suggested_matches(team_size=2, include_players=None, exclude_players=None, ignore_open=False, limit=20):
+def get_suggested_matches(team_size=DEFAULT_TEAM_SIZE, include_players=None, exclude_players=None, ignore_open=False, limit=20):
     """
     Compile list of players this season who have played least number of games then pair them up to
     create teams with a similar average score.
@@ -167,7 +168,7 @@ def get_suggested_matches(team_size=2, include_players=None, exclude_players=Non
         match = SuggestedMatch([player_rank for player_rank in team1], [player_rank for player_rank in team2])
         potential_matches.append(match)
 
-    potential_matches = sorted(potential_matches, key=lambda match: (match.average_time_since_last_game, match.score_diff))
+    potential_matches = sorted(potential_matches, key=lambda match: (match.score_diff, match.average_time_since_last_game))
     logging.debug('Number of potential matches: %d', len(potential_matches))
     return potential_matches[:limit]
 

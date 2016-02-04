@@ -1,0 +1,94 @@
+<div ng-if="ctrl.players == null" layout="row" layout-sm="column" layout-align="space-around">
+    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+</div>
+
+<div ng-if="ctrl.players">
+    <md-chips ng-model="ctrl.includePlayers"
+              md-autocomplete-snap
+              md-require-match="true">
+        <md-autocomplete flex
+                         md-no-cache="true"
+                         md-input-name="includePlayers"
+                         md-search-text="ctrl.includeText"
+                         md-items="item in ctrl.queryPlayers(ctrl.includeText)"
+                         md-item-text="item.name"
+                         placeholder="Include Players">
+            <md-item-template>
+                <strong ng-if="item.name">{{ item.name }} //</strong> {{ item.battle_net_name }}
+            </md-item-template>
+        </md-autocomplete>
+        <md-chip-template>
+            <strong ng-if="$chip.name">{{ $chip.name }} //</strong>
+            {{ $chip.battle_net_name }}
+        </md-chip-template>
+    </md-chips>
+    <md-chips ng-model="ctrl.excludePlayers"
+              md-autocomplete-snap
+              md-require-match="true">
+        <md-autocomplete flex
+                         md-no-cache="true"
+                         md-input-name="excludePlayers"
+                         md-search-text="ctrl.excludeText"
+                         md-items="item in ctrl.queryPlayers(ctrl.excludeText)"
+                         md-item-text="item.name"
+                         placeholder="Exclude Players">
+            <md-item-template>
+                <strong ng-if="item.name">{{ item.name }} //</strong> {{ item.battle_net_name }}
+            </md-item-template>
+        </md-autocomplete>
+        <md-chip-template>
+            <strong ng-if="$chip.name">{{ $chip.name }} //</strong>
+            {{ $chip.battle_net_name }}
+        </md-chip-template>
+    </md-chips>
+    <br/>
+    <div>
+        <md-checkbox ng-model="ctrl.ignoreOpen">Ignore Open Matches</md-checkbox>
+    </div>
+
+    <md-button class="md-primary" ng-click="ctrl.querySuggestedMatches()">
+        Search for Matches
+    </md-button>
+</div>
+
+<md-table-container ng-if="ctrl.promise || ctrl.matches">
+    <table md-table class="md-whiteframe-z1" md-progress="ctrl.promise">
+        <thead md-head>
+        <tr md-row>
+            <th md-column>Team 1</th>
+            <th md-column>Team 2</th>
+            <th md-column>Team 1 Average Score</th>
+            <th md-column>Team 2 Average Score</th>
+            <th md-column>Average Games Played</th>
+            <th md-column>Score Diff</th>
+            <th md-column ng-if="ctrl.allowCreateMatch">Create Match</th>
+        </tr>
+        </thead>
+        <tbody md-body>
+        <tr md-row ng-repeat="m in ctrl.matches">
+            <td md-cell>
+                <sc-player players="m.team1_players"></sc-player>
+            </td>
+            <td md-cell>
+                <sc-player players="m.team2_players"></sc-player>
+            </td>
+            <td md-cell>{{ m.team1_average_score }}</td>
+            <td md-cell>{{ m.team2_average_score }}</td>
+            <td md-cell>{{ m.average_games_played }}</td>
+            <td md-cell>{{ m.score_diff }}</td>
+            <td md-cell ng-if="ctrl.allowCreateMatch">
+                <md-button ng-if="!ctrl.isCreatingMatch" class="md-primary md-icon-button" ng-click="ctrl.createMatch(m, $event)">
+                    <md-icon>create</md-icon>
+                </md-button>
+                <div ng-if="ctrl.isCreatingMatch">
+                    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</md-table-container>
+
+<div ng-if="ctrl.matches && ctrl.matches.length == 0">
+    No matches were found.
+</div>

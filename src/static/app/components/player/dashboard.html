@@ -1,19 +1,48 @@
-<div ng-if="ctrl.player == null" layout="row" layout-sm="column" layout-align="space-around">
-    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+<md-toolbar class="md-accent md-hue-2 md-whiteframe-z1">
+    <h4 class="md-toolbar-tools">
+        Your Open Matches
+    </h4>
+</md-toolbar>
+<sc-matches promise="ctrl.pMatches" matches="ctrl.matches"></sc-matches>
+<div ng-if="ctrl.matches && ctrl.matches.length == 0">
+    You aren't scheduled for any matches.
 </div>
+<br/>
 
-<h4>Display...</h4>
-<ul>
-    <li>Open matches</li>
-    <li>Their player stats (you're above the average score! or something)</li>
-    <li>Suggested matchups</li>
-    <li>Who their nemesis is</li>
-    <li>Allow to find/create match</li>
-    <li>Who they should play for King of the Hill</li>
-</ul>
+<md-toolbar class="md-accent md-hue-2 md-whiteframe-z1">
+    <h4 class="md-toolbar-tools">
+        1v1 Challenges
+    </h4>
+</md-toolbar>
+<div layout="row">
+    <div ng-if="ctrl.player.stats.nemesis" flex="50" flex-sm="100" flex-xs="100" layout="column">
+        <span class="md-headline">Face Off Against Your Nemesis</span>
+        <sc-player-details player="ctrl.nemesis"></sc-player-details>
+    </div>
 
-<div ng-if="ctrl.player" layout="row">
-    <div flex="30" flex-sm="100" flex-xs="100" layout="column">
-        <sc-player-details player="ctrl.player"></sc-player-details>
+    <div ng-if="ctrl.koth" flex="50" flex-sm="100" flex-xs="100" layout="column">
+        <span class="md-headline">Become King of the Hill</span>
+        <sc-player-details player="ctrl.koth"></sc-player-details>
+    </div>
+
+    <div ng-if="ctrl.koth" flex="50" flex-sm="100" flex-xs="100" layout="column">
+        <span class="md-headline">Suggested Opponents</span>
+        <md-card>
+            <sc-player players="ctrl.opponents" show-score="true"></sc-player>
+        </md-card>
     </div>
 </div>
+
+<md-toolbar class="md-accent md-hue-2 md-whiteframe-z1">
+    <h4 class="md-toolbar-tools">
+        Find People To Play With
+    </h4>
+</md-toolbar>
+<sc-find-matches include-players="[ctrl.player]"></sc-find-matches>
+
+<md-toolbar class="md-accent md-hue-2 md-whiteframe-z1">
+    <h4 class="md-toolbar-tools">
+        Your Stats
+    </h4>
+</md-toolbar>
+<sc-player-stats player="ctrl.player"></sc-player-stats>

@@ -1,0 +1,81 @@
+<div ng-if="player == null || !player.stats" layout="row" layout-sm="column" layout-align="space-around">
+    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+</div>
+
+<div ng-if="player && player.stats" layout="row">
+    <div flex="30" flex-sm="100" flex-xs="100" layout="column">
+        <sc-player-details player="player"></sc-player-details>
+    </div>
+    <div flex="30" flex-sm="100" flex-xs="100" layout="column">
+        <md-card>
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">Game Stats</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <md-list-item>
+                    <p>League</p>
+                    <div class="md-secondary">{{ player.league }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Games Won</p>
+                    <div class="md-secondary">{{ player.games_won }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Games Lost</p>
+                    <div class="md-secondary">{{ player.games_lost }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Games Played</p>
+                    <div class="md-secondary">{{ player.games_played }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Ratio</p>
+                    <div class="md-secondary">{{ player.ratio | number:2 }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Longest Win Streak</p>
+                    <div class="md-secondary">{{ player.stats.longest_streak }} games</div>
+                </md-list-item>
+            </md-card-content>
+        </md-card>
+    </div>
+    <div flex="40" flex-sm="100" flex-xs="100" layout="column">
+        <md-card>
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">Player Stats</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <md-list-item>
+                    <p>Joined</p>
+                    <div class="md-secondary">{{ player.created | date:"mediumDate" }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Average Game Length</p>
+                    <div class="md-secondary">{{ player.stats.average_game_length }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Most Played Map</p>
+                    <div class="md-secondary">{{ player.stats.most_played_map }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Map With Most Wins</p>
+                    <div class="md-secondary">{{ player.stats.favourite_map }}</div>
+                </md-list-item>
+                <md-list-item>
+                    <p>Race With Most Wins</p>
+                    <div class="md-secondary">{{ player.stats.favourite_race }}</div>
+                </md-list-item>
+                <md-list-item ng-if="ctrl.player.stats.nemesis">
+                    <p>Nemesis</p>
+                    <div class="md-secondary">
+                        <sc-player players="player.stats.nemesis"></sc-player>
+                    </div>
+                </md-list-item>
+            </md-card-content>
+        </md-card>
+    </div>
+</div>

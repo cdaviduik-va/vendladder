@@ -4,7 +4,8 @@ angular.module('starcraft2')
     return {
         scope: {
             players: '=',
-            disabled: '='
+            disabled: '=',
+            showScore: '='
         },
         templateUrl: '/static/app/components/player/playerDirective.html',
         restrict: 'E',

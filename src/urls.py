@@ -47,11 +47,14 @@ ROUTES = [
 
     # SC2 match resource
     Route('/sc2/api/match', handler='app.sc2.views.api.MatchResource'),
+    Route('/sc2/api/match/suggested', handler='app.sc2.views.api.MatchResource:query_suggested'),
+    Route('/sc2/api/match/forPlayer/<battle_net_name>', handler='app.sc2.views.api.MatchResource:query_for_player'),
     Route('/sc2/api/match/<action>', handler='app.sc2.views.api.MatchResource'),
 
     # SC2 player resource
     Route('/sc2/api/player', handler='app.sc2.views.api.PlayerResource'),
-    Route('/sc2/api/player/getAuthed', handler='app.sc2.views.api.PlayerResource:get_authed', methods=['GET']),
+    Route('/sc2/api/player/getAuthed', handler='app.sc2.views.api.PlayerResource:get_authed'),
+    Route('/sc2/api/player/queryOpponentsForPlayer/<battle_net_name>', handler='app.sc2.views.api.PlayerResource:query_opponents_for_player'),
     Route('/sc2/api/player/<battle_net_name>', handler='app.sc2.views.api.PlayerResource'),
 
     #General

@@ -6,7 +6,8 @@ angular.module('starcraft2')
     return $resource(baseUrl + ':battleNetName',
         {battleNetName: '@battle_net_name'},
         {
-            getAuthed: {url: baseUrl + 'getAuthed'}
+            getAuthed: {url: baseUrl + 'getAuthed'},
+            queryOpponentsForPlayer: {url: baseUrl + 'queryOpponentsForPlayer/:battleNetName', method: 'GET', isArray: true},
         }
     );
 });
