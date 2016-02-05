@@ -1,77 +1,117 @@
-/* line 6, ../scss/sc2ng.scss */
+/* line 7, ../scss/sc2ng.scss */
+.gray {
+  color: #f5f5f5;
+}
+
+/* line 11, ../scss/sc2ng.scss */
+.green {
+  color: #b9f6ca;
+}
+
+/* line 15, ../scss/sc2ng.scss */
+.dark-green {
+  color: #00cd4b;
+}
+
+/* line 19, ../scss/sc2ng.scss */
+.yellow {
+  color: #ffff8d;
+}
+
+/* line 23, ../scss/sc2ng.scss */
+.blue {
+  color: #84ffff;
+}
+
+/* line 27, ../scss/sc2ng.scss */
+.purple {
+  color: #b388ff;
+}
+
+/* line 31, ../scss/sc2ng.scss */
+.red {
+  color: #ff8a80;
+}
+
+/* line 35, ../scss/sc2ng.scss */
+.dark-red {
+  color: #ff4a40;
+}
+
+/* line 39, ../scss/sc2ng.scss */
 body {
   color: #616161;
 }
 
-/* line 10, ../scss/sc2ng.scss */
+/* line 43, ../scss/sc2ng.scss */
 header {
   text-align: center;
 }
 
-/* line 14, ../scss/sc2ng.scss */
+/* line 47, ../scss/sc2ng.scss */
 ui-view {
   background-color: #f2f2f2;
   color: #616161;
 }
 
-/* line 19, ../scss/sc2ng.scss */
+/* line 52, ../scss/sc2ng.scss */
 .md-sidenav-left {
   height: 100%;
 }
-/* line 23, ../scss/sc2ng.scss */
+/* line 56, ../scss/sc2ng.scss */
 .md-sidenav-left .selected {
   background-color: #eee;
 }
-/* line 27, ../scss/sc2ng.scss */
+/* line 60, ../scss/sc2ng.scss */
 .md-sidenav-left a {
   margin: 0;
 }
 
-/* line 32, ../scss/sc2ng.scss */
+/* line 65, ../scss/sc2ng.scss */
 md-list-item.md-2-line .md-list-item-text p {
   color: rgba(0, 0, 0, 0.54);
 }
 
-/* line 36, ../scss/sc2ng.scss */
+/* line 69, ../scss/sc2ng.scss */
 .md-table md-list-item {
   padding: 0;
 }
 
-/* line 40, ../scss/sc2ng.scss */
+/* line 73, ../scss/sc2ng.scss */
 md-card {
   color: #212121;
 }
-/* line 43, ../scss/sc2ng.scss */
+/* line 76, ../scss/sc2ng.scss */
 md-card md-card-title {
   flex: none !important;
 }
 
-/* line 48, ../scss/sc2ng.scss */
+/* line 81, ../scss/sc2ng.scss */
 md-list-item.md-2-line, md-list-item.md-2-line > .md-no-style {
   min-height: auto;
 }
 
-/* line 52, ../scss/sc2ng.scss */
+/* line 85, ../scss/sc2ng.scss */
 md-radio-group.md-default-theme.md-primary .md-checked:not([disabled]) .md-ink-ripple, md-radio-group.md-primary .md-checked:not([disabled]) .md-ink-ripple, md-radio-group.md-default-theme .md-checked:not([disabled]).md-primary .md-ink-ripple, md-radio-group .md-checked:not([disabled]).md-primary .md-ink-ripple {
   color: rgba(33, 150, 243, 0.87);
 }
 
-/* line 56, ../scss/sc2ng.scss */
+/* line 89, ../scss/sc2ng.scss */
 .md-table {
   background: #fff;
 }
-/* line 59, ../scss/sc2ng.scss */
+/* line 92, ../scss/sc2ng.scss */
 .md-table .md-head md-checkbox {
   display: none;
 }
 
-/* line 64, ../scss/sc2ng.scss */
+/* line 97, ../scss/sc2ng.scss */
 .koth-heading {
   color: #212121;
   text-align: center;
 }
 
-/* line 69, ../scss/sc2ng.scss */
+/* line 102, ../scss/sc2ng.scss */
 sc-matches {
   padding: 0 !important;
 }

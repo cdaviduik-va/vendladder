@@ -5,6 +5,11 @@
             <h3>{{ player.battle_net_name }}</h3>
             <p>{{ player.name }}</p>
         </div>
-        <div class="md-secondary" ng-if="showScore">{{ player.score }}</div>
+        <div class="md-secondary" ng-if="showScore">
+            {{ player.score }}
+            <span ng-if="diffWithScore" ng-class="{'dark-red': scoreDiff(player) < 0, 'dark-green': scoreDiff(player) >= 0}">
+                (<span ng-if="scoreDiff(player) > 0">+</span>{{ scoreDiff(player) }})
+            </span>
+        </div>
     </md-list-item>
 </div>

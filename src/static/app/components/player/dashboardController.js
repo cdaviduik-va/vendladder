@@ -18,7 +18,9 @@ angular.module('starcraft2')
         // add stats
         PlayerFactory.get({battleNetName: self.player.battle_net_name}, function(player) {
             self.player = player;
-            self.nemesis = PlayerFactory.get({battleNetName: self.player.stats.nemesis.battle_net_name});
+            if (self.player.stats.nemesis) {
+                self.nemesis = PlayerFactory.get({battleNetName: self.player.stats.nemesis.battle_net_name});
+            }
         });
 
         self.pMatches = MatchFactory.queryForPlayer({battleNetName: self.player.battle_net_name}, function(data) {

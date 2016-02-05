@@ -5,7 +5,8 @@ angular.module('starcraft2')
         scope: {
             players: '=',
             disabled: '=',
-            showScore: '='
+            showScore: '=',
+            diffWithScore: '='
         },
         templateUrl: '/static/app/components/player/playerDirective.html',
         restrict: 'E',
@@ -16,6 +17,9 @@ angular.module('starcraft2')
             }
             $scope.goToDetails = function(player) {
                 $state.transitionTo('nav.playerDetails', {battleNetName: player.battle_net_name});
+            }
+            $scope.scoreDiff = function(player) {
+                return player.score - $scope.diffWithScore;
             }
         }
     }

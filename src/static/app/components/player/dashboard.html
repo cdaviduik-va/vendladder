@@ -28,7 +28,7 @@
     <div ng-if="ctrl.opponents" flex="50" flex-sm="100" flex-xs="100" layout="column">
         <span class="md-headline">Suggested Opponents</span>
         <md-card>
-            <sc-player players="ctrl.opponents" show-score="true"></sc-player>
+            <sc-player players="ctrl.opponents" show-score="true" diff-with-score="ctrl.player.score"></sc-player>
         </md-card>
     </div>
 </div>
