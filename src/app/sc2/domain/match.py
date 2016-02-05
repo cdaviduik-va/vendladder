@@ -111,12 +111,21 @@ def lookup_games(limit=None):
     """ Return a list of games. """
     return GameModel.lookup_all(limit=limit)
 
+def log_time_diff(start_time):
+    logging.debug('--- %s seconds ---', (time.time() - start_time))
 
 def get_suggested_matches(team_size=DEFAULT_TEAM_SIZE, include_players=None, exclude_players=None, ignore_open=False, limit=20):
     """
     Compile list of players this season who have played least number of games then pair them up to
     create teams with a similar average score.
     """
+    start_time = time.time()
+    logging.debug('GETTING SUGGESTED MATCHES')
+    logging.debug('TEAM SIZE: %d', team_size)
+    logging.debug('INCLUDE PLAYERS: %s', include_players)
+    logging.debug('EXCLUDE PLAYERS: %s', exclude_players)
+    logging.debug('IGNORE OPEN: %s', str(ignore_open))
+
     player_ranks = PlayerRankModel.lookup_for_current_season()
     if not player_ranks:
         return []
@@ -138,25 +147,34 @@ def get_suggested_matches(team_size=DEFAULT_TEAM_SIZE, include_players=None, exc
         if player_rank.battle_net_name in exclude_players:
             continue
 
-        logging.debug('Player rank last game played')
-        logging.debug(player_rank.last_2v2_game_played)
-
         valid_player_ranks.append(player_rank)
 
     player_ranks = sorted(valid_player_ranks, key=lambda player_rank: player_rank.get_last_game_played(team_size=team_size))
 
-    all_teams = [team for team in itertools.combinations(player_ranks, team_size)]
-    logging.debug('Number of teams: %d', len(all_teams))
-    all_matches = [match for match in itertools.combinations(all_teams, 2)]
-    logging.debug('Number of matches: %d', len(all_matches))
+    def avg(player_ranks):
+        return sum([player_rank.score for player_rank in player_ranks]) / len(player_ranks)
 
-    logging.debug('Include Players: ' + str(include_players))
-    logging.debug('Exclude Players: ' + str(exclude_players))
+    all_teams = [team for team in itertools.combinations(player_ranks, team_size)
+                 if len(set([pr.battle_net_name for pr in team])) == len(team)]
+    logging.debug('Number of teams: %d', len(all_teams))
+    log_time_diff(start_time)
+
+    all_matches = [SuggestedMatch(t1, t2) for t1, t2 in itertools.combinations(all_teams, 2)]
+    all_matches = sorted(all_matches, key=lambda match: match.score_diff)
+
+    logging.debug('Number of matches: %d', len(all_matches))
+    log_time_diff(start_time)
+
+    # we only need a handful of matches so grabbing the first 1000 with the smalled score diff should be more than enough
+    all_matches = all_matches[:1000]
 
     potential_matches = []
-    for team1, team2 in all_matches:
+    for match in all_matches:
+        team1 = match.team1
+        team2 = match.team2
         team1_names = [player_rank.battle_net_name for player_rank in team1]
         team2_names = [player_rank.battle_net_name for player_rank in team2]
+
         if set(team1_names) & set(team2_names):
             # skip any matches where same player is on both team
             continue
@@ -165,11 +183,11 @@ def get_suggested_matches(team_size=DEFAULT_TEAM_SIZE, include_players=None, exc
             # skip teams if players are not in "include" list
             continue
 
-        match = SuggestedMatch([player_rank for player_rank in team1], [player_rank for player_rank in team2])
         potential_matches.append(match)
 
     potential_matches = sorted(potential_matches, key=lambda match: (match.score_diff, match.average_time_since_last_game))
     logging.debug('Number of potential matches: %d', len(potential_matches))
+    log_time_diff(start_time)
     return potential_matches[:limit]
 
 
@@ -181,14 +199,26 @@ class SuggestedMatch(object):
         self.team1 = team1
         self.team2 = team2
         self.season_id = self.team1[0].season_id
-        self.team1_average_score = sum([player_rank.score for player_rank in self.team1]) / len(self.team1)
-        self.team2_average_score = sum([player_rank.score for player_rank in self.team2]) / len(self.team1)
-        self.average_games_played = sum([player_rank.games_played for player_rank in self.team1 + self.team2]) / len(self.team1 + self.team2)
         self.score_diff = abs(self.team1_average_score - self.team2_average_score)
+    @property
+    def team1_average_score(self):
+        return sum([player_rank.score for player_rank in self.team1]) / len(self.team1)
+
+    @property
+    def team2_average_score(self):
+        return sum([player_rank.score for player_rank in self.team2]) / len(self.team2)
+
+    @property
+    def average_games_played(self):
+        return sum([player_rank.games_played for player_rank in self.team1 + self.team2]) / len(self.team1 + self.team2)
+
+    @property
+    def average_time_since_last_game(self):
         last_games_played = [player_rank.last_game_played for player_rank in self.team1 + self.team2 if player_rank.last_game_played]
-        self.average_time_since_last_game = 0
+        average_time_since_last_game = 0
         if len(last_games_played) > 0:
-            self.average_time_since_last_game = sum([time.mktime(last_game_played.timetuple()) for last_game_played in last_games_played]) / len(last_games_played)
+            average_time_since_last_game = sum([time.mktime(last_game_played.timetuple()) for last_game_played in last_games_played]) / len(last_games_played)
+        return average_time_since_last_game
 
     def to_dict(self):
         team1_battle_net_names = [player_rank.battle_net_name for player_rank in self.team1]
