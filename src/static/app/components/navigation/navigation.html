@@ -13,7 +13,7 @@
                 <p>Dashboard</p>
             </md-list-item>
             <md-list-item ui-sref="nav.koth" ui-sref-active="selected">
-                <md-icon>star</md-icon>
+                <md-icon>people</md-icon>
                 <p>King of the Hill</p>
             </md-list-item>
             <md-list-item ui-sref="nav.matches" ui-sref-active="selected">
@@ -29,6 +29,11 @@
                 <md-list-item ui-sref="nav.upload" ui-sref-active="selected">
                     <md-icon>backup</md-icon>
                     <p>UPLOAD A REPLAY</p>
+                </md-list-item>
+                <md-divider></md-divider>
+                <md-list-item ng-click="navCtrl.navigateTo(navCtrl.authLinks.logout)">
+                    <md-icon>clear</md-icon>
+                    <p>LOGOUT</p>
                 </md-list-item>
             </div>
             <md-divider></md-divider>
@@ -49,7 +54,9 @@
             <h1 class="md-toolbar-tools">{{ navCtrl.pageTitle }}</h1>
             <span flex></span>
             <md-button ng-if="!navCtrl.user" ng-click="navCtrl.navigateTo(navCtrl.authLinks.login)">Login</md-button>
-            <md-button ng-if="navCtrl.user" ng-click="navCtrl.navigateTo(navCtrl.authLinks.logout)">Logout</md-button>
+            <md-button ng-if="navCtrl.player" class="md-toolbar-tools" style="width: auto;" ng-click="navCtrl.goToPlayerDetails(navCtrl.player)">
+                <md-icon>star</md-icon> {{ navCtrl.player.score }}
+            </md-button>
         </md-toolbar>
         <md-content md-scroll-y layout="column" flex flex-sm="noshrink" flex-xs="noshrink">
             <ui-view layout-padding flex="noshrink"></ui-view>

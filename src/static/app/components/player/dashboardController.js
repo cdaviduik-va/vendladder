@@ -5,21 +5,19 @@ angular.module('starcraft2')
     self.player = null;
     self.pMatches = null;
     self.matches = null;
+    self.includePlayers = [];
 
     PlayerFactory.getAuthed(function(player) {
         self.player = player;
+        self.includePlayers.push(self.player);
 
         // get suggested 1v1 opponents
-        self.opponents = PlayerFactory.queryOpponentsForPlayer({battleNetName: self.player.battle_net_name}, function(data) {
-            console.log('opponents')
-            console.log(data)
-        });
-
+        self.opponents = PlayerFactory.queryOpponentsForPlayer({battleNetName: self.player.battle_net_name});
         self.koth = PlayerFactory.get({battleNetName: KingOfTheHill[self.player.league.toLowerCase()]});
 
+        // add stats
         PlayerFactory.get({battleNetName: self.player.battle_net_name}, function(player) {
             self.player = player;
-
             self.nemesis = PlayerFactory.get({battleNetName: self.player.stats.nemesis.battle_net_name});
         });
 

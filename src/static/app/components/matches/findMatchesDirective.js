@@ -4,7 +4,9 @@ angular.module('starcraft2')
     return {
         scope: {
             allowCreateMatch: '=',
-            includePlayers: '='
+            includePlayers: '=',
+            excludePlayers: '=',
+            ignoreOpen: '='
         },
         templateUrl: '/static/app/components/matches/findMatchesDirective.html',
         restrict: 'E',
@@ -22,14 +24,13 @@ function FindMatchesController(PlayerFactory, MatchFactory, $mdDialog) {
     self.includePlayers = self.includePlayers || [];
     self.excludePlayers = self.excludePlayers || [];
     self.isCreatingMatch = false;
-    self.ignoreOpen = false;
 
     self.queryPlayers = queryPlayers;
     self.querySuggestedMatches = querySuggestedMatches;
     self.createMatch = createMatch;
 
     PlayerFactory.query(function(players) {
-        self.players = players
+        self.players = players;
     });
 
     function queryPlayers(query) {

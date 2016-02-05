@@ -25,7 +25,7 @@
         <sc-player-details player="ctrl.koth"></sc-player-details>
     </div>
 
-    <div ng-if="ctrl.koth" flex="50" flex-sm="100" flex-xs="100" layout="column">
+    <div ng-if="ctrl.opponents" flex="50" flex-sm="100" flex-xs="100" layout="column">
         <span class="md-headline">Suggested Opponents</span>
         <md-card>
             <sc-player players="ctrl.opponents" show-score="true"></sc-player>
@@ -38,11 +38,11 @@
         Find People To Play With
     </h4>
 </md-toolbar>
-<sc-find-matches include-players="[ctrl.player]"></sc-find-matches>
+<sc-find-matches include-players="ctrl.includePlayers" ignore-open="true"></sc-find-matches>
 
 <md-toolbar class="md-accent md-hue-2 md-whiteframe-z1">
     <h4 class="md-toolbar-tools">
-        Your Stats
+        Your Stats This Season
     </h4>
 </md-toolbar>
 <sc-player-stats player="ctrl.player"></sc-player-stats>
