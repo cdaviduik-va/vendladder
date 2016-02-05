@@ -8,7 +8,7 @@
         </header>
         <md-list>
             <sc-player ng-if="navCtrl.player" players="navCtrl.player"></sc-player>
-            <md-list-item ui-sref="nav.dashboard" ui-sref-active="selected">
+            <md-list-item ng-if="navCtrl.player" ui-sref="nav.dashboard" ui-sref-active="selected">
                 <md-icon>dashboard</md-icon>
                 <p>Dashboard</p>
             </md-list-item>
