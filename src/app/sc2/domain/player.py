@@ -57,8 +57,8 @@ def update_player(battle_net_name, **kwargs):
 
 
 def update_player_ranks(winning_player_ranks, losing_player_ranks):
-    average_winning_score = sum([w_rank.score for w_rank in winning_player_ranks])
-    average_losing_score = sum([l_rank.score for l_rank in losing_player_ranks])
+    average_winning_score = sum([w_rank.score for w_rank in winning_player_ranks]) / len(winning_player_ranks)
+    average_losing_score = sum([l_rank.score for l_rank in losing_player_ranks]) / len(losing_player_ranks)
 
     new_winning_score, new_losing_score = calculate_elo_rank(average_winning_score, average_losing_score)
     win_diff = new_winning_score - average_winning_score
