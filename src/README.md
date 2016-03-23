@@ -4,6 +4,9 @@ This is the code repository for the site found at http://foosball.vendasta.com.
 It uses Google's App Engine and Python, with Jinja2 templating.
 
 # VendAsta SC2 Ladder
+foos 10-3
+- Added a Rules and Resources page
+
 foos 10-2
 - Improved apis to be more restful
 - Added api to get matches for a player
