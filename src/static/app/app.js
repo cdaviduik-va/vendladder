@@ -9,10 +9,12 @@ angular
         'md.data.table'
     ])
     .constant('KingOfTheHill', {
+        captain: null,
         sergeant: 'Edindya',
         corporal: 'FutureNights',
         recruit: 'Ferrous'
     })
+    .constant('DefaultPlayerImageUrl', 'https://www.vendasta.com/__v965/static/images/team/user-icon.jpg')
     .config(function($stateProvider, $urlRouterProvider, $mdThemingProvider) {
 
         $stateProvider
@@ -21,6 +23,18 @@ angular
                 abstract: true,
                 templateUrl: '/static/app/components/navigation/navigation.html',
                 controller: 'NavigationController as navCtrl'
+            })
+            .state('nav.rules', {
+                url: '/rules',
+                templateUrl: '/static/app/components/general/rules.html',
+                controller: 'RulesController as ctrl',
+                title: 'Rules & Etiquette'
+            })
+            .state('nav.resources', {
+                url: '/resources',
+                templateUrl: '/static/app/components/general/resources.html',
+                controller: 'ResourcesController as ctrl',
+                title: 'Resources'
             })
             .state('nav.dashboard', {
                 url: '/dashboard',
@@ -31,7 +45,7 @@ angular
             .state('nav.koth', {
                 url: '/koth',
                 templateUrl: '/static/app/components/ladder/koth.html',
-                controller: 'KothController as kothCtrl',
+                controller: 'KothController as ctrl',
                 title: 'King of the Hill'
             })
             .state('nav.matches', {

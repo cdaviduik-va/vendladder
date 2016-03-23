@@ -8,24 +8,24 @@
         </header>
         <md-list>
             <sc-player ng-if="navCtrl.player" players="navCtrl.player"></sc-player>
-            <md-list-item ng-if="navCtrl.player" ui-sref="nav.dashboard" ui-sref-active="selected">
-                <md-icon>dashboard</md-icon>
-                <p>Dashboard</p>
-            </md-list-item>
-            <md-list-item ui-sref="nav.koth" ui-sref-active="selected">
-                <md-icon>people</md-icon>
-                <p>King of the Hill</p>
-            </md-list-item>
-            <md-list-item ui-sref="nav.matches" ui-sref-active="selected">
-                <md-icon>group</md-icon>
-                <p>MATCHES</p>
-            </md-list-item>
-            <md-list-item ui-sref="nav.ladder" ui-sref-active="selected">
-                <md-icon>list</md-icon>
-                <p>LADDER</p>
-            </md-list-item>
-            <md-divider></md-divider>
             <div ng-if="navCtrl.user">
+                <md-list-item ng-if="navCtrl.player" ui-sref="nav.dashboard" ui-sref-active="selected">
+                    <md-icon>dashboard</md-icon>
+                    <p>Dashboard</p>
+                </md-list-item>
+                <md-list-item ui-sref="nav.koth" ui-sref-active="selected">
+                    <md-icon>people</md-icon>
+                    <p>King of the Hill</p>
+                </md-list-item>
+                <md-list-item ui-sref="nav.matches" ui-sref-active="selected">
+                    <md-icon>group</md-icon>
+                    <p>MATCHES</p>
+                </md-list-item>
+                <md-list-item ui-sref="nav.ladder" ui-sref-active="selected">
+                    <md-icon>list</md-icon>
+                    <p>LADDER</p>
+                </md-list-item>
+                <md-divider></md-divider>
                 <md-list-item ui-sref="nav.upload" ui-sref-active="selected">
                     <md-icon>backup</md-icon>
                     <p>UPLOAD A REPLAY</p>
@@ -35,9 +35,18 @@
                     <md-icon>clear</md-icon>
                     <p>LOGOUT</p>
                 </md-list-item>
+                <md-divider></md-divider>
+                <md-list-item ui-sref="nav.rules" ui-sref-active="selected">
+                    <md-icon>favorite</md-icon>
+                    <p>Rules & Etiquette</p>
+                </md-list-item>
+                <md-list-item ui-sref="nav.resources" ui-sref-active="selected">
+                    <md-icon>help</md-icon>
+                    <p>Resources</p>
+                </md-list-item>
             </div>
-            <md-divider></md-divider>
             <div ng-if="navCtrl.user && navCtrl.user.is_admin">
+                <md-divider></md-divider>
                 <md-subheader class="md-no-sticky">Admin</md-subheader>
                 <md-list-item ui-sref="nav.adminCreateMatch" ui-sref-active="selected">
                     <md-icon>create</md-icon>
@@ -59,7 +68,11 @@
             </md-button>
         </md-toolbar>
         <md-content md-scroll-y layout="column" flex flex-sm="noshrink" flex-xs="noshrink">
-            <ui-view layout-padding flex="noshrink"></ui-view>
+            <div ng-if="!navCtrl.user" layout-padding flex="noshrink">
+                <h1 class="md-no-sticky md-display-1">You are almost there!</h1>
+                <md-button ng-click="navCtrl.navigateTo(navCtrl.authLinks.login)" class="md-primary md-raised">Login</md-button>
+            </div>
+            <ui-view ng-if="navCtrl.user" layout-padding flex="noshrink"></ui-view>
         </md-content>
     </div>
 </div>

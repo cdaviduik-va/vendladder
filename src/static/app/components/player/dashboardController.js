@@ -3,8 +3,8 @@ angular.module('starcraft2')
 .controller('DashboardController', function($stateParams, KingOfTheHill, PlayerFactory, MatchFactory) {
     var self = this;
     self.player = null;
-    self.pMatches = null;
-    self.matches = null;
+    //self.pMatches = null;
+    //self.matches = null;
     self.includePlayers = [];
 
     PlayerFactory.getAuthed(function(player) {
@@ -13,7 +13,10 @@ angular.module('starcraft2')
 
         // get suggested 1v1 opponents
         self.opponents = PlayerFactory.queryOpponentsForPlayer({battleNetName: self.player.battle_net_name});
-        self.koth = PlayerFactory.get({battleNetName: KingOfTheHill[self.player.league.toLowerCase()]});
+        var kothName = KingOfTheHill[self.player.league.toLowerCase()];
+        if (kothName) {
+            self.koth = PlayerFactory.get({battleNetName: kothName});
+        }
 
         // add stats
         PlayerFactory.get({battleNetName: self.player.battle_net_name}, function(player) {
@@ -23,8 +26,8 @@ angular.module('starcraft2')
             }
         });
 
-        self.pMatches = MatchFactory.queryForPlayer({battleNetName: self.player.battle_net_name}, function(data) {
-            self.matches = data;
-        }).$promise;
+        //self.pMatches = MatchFactory.queryForPlayer({battleNetName: self.player.battle_net_name}, function(data) {
+        //    self.matches = data;
+        //}).$promise;
     });
 });
