@@ -4,7 +4,8 @@ Match domain module
 import time
 import itertools
 import logging
-from app.sc2.domain.player import update_player_ranks
+
+from app.sc2.domain.player import update_player_ranks, prettify_name
 from app.sc2.domain.season import lookup_current_season
 from app.sc2.models.game import GameModel
 from app.sc2.models.match import MatchModel
@@ -29,6 +30,7 @@ def create_match(team1, team2):
             sorted(team2) == sorted(match.team2_battle_net_names):
             raise ValueError('A match already exists with the team: ' + '& '.join(match.team1_battle_net_names) + ' vs. ' + '& '.join(match.team2_battle_net_names))
 
+    # TODO: put slack notification send here
     season_id = lookup_current_season(id_only=True)
     key = MatchModel.generate_key(all_players, season_id)
     match = MatchModel(key=key, team1_battle_net_names=team1, team2_battle_net_names=team2)
@@ -234,3 +236,16 @@ class SuggestedMatch(object):
             'average_games_played': self.average_games_played,
             'score_diff': self.score_diff
         }
+
+
+def get_match_player_string_from_match(match):
+    team1_names = [prettify_name(n) for n in match.team1_names]
+    team2_names = [prettify_name(n) for n in match.team2_names]
+
+    match_string = '{p1} & {p2} @ {p3} & {p4};'.format(
+        p1=team1_names[0],
+        p2=team1_names[1],
+        p3=team2_names[0],
+        p4=team2_names[1],
+    )
+    return match_string

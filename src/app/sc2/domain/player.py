@@ -214,3 +214,9 @@ class PlayerDetails(object):
         player_rank = PlayerRankModel.get_or_create(player.battle_net_name, season_id)
         is_participating = season_id in player.seasons_participated
         return PlayerDetails(player, player_rank, is_participating=is_participating)
+
+
+def prettify_name(name):
+    names = name.strip().split(' ')
+    formatted_name = '{first} {last}'.format(first=names[0], last=names[1][0]) if len(names) == 2 else names[0]
+    return formatted_name
