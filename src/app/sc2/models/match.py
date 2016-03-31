@@ -80,4 +80,4 @@ class MatchModel(BaseModel):
     def _post_put_hook(self, future):
         future.check_success()
         # TODO: get channel id for starcraft-2 channel
-        update_channel_topic_with_open_games('asdf')
+        # update_channel_topic_with_open_games('asdf')

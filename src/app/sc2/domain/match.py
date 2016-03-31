@@ -13,6 +13,7 @@ from app.sc2.models.player import PlayerRankModel
 
 DEFAULT_TEAM_SIZE = 2
 
+
 def create_match(team1, team2):
     """
     Create a new match for the current season where each team is a list of player battle_net_names.
@@ -25,9 +26,9 @@ def create_match(team1, team2):
     open_matches = lookup_open_matches()
     for match in open_matches:
         if sorted(team1) == sorted(match.team1_battle_net_names) or \
-            sorted(team1) == sorted(match.team1_battle_net_names) or \
-            sorted(team2) == sorted(match.team1_battle_net_names) or \
-            sorted(team2) == sorted(match.team2_battle_net_names):
+                        sorted(team1) == sorted(match.team1_battle_net_names) or \
+                        sorted(team2) == sorted(match.team1_battle_net_names) or \
+                        sorted(team2) == sorted(match.team2_battle_net_names):
             raise ValueError('A match already exists with the team: ' + '& '.join(match.team1_battle_net_names) + ' vs. ' + '& '.join(match.team2_battle_net_names))
 
     # TODO: put slack notification send here
@@ -113,8 +114,10 @@ def lookup_games(limit=None):
     """ Return a list of games. """
     return GameModel.lookup_all(limit=limit)
 
+
 def log_time_diff(start_time):
     logging.debug('--- %s seconds ---', (time.time() - start_time))
+
 
 def get_suggested_matches(team_size=DEFAULT_TEAM_SIZE, include_players=None, exclude_players=None, ignore_open=False, limit=20):
     """
@@ -193,6 +196,19 @@ def get_suggested_matches(team_size=DEFAULT_TEAM_SIZE, include_players=None, exc
     return potential_matches[:limit]
 
 
+def get_match_player_string_from_match(match):
+    team1_names = [prettify_name(n) for n in match.team1_names]
+    team2_names = [prettify_name(n) for n in match.team2_names]
+
+    match_string = '{p1} & {p2} @ {p3} & {p4}'.format(
+        p1=team1_names[0],
+        p2=team1_names[1],
+        p3=team2_names[0],
+        p4=team2_names[1],
+    )
+    return match_string
+
+
 class SuggestedMatch(object):
     """ Represents a potential match between two teams. """
 
@@ -236,16 +252,3 @@ class SuggestedMatch(object):
             'average_games_played': self.average_games_played,
             'score_diff': self.score_diff
         }
-
-
-def get_match_player_string_from_match(match):
-    team1_names = [prettify_name(n) for n in match.team1_names]
-    team2_names = [prettify_name(n) for n in match.team2_names]
-
-    match_string = '{p1} & {p2} @ {p3} & {p4};'.format(
-        p1=team1_names[0],
-        p2=team1_names[1],
-        p3=team2_names[0],
-        p4=team2_names[1],
-    )
-    return match_string
