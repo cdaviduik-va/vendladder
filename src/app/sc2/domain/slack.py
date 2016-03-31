@@ -7,6 +7,7 @@ from app.sc2.domain.match import lookup_open_matches, get_vs_string_from_match
 from app.sc2.domain.player import prettify_name
 
 
+# TODO: hook this up when auth stuff figured out
 def update_channel_topic_with_open_games(channel_id):
     """
     Sets the channel topic to the currently open games
