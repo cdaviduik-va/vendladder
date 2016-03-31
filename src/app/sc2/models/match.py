@@ -80,4 +80,4 @@ class MatchModel(BaseModel):
         future.check_success()
         from app.sc2.domain.slack import update_channel_topic_with_open_games
         # TODO: get channel id for starcraft-2 channel
-        # update_channel_topic_with_open_games('asdf')
+        update_channel_topic_with_open_games('asdf', MatchModel.lookup_open())

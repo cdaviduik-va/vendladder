@@ -5,8 +5,9 @@ import time
 import itertools
 import logging
 
-from app.sc2.domain.player import update_player_ranks, prettify_name
+from app.sc2.domain.player import update_player_ranks
 from app.sc2.domain.season import lookup_current_season
+from app.sc2.domain.slack import alert_match_closed
 from app.sc2.models.game import GameModel
 from app.sc2.models.match import MatchModel
 from app.sc2.models.player import PlayerRankModel
@@ -95,6 +96,7 @@ def close_match(match_id):
     #         match.team2_wins += 1
 
     match.put()
+    alert_match_closed(match)
 
 
 def get_match(match_id, season_id):
@@ -193,19 +195,6 @@ def get_suggested_matches(team_size=DEFAULT_TEAM_SIZE, include_players=None, exc
     logging.debug('Number of potential matches: %d', len(potential_matches))
     log_time_diff(start_time)
     return potential_matches[:limit]
-
-
-def get_vs_string_from_match(match):
-    """ Given a match and returns a formatted string that contains the players"""
-    return get_vs_string_from_names(match.team1_names, match.team2_names)
-
-
-def get_vs_string_from_names(team1, team2):
-    """ Given a list of winners and a list of losers returns a string formatted with the players of the match """
-    team1_names = ' & '.join([prettify_name(n) for n in team1])
-    team2_names = ' & '.join([prettify_name(n) for n in team2])
-    match_string = '{team1} @ {team2}'.format(team1=team1_names, team2=team2_names)
-    return match_string
 
 
 class SuggestedMatch(object):
