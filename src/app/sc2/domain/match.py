@@ -31,7 +31,6 @@ def create_match(team1, team2):
                         sorted(team2) == sorted(match.team2_battle_net_names):
             raise ValueError('A match already exists with the team: ' + '& '.join(match.team1_battle_net_names) + ' vs. ' + '& '.join(match.team2_battle_net_names))
 
-    # TODO: put slack notification send here
     season_id = lookup_current_season(id_only=True)
     key = MatchModel.generate_key(all_players, season_id)
     match = MatchModel(key=key, team1_battle_net_names=team1, team2_battle_net_names=team2)
@@ -197,18 +196,15 @@ def get_suggested_matches(team_size=DEFAULT_TEAM_SIZE, include_players=None, exc
 
 
 def get_vs_string_from_match(match):
+    """ Given a match and returns a formatted string that contains the players"""
     return get_vs_string_from_names(match.team1_names, match.team2_names)
 
 
 def get_vs_string_from_names(team1, team2):
-    team1_names = [prettify_name(n) for n in team1]
-    team2_names = [prettify_name(n) for n in team2]
-    match_string = '{p1} & {p2} @ {p3} & {p4}'.format(
-        p1=team1_names[0],
-        p2=team1_names[1],
-        p3=team2_names[0],
-        p4=team2_names[1],
-    )
+    """ Given a list of winners and a list of losers returns a string formatted with the players of the match """
+    team1_names = ' & '.join([prettify_name(n) for n in team1])
+    team2_names = ' & '.join([prettify_name(n) for n in team2])
+    match_string = '{team1} @ {team2}'.format(team1=team1_names, team2=team2_names)
     return match_string
 
 

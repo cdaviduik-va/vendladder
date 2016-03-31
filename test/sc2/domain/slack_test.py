@@ -58,14 +58,6 @@ class DetermineMatchWinnerLoserTests(TestCase):
         expect = (['Stone Cold', 'Brett Hart'], ['Randy Savage', 'Hulk Hogan'])
         self.assertEqual(expect, slack.determine_match_winner_loser(self.match))
 
-    def test_both_teams_in_losers_when_tied(self):
-        self.match.team1_wins = 1
-        self.match.team2_wins = 1
-        loser_expect = ['Randy Savage', 'Hulk Hogan', 'Stone Cold', 'Brett Hart']
-        winner, loser = slack.determine_match_winner_loser(self.match)
-        self.assertListEqual([], winner)
-        self.assertEqual(loser_expect, loser)
-
     def test_winners_and_losers_is_empty_when_no_matches_played(self):
         self.match.team1_wins = 0
         self.match.team2_wins = 0
