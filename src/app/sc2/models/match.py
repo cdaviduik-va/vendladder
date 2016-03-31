@@ -77,7 +77,7 @@ class MatchModel(BaseModel):
         return "SCII_MatchModel"
 
     def _post_put_hook(self, future):
-        future.check_success()
-        from app.sc2.domain.slack import update_channel_topic_with_open_games
-        # TODO: get channel id for starcraft-2 channel
-        update_channel_topic_with_open_games('asdf', MatchModel.lookup_open())
+        """ post put hook """
+        # future.check_success()
+        # from app.sc2.domain.slack import update_channel_topic_with_open_games
+        # TODO:slack add channel topic setting here

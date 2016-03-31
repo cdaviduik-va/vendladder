@@ -7,7 +7,7 @@ from app.sc2.utils.match_utils import get_vs_string_from_match
 from app.sc2.utils.player_utils import prettify_name
 
 
-# TODO: hook this up when auth stuff figured out
+# TODO:slack hook this up when auth stuff figured out
 def update_channel_topic_with_open_games(channel_id, open_matches):
     """
     Sets the channel topic to the currently open games
