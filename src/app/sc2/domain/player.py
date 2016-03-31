@@ -8,8 +8,8 @@ from google.appengine.ext import ndb
 from app.sc2.domain.season import lookup_current_season
 from app.sc2.models.game import GameModel
 from app.sc2.models.season import SeasonModel
-from app.utils import calculate_elo_rank
 from app.sc2.models.player import PlayerModel, PlayerRankModel, DEFAULT_IMAGE_URL
+from app.utils import calculate_elo_rank
 
 
 def create_player(battle_net_name, real_name=None, vendasta_email=None, score=None):

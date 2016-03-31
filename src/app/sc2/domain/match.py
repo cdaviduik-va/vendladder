@@ -196,10 +196,13 @@ def get_suggested_matches(team_size=DEFAULT_TEAM_SIZE, include_players=None, exc
     return potential_matches[:limit]
 
 
-def get_match_player_string_from_match(match):
-    team1_names = [prettify_name(n) for n in match.team1_names]
-    team2_names = [prettify_name(n) for n in match.team2_names]
+def get_vs_string_from_match(match):
+    return get_vs_string_from_names(match.team1_names, match.team2_names)
 
+
+def get_vs_string_from_names(team1, team2):
+    team1_names = [prettify_name(n) for n in team1]
+    team2_names = [prettify_name(n) for n in team2]
     match_string = '{p1} & {p2} @ {p3} & {p4}'.format(
         p1=team1_names[0],
         p2=team1_names[1],

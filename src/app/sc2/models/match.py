@@ -5,7 +5,6 @@ import hashlib
 
 from google.appengine.ext import ndb
 
-from app.sc2.domain.slack import update_channel_topic_with_open_games
 from app.sc2.models import BaseModel
 from app.sc2.models.player import PlayerModel
 from app.sc2.models.season import SeasonModel
@@ -79,5 +78,6 @@ class MatchModel(BaseModel):
 
     def _post_put_hook(self, future):
         future.check_success()
+        from app.sc2.domain.slack import update_channel_topic_with_open_games
         # TODO: get channel id for starcraft-2 channel
         # update_channel_topic_with_open_games('asdf')
