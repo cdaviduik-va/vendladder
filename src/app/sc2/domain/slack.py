@@ -1,4 +1,5 @@
 """ Slack integration """
+from datetime import datetime
 import logging
 import urllib
 
@@ -88,8 +89,13 @@ def get_message_data(match):
         emoji = ':fallout-thumb:'
     else:
         match_string = get_vs_string_from_match(match)
-        message = 'Due to either inactivity or unforseen circumstances the match between {match} has been ' \
-                  'closed.'.format(match=match_string)
+        date_diff = datetime.now() - match.created
+        if date_diff.days > 13:
+            circumstance = 'inactivity'
+        else:
+            circumstance = 'unforseen circumstances'
+        message = 'Due to {circumstance} the match between {match} has been ' \
+                  'closed.'.format(match=match_string, circumstance=circumstance)
         title = 'Match Closed'
         colour = 'danger'
         emoji = ':brucehrm:'
@@ -128,13 +134,8 @@ def determine_match_winner_loser(match):
 
 
 def get_vs_string_from_match(match):
-    """ Given a match and returns a formatted string that contains the players"""
-    return get_vs_string_from_names(match.team1_names, match.team2_names)
-
-
-def get_vs_string_from_names(team1, team2):
     """ Given a list of winners and a list of losers returns a string formatted with the players of the match """
-    team1_names = ' & '.join([get_pretty_name(n) for n in team1])
-    team2_names = ' & '.join([get_pretty_name(n) for n in team2])
-    match_string = '{team1} @ {team2}'.format(team1=team1_names, team2=team2_names)
+    team1_names = ' & '.join([get_pretty_name(n) for n in match.team1_names])
+    team2_names = ' & '.join([get_pretty_name(n) for n in match.team2_names])
+    match_string = '{team1} vs. {team2}'.format(team1=team1_names, team2=team2_names)
     return match_string
