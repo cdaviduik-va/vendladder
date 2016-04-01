@@ -1,7 +1,9 @@
 """ Slack integration """
+import logging
 import urllib
 
 from google.appengine.api import urlfetch
+from google.appengine.ext import ndb
 
 from app.sc2.domain.player import get_pretty_name
 
@@ -36,7 +38,8 @@ def update_channel_topic_with_open_games(channel_id, open_matches):
     )
 
 
-def alert_match_closed(match):
+@ndb.tasklet
+def alert_match_closed_async(match):
     """
     Send a message to slack when a match is closed
     :param match: the match that was closed
@@ -51,12 +54,22 @@ def alert_match_closed(match):
     info_dict.update(get_message_data(match))
 
     payload = urllib.urlencode(info_dict)
-    urlfetch.fetch(
+
+    rpc = urlfetch.create_rpc()
+    urlfetch.make_fetch_call(
+        rpc,
         'https://hooks.slack.com/services/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',
         payload=payload,
         method=urlfetch.POST,
         headers=headers
     )
+    try:
+        result = yield rpc
+    except Exception as e:
+        # not a huge deal if slack isn't notified, just don't bring down the rest of the request
+        logging.error(e.message)
+        result = None
+    raise ndb.Return(result)
 
 
 def get_message_data(match):

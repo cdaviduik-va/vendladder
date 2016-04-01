@@ -7,7 +7,7 @@ import logging
 
 from app.sc2.domain.player import update_player_ranks
 from app.sc2.domain.season import lookup_current_season
-from app.sc2.domain.slack import alert_match_closed
+from app.sc2.domain.slack import alert_match_closed_async
 from app.sc2.models.game import GameModel
 from app.sc2.models.match import MatchModel
 from app.sc2.models.player import PlayerRankModel
@@ -44,6 +44,7 @@ def close_match(match_id):
     key = MatchModel.build_key(match_id, season_id)
     match = key.get()
     match.is_open = False
+    alerting_future = alert_match_closed_async(match)
 
     if match.team2_wins != match.team1_wins:
         # do not update rank if match was a tie
@@ -96,7 +97,7 @@ def close_match(match_id):
     #         match.team2_wins += 1
 
     match.put()
-    alert_match_closed(match)
+    alerting_future.get_result()
 
 
 def get_match(match_id, season_id):
