@@ -79,5 +79,6 @@ class MatchModel(BaseModel):
     def _post_put_hook(self, future):
         """ post put hook """
         # future.check_success()
+        # if not self.is_open:
         # from app.sc2.domain.slack import update_channel_topic_with_open_games
         # TODO:slack add channel topic setting here

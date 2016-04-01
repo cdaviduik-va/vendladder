@@ -63,30 +63,30 @@ class DetermineMatchWinnerLoserTests(TestCase):
 
 
 class GetMessageDataTests(TestCase):
-    def test_winner_data_returned(self):
-        winners = ['Randy Savage', 'Steve Austin']
-        losers = ['Ric Flair', 'Vince McMahon']
-        match_string = 'Randy S & Steve A @ Ric F & Vince M'
-
+    @mock.patch('app.sc2.models.match.MatchModel.team1_names',
+                new_callable=mock.PropertyMock(return_value=['Randy Savage', 'Steve Austin']))
+    @mock.patch('app.sc2.models.match.MatchModel.team2_names',
+                new_callable=mock.PropertyMock(return_value=['Ric Flair', 'Vince McMahon']))
+    def test_winner_data_returned(self, team2_mock, team1_mock):
         expect = {
             'attachments': [{
                 'color': 'good',
                 'fields': [{
-                    'value': 'Congratulations on the victory Randy S & Steve A!\nBetter luck next time Ric F & Vince M',
+                    'value': 'Congratulations on the victory Randy S & Steve A!\nBetter luck next time Ric F & Vince M.',
                     'title': 'Match Played'
                 }]
             }],
             'icon_emoji': ':fallout-thumb:'
         }
 
-        result = slack.get_message_data(winners, losers, match_string)
+        result = slack.get_message_data(MatchModel(team1_wins=2, team2_wins=1))
         self.assertDictEqual(expect, result)
 
-    def test_closed_data_returned(self):
-        winners = []
-        losers = []
-        match_string = 'Randy S & Steve A @ Ric F & Vince M'
-
+    @mock.patch('app.sc2.models.match.MatchModel.team1_names',
+                new_callable=mock.PropertyMock(return_value=['Randy Savage', 'Steve Austin']))
+    @mock.patch('app.sc2.models.match.MatchModel.team2_names',
+                new_callable=mock.PropertyMock(return_value=['Ric Flair', 'Vince McMahon']))
+    def test_closed_data_returned(self, team2_mock, team1_mock):
         expect = {
             'attachments': [{
                 'color': 'danger',
@@ -99,5 +99,28 @@ class GetMessageDataTests(TestCase):
             'icon_emoji': ':brucehrm:'
         }
 
-        result = slack.get_message_data(winners, losers, match_string)
+        result = slack.get_message_data(MatchModel(team1_wins=0, team2_wins=0))
         self.assertDictEqual(expect, result)
+
+
+class GetVsStringFromNamesTests(TestCase):
+    def test_single_player_match_formats_correctly(self):
+        expect = "Randy S @ Steve A"
+        result = slack.get_vs_string_from_names(['Randy Savage'], ['Steve Austin'])
+        self.assertEqual(expect, result)
+
+    def test_two_player_match_formats_correctly(self):
+        expect = "Randy S & Steve A @ Ric F & Vince M"
+        result = slack.get_vs_string_from_names(['Randy Savage', 'Steve Austin'], ['Ric Flair', 'Vince McMahon'])
+        self.assertEqual(expect, result)
+
+    def test_three_player_match_formats_correctly(self):
+        expect = 'Randy S & Steve A & Undertaker @ Ric F & Vince M & Triple H'
+        result = slack.get_vs_string_from_names(['Randy Savage', 'Steve Austin', 'Undertaker'],
+                                                ['Ric Flair', 'Vince McMahon', ' Triple H'])
+        self.assertEqual(expect, result)
+
+    def test_match_string_works_with_mixed_length_names(self):
+        expect = 'Sting & Hulk H @ Stone C & Undertaker'
+        result = slack.get_vs_string_from_names(['Sting', 'Hulk Hogan'], ['Stone Cold', 'Undertaker'])
+        self.assertEqual(expect, result)

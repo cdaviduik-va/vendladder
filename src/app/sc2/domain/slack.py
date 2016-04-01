@@ -3,8 +3,7 @@ import urllib
 
 from google.appengine.api import urlfetch
 
-from app.sc2.utils.match_utils import get_vs_string_from_match
-from app.sc2.utils.player_utils import prettify_name
+from app.sc2.domain.player import get_pretty_name
 
 
 # TODO:slack hook this up when auth stuff figured out
@@ -45,14 +44,11 @@ def alert_match_closed(match):
     headers = {
         'Content-type': 'application/x-www-form-urlencoded',
     }
-    winner, loser = determine_match_winner_loser(match)
-    match_string = get_vs_string_from_match(match)
-
     info_dict = {
         "fallback": "A match was played/closed",
         "username": "SC2 Bot",
     }
-    info_dict.update(get_message_data(winner, loser, match_string))
+    info_dict.update(get_message_data(match))
 
     payload = urllib.urlencode(info_dict)
     urlfetch.fetch(
@@ -63,19 +59,22 @@ def alert_match_closed(match):
     )
 
 
-def get_message_data(winner, loser, match_string):
+def get_message_data(match):
     """
     Returns a dict of info depending on how the match turned out
     """
-    winner_names = ' & '.join([prettify_name(n) for n in winner])
-    loser_names = ' & '.join([prettify_name(n) for n in loser])
+    winner, loser = determine_match_winner_loser(match)
+    winner_names = ' & '.join([get_pretty_name(n) for n in winner])
+    loser_names = ' & '.join([get_pretty_name(n) for n in loser])
+
     if winner and loser:
-        message = 'Congratulations on the victory {winner}!\nBetter luck next time {loser}'.format(winner=winner_names,
-                                                                                                   loser=loser_names)
+        message = 'Congratulations on the victory {winner}!\nBetter luck next time {loser}.'.format(winner=winner_names,
+                                                                                                    loser=loser_names)
         title = 'Match Played'
         colour = 'good'
         emoji = ':fallout-thumb:'
     else:
+        match_string = get_vs_string_from_match(match)
         message = 'Due to either inactivity or unforseen circumstances the match between {match} has been ' \
                   'closed.'.format(match=match_string)
         title = 'Match Closed'
@@ -113,3 +112,16 @@ def determine_match_winner_loser(match):
         loser = []
 
     return winner, loser
+
+
+def get_vs_string_from_match(match):
+    """ Given a match and returns a formatted string that contains the players"""
+    return get_vs_string_from_names(match.team1_names, match.team2_names)
+
+
+def get_vs_string_from_names(team1, team2):
+    """ Given a list of winners and a list of losers returns a string formatted with the players of the match """
+    team1_names = ' & '.join([get_pretty_name(n) for n in team1])
+    team2_names = ' & '.join([get_pretty_name(n) for n in team2])
+    match_string = '{team1} @ {team2}'.format(team1=team1_names, team2=team2_names)
+    return match_string
