@@ -17,7 +17,7 @@ class AlertMatchClosedOtwTests(TestCase):
         self.testbed.init_urlfetch_stub()
 
         patcher = mock.patch('app.sc2.models.match.MatchModel.team1_names',
-                             new_callable=mock.PropertyMock(return_value=['Conrad', 'Hulk Hogan']))
+                             new_callable=mock.PropertyMock(return_value=['Randy Savage', 'Hulk Hogan']))
 
         self.team1_patcher = patcher.start()
         self.addCleanup(patcher.stop)
