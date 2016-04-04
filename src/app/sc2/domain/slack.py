@@ -92,13 +92,14 @@ def get_message_data(match):
         date_diff = datetime.now() - match.created
         if date_diff.days > 13:
             circumstance = 'inactivity'
+            emoji = ':brucehrm:'
         else:
             circumstance = 'unforseen circumstances'
+            emoji = ':disappoint:'
         message = 'Due to {circumstance} the match between {match} has been ' \
                   'closed.'.format(match=match_string, circumstance=circumstance)
         title = 'Match Closed'
         colour = 'danger'
-        emoji = ':brucehrm:'
 
     return {
         'attachments': [{

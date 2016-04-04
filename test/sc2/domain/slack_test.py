@@ -98,7 +98,7 @@ class GetMessageDataTests(TestCase):
                     'title': 'Match Closed'
                 }]
             }],
-            'icon_emoji': ':brucehrm:'
+            'icon_emoji': ':disappoint:'
         }
 
         result = slack.get_message_data(MatchModel(team1_wins=0, team2_wins=0, created=datetime.now()))
