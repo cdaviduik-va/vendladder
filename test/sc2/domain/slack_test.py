@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 
+from google.appengine.ext import testbed
+
 from app.sc2.domain import slack
 from app.sc2.models.match import MatchModel
 
@@ -7,22 +9,53 @@ import mock
 from unittest import TestCase
 
 
+class AlertMatchClosedOtwTests(TestCase):
+    def setUp(self):
+        super(AlertMatchClosedOtwTests, self).setUp()
+        self.testbed = testbed.Testbed()
+        self.testbed.activate()
+        self.testbed.init_urlfetch_stub()
+
+        patcher = mock.patch('app.sc2.models.match.MatchModel.team1_names',
+                             new_callable=mock.PropertyMock(return_value=['Conrad', 'Hulk Hogan']))
+
+        self.team1_patcher = patcher.start()
+        self.addCleanup(patcher.stop)
+
+        patcher = mock.patch('app.sc2.models.match.MatchModel.team2_names',
+                             new_callable=mock.PropertyMock(return_value=['Stone Cold', 'Brett Hart']))
+        self.team2_patcher = patcher.start()
+        self.addCleanup(patcher.stop)
+
+        payload = '{"username": "SC2 Bot", "icon_emoji": ":fallout-thumb:", "fallback": "A match was played/closed", "attachments": [{"color": "good", "fields": [{"value": "Congratulations on the victory Randy S & Hulk H!\nBetter luck next time Stone C & Brett H.", "title": "Match Played"}]}], "channel": "@cberenik"}'
+        patcher = mock.patch('json.dumps', return_value=payload)
+        self.json_mock = patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def tearDown(self):
+        self.testbed.deactivate()
+
+    def test_message_sent_to_slack(self):
+        response = slack.alert_match_closed_async(MatchModel(team1_wins=2, team2_wins=1)).get_result()
+        self.assertEqual(200, response.status_code)
+
+
 class UpdateChannelTopicTests(TestCase):
     def setUp(self):
         super(UpdateChannelTopicTests, self).setUp()
-        mocker = mock.patch('app.sc2.domain.slack.urlfetch.fetch')
-        self.urlfetch_patcher = mocker.start()
-        self.addCleanup(mocker.stop)
+        patcher = mock.patch('app.sc2.domain.slack.urlfetch.fetch')
+        self.urlfetch_patcher = patcher.start()
+        self.addCleanup(patcher.stop)
 
-        mocker = mock.patch('app.sc2.models.match.MatchModel.team1_names',
-                            new_callable=mock.PropertyMock(return_value=['Randy Savage', 'Hulk Hogan']))
-        self.team1_patcher = mocker.start()
-        self.addCleanup(mocker.stop)
+        patcher = mock.patch('app.sc2.models.match.MatchModel.team1_names',
+                             new_callable=mock.PropertyMock(return_value=['Randy Savage', 'Hulk Hogan']))
+        self.team1_patcher = patcher.start()
+        self.addCleanup(patcher.stop)
 
-        mocker = mock.patch('app.sc2.models.match.MatchModel.team2_names',
-                            new_callable=mock.PropertyMock(return_value=['Stone Cold', 'Brett Hart']))
-        self.team2_patcher = mocker.start()
-        self.addCleanup(mocker.stop)
+        patcher = mock.patch('app.sc2.models.match.MatchModel.team2_names',
+                             new_callable=mock.PropertyMock(return_value=['Stone Cold', 'Brett Hart']))
+        self.team2_patcher = patcher.start()
+        self.addCleanup(patcher.stop)
         self.match = MatchModel()
 
     def test_makes_call_to_slack(self):
@@ -33,15 +66,15 @@ class UpdateChannelTopicTests(TestCase):
 class DetermineMatchWinnerLoserTests(TestCase):
     def setUp(self):
         super(DetermineMatchWinnerLoserTests, self).setUp()
-        mocker = mock.patch('app.sc2.models.match.MatchModel.team1_names',
-                            new_callable=mock.PropertyMock(return_value=['Randy Savage', 'Hulk Hogan']))
-        self.team1_patcher = mocker.start()
-        self.addCleanup(mocker.stop)
+        patcher = mock.patch('app.sc2.models.match.MatchModel.team1_names',
+                             new_callable=mock.PropertyMock(return_value=['Randy Savage', 'Hulk Hogan']))
+        self.team1_patcher = patcher.start()
+        self.addCleanup(patcher.stop)
 
-        mocker = mock.patch('app.sc2.models.match.MatchModel.team2_names',
-                            new_callable=mock.PropertyMock(return_value=['Stone Cold', 'Brett Hart']))
-        self.team2_patcher = mocker.start()
-        self.addCleanup(mocker.stop)
+        patcher = mock.patch('app.sc2.models.match.MatchModel.team2_names',
+                             new_callable=mock.PropertyMock(return_value=['Stone Cold', 'Brett Hart']))
+        self.team2_patcher = patcher.start()
+        self.addCleanup(patcher.stop)
         self.match = MatchModel()
 
     def test_chooses_team1_as_winner_when_they_win(self):

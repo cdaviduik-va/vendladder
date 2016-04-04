@@ -1,7 +1,7 @@
 """ Slack integration """
 from datetime import datetime
 import logging
-import urllib
+import json
 
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
@@ -21,14 +21,14 @@ def update_channel_topic_with_open_games(channel_id, open_matches):
         games_to_be_played = 'All games have been played! :boom:'
 
     # TODO: get auth token for slack
-    payload = urllib.urlencode({
+    payload = json.dumps({
         'token': 'asdf',
         'channel': channel_id,
         'purpose': games_to_be_played,
     })
 
     headers = {
-        'Content-type': 'application/x-www-form-urlencoded',
+        'Content-type': 'application/json',
     }
 
     urlfetch.fetch(
@@ -46,7 +46,7 @@ def alert_match_closed_async(match):
     :param match: the match that was closed
     """
     headers = {
-        'Content-type': 'application/x-www-form-urlencoded',
+        'Content-type': 'application/json',
     }
     info_dict = {
         "fallback": "A match was played/closed",
@@ -54,7 +54,7 @@ def alert_match_closed_async(match):
     }
     info_dict.update(get_message_data(match))
 
-    payload = urllib.urlencode(info_dict)
+    payload = json.dumps(info_dict)
 
     rpc = urlfetch.create_rpc()
     urlfetch.make_fetch_call(
