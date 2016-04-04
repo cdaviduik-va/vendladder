@@ -8,8 +8,8 @@ from google.appengine.ext import ndb
 from app.sc2.domain.season import lookup_current_season
 from app.sc2.models.game import GameModel
 from app.sc2.models.season import SeasonModel
-from app.utils import calculate_elo_rank
 from app.sc2.models.player import PlayerModel, PlayerRankModel, DEFAULT_IMAGE_URL
+from app.utils import calculate_elo_rank
 
 
 def create_player(battle_net_name, real_name=None, vendasta_email=None, score=None):
@@ -28,6 +28,17 @@ def create_player(battle_net_name, real_name=None, vendasta_email=None, score=No
     player_rank.put()
 
     return player
+
+
+def get_pretty_name(name):
+    """
+    Make the name of a user nice
+    :param name: Either a single name or a first and last name separated by a space
+    :return: The single name or the first and last name in the format "Firstname LastInitial"
+    """
+    names = name.strip().split(' ')
+    formatted_name = '{first} {last}'.format(first=names[0], last=names[1][0]) if len(names) == 2 else names[0]
+    return formatted_name
 
 
 def update_player(battle_net_name, **kwargs):
@@ -83,7 +94,8 @@ def lookup_players_for_season(season_id=None):
 def lookup_players_with_similar_score(battle_net_name, season_id=None, limit=5):
     target_player = get_player_details(battle_net_name)
     all_players = get_all_player_details_for_season()
-    sorted_players = sorted([ap for ap in all_players if ap.battle_net_name != target_player.battle_net_name], key=lambda player: abs(target_player.score - player.score))
+    sorted_players = sorted([ap for ap in all_players if ap.battle_net_name != target_player.battle_net_name],
+                            key=lambda player: abs(target_player.score - player.score))
     return sorted_players[:limit]
 
 

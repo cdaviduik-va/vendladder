@@ -4,13 +4,16 @@ Match domain module
 import time
 import itertools
 import logging
+
 from app.sc2.domain.player import update_player_ranks
 from app.sc2.domain.season import lookup_current_season
+from app.sc2.domain.slack import alert_match_closed_async
 from app.sc2.models.game import GameModel
 from app.sc2.models.match import MatchModel
 from app.sc2.models.player import PlayerRankModel
 
 DEFAULT_TEAM_SIZE = 2
+
 
 def create_match(team1, team2):
     """
@@ -24,9 +27,9 @@ def create_match(team1, team2):
     open_matches = lookup_open_matches()
     for match in open_matches:
         if sorted(team1) == sorted(match.team1_battle_net_names) or \
-            sorted(team1) == sorted(match.team1_battle_net_names) or \
-            sorted(team2) == sorted(match.team1_battle_net_names) or \
-            sorted(team2) == sorted(match.team2_battle_net_names):
+                        sorted(team1) == sorted(match.team1_battle_net_names) or \
+                        sorted(team2) == sorted(match.team1_battle_net_names) or \
+                        sorted(team2) == sorted(match.team2_battle_net_names):
             raise ValueError('A match already exists with the team: ' + '& '.join(match.team1_battle_net_names) + ' vs. ' + '& '.join(match.team2_battle_net_names))
 
     season_id = lookup_current_season(id_only=True)
@@ -41,6 +44,7 @@ def close_match(match_id):
     key = MatchModel.build_key(match_id, season_id)
     match = key.get()
     match.is_open = False
+    alerting_future = alert_match_closed_async(match)
 
     if match.team2_wins != match.team1_wins:
         # do not update rank if match was a tie
@@ -93,6 +97,7 @@ def close_match(match_id):
     #         match.team2_wins += 1
 
     match.put()
+    alerting_future.get_result()
 
 
 def get_match(match_id, season_id):
@@ -111,8 +116,10 @@ def lookup_games(limit=None):
     """ Return a list of games. """
     return GameModel.lookup_all(limit=limit)
 
+
 def log_time_diff(start_time):
     logging.debug('--- %s seconds ---', (time.time() - start_time))
+
 
 def get_suggested_matches(team_size=DEFAULT_TEAM_SIZE, include_players=None, exclude_players=None, ignore_open=False, limit=20):
     """
