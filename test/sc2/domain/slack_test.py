@@ -16,20 +16,22 @@ class AlertMatchClosedOtwTests(TestCase):
         self.testbed.activate()
         self.testbed.init_urlfetch_stub()
 
-        patcher = mock.patch('app.sc2.models.match.MatchModel.team1_names',
-                             new_callable=mock.PropertyMock(return_value=['Randy Savage', 'Hulk Hogan']))
+        data = {
+            'username': 'SC2 Bot',
+            'channel': '@cberenik',
+            'attachments': [{
+                'fallback': 'Match Played',
+                'color': 'good',
+                'fields': [{
+                    'title': 'Match Played',
+                    'value': 'Congratulations on the victory {winner}!\nBetter luck next time {loser}.',
+                }]
+            }],
+            "icon_emoji": ':fallout-thumb:',
+        }
 
-        self.team1_patcher = patcher.start()
-        self.addCleanup(patcher.stop)
-
-        patcher = mock.patch('app.sc2.models.match.MatchModel.team2_names',
-                             new_callable=mock.PropertyMock(return_value=['Stone Cold', 'Brett Hart']))
-        self.team2_patcher = patcher.start()
-        self.addCleanup(patcher.stop)
-
-        payload = '{"username": "SC2 Bot", "icon_emoji": ":fallout-thumb:", "fallback": "A match was played/closed", "attachments": [{"color": "good", "fields": [{"value": "Congratulations on the victory Randy S & Hulk H!\nBetter luck next time Stone C & Brett H.", "title": "Match Played"}]}], "channel": "@cberenik"}'
-        patcher = mock.patch('json.dumps', return_value=payload)
-        self.json_mock = patcher.start()
+        patcher = mock.patch('app.sc2.domain.slack.get_message_data', return_value=data)
+        self.message_data_mock = patcher.start()
         self.addCleanup(patcher.stop)
 
     def tearDown(self):

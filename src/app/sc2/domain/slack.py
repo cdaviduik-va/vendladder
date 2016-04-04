@@ -48,13 +48,7 @@ def alert_match_closed_async(match):
     headers = {
         'Content-type': 'application/json',
     }
-    info_dict = {
-        "fallback": "A match was played/closed",
-        "username": "SC2 Bot",
-    }
-    info_dict.update(get_message_data(match))
-
-    payload = json.dumps(info_dict)
+    payload = json.dumps(get_message_data(match))
 
     rpc = urlfetch.create_rpc()
     urlfetch.make_fetch_call(
@@ -102,7 +96,9 @@ def get_message_data(match):
         colour = 'danger'
 
     return {
+        'username': 'SC2 Bot',
         'attachments': [{
+            'fallback': title,
             'color': colour,
             'fields': [{
                 'title': title,
