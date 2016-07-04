@@ -8,11 +8,14 @@ from sc2reader.utils import Length
 
 @loggable
 class ContextLoader(object):
-    name = 'ContextLoader'
+    name='ContextLoader'
 
     def handleInitGame(self, event, replay):
         replay.units = set()
         replay.unit = dict()
+
+        # keep track of last TargetAbilityEvent for UpdateTargetAbilityEvent
+        self.last_target_ability_event = {}
 
     def handleGameEvent(self, event, replay):
         self.load_message_game_player(event, replay)
@@ -20,17 +23,24 @@ class ContextLoader(object):
     def handleMessageEvent(self, event, replay):
         self.load_message_game_player(event, replay)
 
-    def handleCommandEvent(self, event, replay):
+    def handleAbilityEvent(self, event, replay):
         if not replay.datapack:
             return
 
         if event.ability_id not in replay.datapack.abilities:
+            # safeguard against missing abilities
+            if event.player.pid in self.last_target_ability_event:
+                del self.last_target_ability_event[event.player.pid]
+
             if not getattr(replay, 'marked_error', None):
                 replay.marked_error = True
                 event.logger.error(replay.filename)
-                event.logger.error("Release String: " + replay.release_string)
+                event.logger.error("Release String: "+replay.release_string)
                 for player in replay.players:
-                    event.logger.error("\t{0}".format(player))
+                    try:
+                        event.logger.error("\t"+unicode(player).encode('ascii', 'ignore'))
+                    except:
+                        event.logger.error("\t"+player.__str__())
 
             self.logger.error("{0}\t{1}\tMissing ability {2:X} from {3}".format(event.frame, event.player.name, event.ability_id, replay.datapack.__class__.__name__))
 
@@ -43,7 +53,9 @@ class ContextLoader(object):
         elif event.other_unit_id is not None:
             self.logger.error("Other unit {0} not found".format(event.other_unit_id))
 
-    def handleTargetUnitCommandEvent(self, event, replay):
+    def handleTargetAbilityEvent(self, event, replay):
+        self.last_target_ability_event[event.player.pid] = event
+
         if not replay.datapack:
             return
 
@@ -58,6 +70,17 @@ class ContextLoader(object):
             unit = replay.datapack.create_unit(event.target_unit_id, event.target_unit_type, event.frame)
             event.target = unit
             replay.objects[event.target_unit_id] = unit
+
+    def handleUpdateTargetAbilityEvent(self, event, replay):
+        # We may not find a TargetAbilityEvent before finding an
+        # UpdateTargetAbilityEvent, perhaps due to Missing Abilities in the
+        # datapack
+        if event.player.pid in self.last_target_ability_event:
+            # store corresponding TargetAbilityEvent data in this event
+            # currently using for *MacroTracker only, so only need ability name
+            event.ability_name = self.last_target_ability_event[event.player.pid].ability_name
+
+        self.handleTargetAbilityEvent(event, replay)
 
     def handleSelectionEvent(self, event, replay):
         if not replay.datapack:
@@ -85,8 +108,14 @@ class ContextLoader(object):
 
             # If we have tracker events, the unit must already exist and must already
             # have the correct unit type.
+            elif unit_id in replay.objects:
+              unit = replay.objects[unit_id]
+
+            # Except when it doesn't.
             else:
-                unit = replay.objects[unit_id]
+              unit = replay.datapack.create_unit(unit_id, unit_type, event.frame)
+              replay.objects[unit_id] = unit
+
 
             # Selection events hold flags on units (like hallucination)
             unit.apply_flags(intra_subgroup_flags)
@@ -98,11 +127,6 @@ class ContextLoader(object):
     def handleResourceTradeEvent(self, event, replay):
         event.sender = event.player
         event.recipient = replay.players[event.recipient_id]
-
-    def handleHijackReplayGameEvent(self, event, replay):
-        replay.resume_from_replay = True
-        replay.resume_method = event.method
-        replay.resume_user_info = event.user_infos
 
     def handlePlayerStatsEvent(self, event, replay):
         self.load_tracker_player(event, replay)
@@ -254,7 +278,7 @@ class ContextLoader(object):
                 event.player = replay.human[event.pid]
                 event.player.events.append(event)
             elif event.pid != 16:
-                self.logger.error("Bad pid ({0}) for event {1} at {2} [{3}].".format(event.pid, event.__class__, Length(seconds=event.second), event.frame))
+                self.logger.error("Bad pid ({0}) for event {1} at {2} [{3}].".format(event.pid, event.__class__, Length(seconds=event.second), event.frames))
             else:
                 pass  # This is a global event
 

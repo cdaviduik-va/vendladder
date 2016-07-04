@@ -73,7 +73,7 @@ class Unit(object):
         self.killed_units = list()
 
         #: The unique in-game id for this unit. The id can sometimes be zero because
-        #: TargetUnitCommandEvents will create a new unit with id zero when a unit
+        #: TargetAbilityEvents will create a new unit with id zero when a unit
         #: behind the fog of war is targetted.
         self.id = unit_id
 
@@ -401,11 +401,12 @@ for version in ('16117', '17326', '18092', '19458', '22612', '24944'):
 hots_builds = dict()
 for version in ('base', '23925', '24247', '24764'):
     hots_builds[version] = load_build('HotS', version)
+hots_builds['38215'] = load_build('LotV', 'base')
+hots_builds['38215'].id = '38215'
 
 # Load LotV Data
 lotv_builds = dict()
 for version in ('base', ):
     lotv_builds[version] = load_build('LotV', version)
-
 
 datapacks = builds = {'WoL': wol_builds, 'HotS': hots_builds, 'LotV': lotv_builds}

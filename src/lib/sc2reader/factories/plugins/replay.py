@@ -62,7 +62,7 @@ def toDict(replay):
 
     # Consolidate replay metadata into dictionary
     return {
-        'region': getattr(replay, 'region', None),
+        'gateway': getattr(replay, 'gateway', None),
         'map_name': getattr(replay, 'map_name', None),
         'file_time': getattr(replay, 'file_time', None),
         'filehash': getattr(replay, 'filehash', None),
@@ -94,7 +94,7 @@ def toDict(replay):
 def APMTracker(replay):
     """
     Builds ``player.aps`` and ``player.apm`` dictionaries where an action is
-    any Selection, Hotkey, or Command event.
+    any Selection, Hotkey, or Ability event.
 
     Also provides ``player.avg_apm`` which is defined as the sum of all the
     above actions divided by the number of seconds played by the player (not
@@ -106,9 +106,9 @@ def APMTracker(replay):
         player.seconds_played = replay.length.seconds
 
         for event in player.events:
-            if event.name == 'SelectionEvent' or 'CommandEvent' in event.name or 'ControlGroup' in event.name:
-                player.aps[event.second] += 1
-                player.apm[int(event.second/60)] += 1
+            if event.name == 'SelectionEvent' or 'AbilityEvent' in event.name or 'Hotkey' in event.name:
+                player.aps[event.second] += 1.4
+                player.apm[int(event.second/60)] += 1.4
 
             elif event.name == 'PlayerLeaveEvent':
                 player.seconds_played = event.second
@@ -120,10 +120,9 @@ def APMTracker(replay):
 
     return replay
 
-
 @plugin
 def SelectionTracker(replay):
-    debug = replay.opt['debug']
+    debug = replay.opt.debug
     logger = log_utils.get_logger(SelectionTracker)
 
     for person in replay.entities:

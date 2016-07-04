@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals, division
 
+import struct
+
 from sc2reader.exceptions import ParseError, ReadError
 from sc2reader.objects import *
 from sc2reader.events.game import *
@@ -32,7 +34,7 @@ class InitDataReader(object):
                 hero=data.read_aligned_string(data.read_bits(9)) if replay.base_build >= 34784 else None,
                 skin=data.read_aligned_string(data.read_bits(9)) if replay.base_build >= 34784 else None,
                 mount=data.read_aligned_string(data.read_bits(9)) if replay.base_build >= 34784 else None,
-                toon_handle=data.read_aligned_string(data.read_bits(7)) if replay.base_build >= 34784 else None,
+                toon_handle=data.read_aligned_string(data.read_bits(7)) if replay.base_build >= 34784 else None,                
             ) for i in range(data.read_bits(5))],
 
             game_description=dict(
@@ -45,7 +47,7 @@ class InitDataReader(object):
                     random_races=data.read_bool(),
                     battle_net=data.read_bool(),
                     amm=data.read_bool(),
-                    ranked=data.read_bool() if replay.base_build >= 34784 else None,
+                    ranked=data.read_bool() if replay.base_build >= 34784 and replay.base_build < 38215 else None,
                     competitive=data.read_bool(),
                     practice=data.read_bool() if replay.base_build >= 34784 else None,
                     cooperative=data.read_bool() if replay.base_build >= 34784 else None,
@@ -83,6 +85,7 @@ class InitDataReader(object):
                 default_ai_build=data.read_bits(8 if replay.base_build >= 38749 else 7) if replay.base_build >= 23925 else None,
                 cache_handles=[DepotFile(data.read_aligned_bytes(40)) for i in range(data.read_bits(6 if replay.base_build >= 21955 else 4))],
                 has_extension_mod=data.read_bool() if replay.base_build >= 27950 else None,
+                has_nonBlizzardExtensionMod=data.read_bool() if replay.base_build >= 42932 else None,
                 is_blizzardMap=data.read_bool(),
                 is_premade_ffa=data.read_bool(),
                 is_coop_mode=data.read_bool() if replay.base_build >= 23925 else None,
@@ -118,6 +121,8 @@ class InitDataReader(object):
                     commander_level=data.read_uint32() if replay.base_build >= 36442 else None,
                     has_silence_penalty=data.read_bool() if replay.base_build >= 38215 else None,
                     tandem_id=data.read_bits(4) if replay.base_build >= 39576 and data.read_bool() else None,
+                    commander_mastery_level=data.read_uint32() if replay.base_build >= 42932 else None,
+                    commander_mastery_talents=[data.read_uint32() for i in range(data.read_bits(3))] if replay.base_build >= 42932 else None,
                 ) for i in range(data.read_bits(5))],
                 random_seed=data.read_uint32(),
                 host_user_id=data.read_bits(4) if data.read_bool() else None,
@@ -220,7 +225,7 @@ class MessageEventsReader(object):
 
             elif flag == 2:  # Loading progress message
                 progress = data.read_uint32()-2147483648
-                packets.append(ProgressEvent(frame, pid, progress))
+                packets.append(PacketEvent(frame, pid, progress))
 
             elif flag == 3:  # Server ping message
                 pass
@@ -321,7 +326,7 @@ class GameEventsReader_Base(object):
 
         # method short cuts, avoid dict lookups
         EVENT_DISPATCH = self.EVENT_DISPATCH
-        debug = replay.opt['debug']
+        debug = replay.opt.debug
         tell = data.tell
         read_frames = data.read_frames
         read_bits = data.read_bits
@@ -918,8 +923,10 @@ class GameEventsReader_16561(GameEventsReader_15405):
         )
 
     def decrement_game_time_remaining_event(self, data):
+        # really this should be set to 19, and a new GameEventsReader_41743 should be introduced that specifies 32 bits.
+        # but I dont care about ability to read old replays.
         return dict(
-            decrement_ms=data.read_bits(19)
+            decrement_ms=data.read_bits(32)
         )
 
 
@@ -1354,7 +1361,7 @@ class GameEventsReader_24247(GameEventsReader_HotSBeta):
             21: (None, self.save_game_event),                     # New
             22: (None, self.save_game_done_event),                # Override
             23: (None, self.load_game_done_event),                # Override
-            43: (HijackReplayGameEvent, self.hijack_replay_game_event),  # New
+            43: (None, self.hijack_replay_game_event),            # New
             62: (None, self.trigger_target_mode_update_event),    # New
             101: (PlayerLeaveEvent, self.game_user_leave_event),  # New
             102: (None, self.game_user_join_event),               # New
@@ -1384,7 +1391,7 @@ class GameEventsReader_24247(GameEventsReader_HotSBeta):
     def hijack_replay_game_event(self, data):
         return dict(
             user_infos=[dict(
-                game_user_id=data.read_bits(4),
+                game_unit_id=data.read_bits(4),
                 observe=data.read_bits(2),
                 name=data.read_aligned_string(data.read_uint8()),
                 toon_handle=data.read_aligned_string(data.read_bits(7)) if data.read_bool() else None,
@@ -1508,7 +1515,6 @@ class GameEventsReader_27950(GameEventsReader_26490):
             clan_logo=DepotFile(data.read_aligned_bytes(40)) if data.read_bool() else None,
         )
 
-
 class GameEventsReader_34784(GameEventsReader_27950):
 
     def __init__(self):
@@ -1519,7 +1525,7 @@ class GameEventsReader_34784(GameEventsReader_27950):
             61: (None, self.trigger_hotkey_pressed_event),
             103: (None, self.command_manager_state_event),
             104: (None, self.command_update_target_point_event),
-            105: (None, self.command_update_target_unit_event),
+            105: (UpdateTargetAbilityEvent, self.command_update_target_unit_event),
             106: (None, self.trigger_anim_length_query_by_name_event),
             107: (None, self.trigger_anim_length_query_by_props_event),
             108: (None, self.trigger_anim_offset_event),
@@ -1590,19 +1596,24 @@ class GameEventsReader_34784(GameEventsReader_27950):
 
     def command_update_target_unit_event(self, data):
         return dict(
-            target=dict(
-                target_unit_flags=data.read_uint16(),
+            flags=0,       # fill me with previous TargetUnitEvent.flags
+            ability=None,  # fill me with previous TargetUnitEvent.ability
+            data=('TargetUnit', dict(
+                flags=data.read_uint16(),
                 timer=data.read_uint8(),
-                tag=data.read_uint32(),
-                snapshot_unit_link=data.read_uint16(),
-                snapshot_control_player_id=data.read_bits(4) if data.read_bool() else None,
-                snapshot_upkeep_player_id=data.read_bits(4) if data.read_bool() else None,
-                snapshot_point=dict(
+                unit_tag=data.read_uint32(),
+                unit_link=data.read_uint16(),
+                control_player_id=data.read_bits(4) if data.read_bool() else None,
+                upkeep_player_id=data.read_bits(4) if data.read_bool() else None,
+                point=dict(
                     x=data.read_bits(20),
                     y=data.read_bits(20),
                     z=data.read_bits(32) - 2147483648,
-                )
-            )
+                ),
+            )),
+            sequence=0,          # fill me with previous TargetUnitEvent.flags
+            other_unit_tag=None, # fill me with previous TargetUnitEvent.flags
+            unit_group=None,     # fill me with previous TargetUnitEvent.flags
         )
 
     def command_event(self, data):
@@ -1710,7 +1721,6 @@ class GameEventsReader_34784(GameEventsReader_27950):
             leave_reason=data.read_bits(4)
         )
 
-
 class GameEventsReader_36442(GameEventsReader_34784):
 
     def control_group_update_event(self, data):
@@ -1726,6 +1736,31 @@ class GameEventsReader_36442(GameEventsReader_34784):
         )
 
 class GameEventsReader_38215(GameEventsReader_36442):
+
+    def __init__(self):
+        super(GameEventsReader_38215, self).__init__()
+
+        self.EVENT_DISPATCH.update({
+            76: (None, self.trigger_command_error_event),
+            92: (None, self.trigger_mousewheel_event),   # 172 in protocol38125.py
+        })
+
+    def trigger_command_error_event(self, data):
+        return dict(
+            error=data.read_uint32() - 2147483648,
+            ability=dict(
+                ability_link=data.read_uint16(),
+                ability_command_index=data.read_bits(5),
+                ability_command_data=data.read_uint8() if data.read_bool() else None,
+            ) if data.read_bool() else None,
+        )
+
+    def trigger_mousewheel_event(self, data):
+        # 172 in protocol38125.py
+        return dict(
+            wheelspin=data.read_uint16()-32768,   # 171 in protocol38125.py
+            flags=data.read_uint8() - 128,        # 112 in protocol38125.py
+        )
 
     def command_event(self, data):
         # this function is exactly the same as command_event() from GameEventsReader_36442
@@ -1812,6 +1847,7 @@ class GameEventsReader_38749(GameEventsReader_38215):
 class GameEventsReader_38996(GameEventsReader_38749):
 
     def trigger_ping_event(self, data):
+        print('yo')
         return dict(
             point=dict(
                 x=data.read_uint32() - 2147483648,

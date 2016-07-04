@@ -101,9 +101,7 @@ class Entity(object):
         self.handicap = slot_data['handicap']
 
         #: The entity's team number. None for observers
-        self.team_id = None
-        if slot_data['team_id'] is not None:
-            self.team_id = slot_data['team_id'] + 1
+        self.team_id = slot_data['team_id']+1
 
         #: A flag indicating if the person is a human or computer
         #: Really just a shortcut for isinstance(entity, User)
@@ -124,7 +122,7 @@ class Entity(object):
 
         #:
         self.hero_mount = slot_data['mount']
-
+        
         #: The unique Battle.net account identifier in the form of
         #: <region_id>-S2-<subregion>-<toon_id>
         self.toon_handle = slot_data['toon_handle']
@@ -134,6 +132,9 @@ class Entity(object):
 
         #: The Battle.net region the entity is registered to
         self.region = GATEWAY_LOOKUP[int(parts[0])]
+
+        #: Deprecated, see Entity.region
+        self.gateway = self.region
 
         #: The Battle.net subregion the entity is registered to
         self.subregion = int(parts[2])
@@ -208,6 +209,9 @@ class Player(object):
 
         #: The Battle.net region the entity is registered to
         self.region = GATEWAY_LOOKUP[detail_data['bnet']['region']]
+
+        #: Deprecated, see `Player.region`
+        self.gateway = self.region
 
         #: The Battle.net subregion the entity is registered to
         self.subregion = detail_data['bnet']['subregion']
@@ -355,7 +359,12 @@ class PlayerSummary():
     #: Subregion id of player
     subregion = int()
 
-    #: The player's region, such as us, eu, sea
+    #: The player's gateway, such as us, eu
+    gateway = str()
+
+    #: The player's region, such as na, la, eu or ru.  This is
+    # provided for convenience, but as of 20121018 is strictly a
+    # function of gateway and subregion.
     region = str()
 
     #: unknown1
@@ -530,9 +539,14 @@ class MapInfo(object):
 
         if self.version >= 0x1f:
             self.unknown3 = data.read_cstring()
-            self.unknown4 = data.read_uint32()
 
-        self.unknown5 = data.read_uint32()
+        if self.version >= 0x26:
+            self.unknown4 = data.read_cstring()
+
+        if self.version >= 0x1f:
+            self.unknown5 = data.read_uint32()
+
+        self.unknown6 = data.read_uint32()
 
         #: The type of fog of war used on the map
         self.fog_type = data.read_cstring()
@@ -555,6 +569,10 @@ class MapInfo(object):
         #: The map base height (what is that?). This value is 4096*Base Height in the editor (giving a decimal value).
         self.base_height = data.read_uint32()/4096
 
+        # Leave early so we dont barf. Turns out ggtracker doesnt need
+        # any of the map data thats loaded below.
+        return
+        
         #: Load screen type: 0 = default, 1 = custom
         self.load_screen_type = data.read_uint32()
 
@@ -562,7 +580,7 @@ class MapInfo(object):
         self.load_screen_path = data.read_cstring()
 
         #: Unknown string, usually empty
-        self.unknown6 = data.read_bytes(data.read_uint16()).decode('utf8')
+        self.unknown7 = data.read_bytes(data.read_uint16()).decode('utf8')
 
         #: Load screen image scaling strategy: 0 = normal, 1 = aspect scaling, 2 = stretch the image.
         self.load_screen_scaling = data.read_uint32()
@@ -604,16 +622,16 @@ class MapInfo(object):
         #:
         self.data_flags = data.read_uint32()
 
-        self.unknown7 = data.read_uint32()
+        self.unknown8 = data.read_uint32()
 
         if self.version >= 0x19:
-            self.unknown8 = data.read_bytes(8)
+            self.unknown9 = data.read_bytes(8)
 
         if self.version >= 0x1f:
-            self.unknown9 = data.read_bytes(9)
+            self.unknown10 = data.read_bytes(9)
 
         if self.version >= 0x20:
-            self.unknown10 = data.read_bytes(4)
+            self.unknown11 = data.read_bytes(4)
 
         #: The number of players enabled via the data editor
         self.player_count = data.read_uint32()
