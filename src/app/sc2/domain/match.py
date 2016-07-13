@@ -186,7 +186,7 @@ def get_suggested_matches(team_size=DEFAULT_TEAM_SIZE, include_players=None, exc
             # skip any matches where same player is on both team
             continue
 
-        if include_players and not (set(team1_names) & set(include_players) or set(team2_names) & set(include_players)):
+        if not teams_include_players(team1_names, team2_names, include_players):
             # skip teams if players are not in "include" list
             continue
 
@@ -196,6 +196,19 @@ def get_suggested_matches(team_size=DEFAULT_TEAM_SIZE, include_players=None, exc
     logging.debug('Number of potential matches: %d', len(potential_matches))
     log_time_diff(start_time)
     return potential_matches[:limit]
+
+
+def teams_include_players(team1_names, team2_names, include_players=None):
+    """
+    Ensures that all the include_players are specified between both teams.
+    :param team1_names: List of team1 names.
+    :param team2_names: List of team2 names.
+    :param include_players: List of names required to be present on teams.
+    :return: True, if include_players names are present between both teams.
+    """
+    include_players = include_players or []
+    all_team_names = set(team1_names + team2_names)
+    return set(include_players).issubset(all_team_names)
 
 
 class SuggestedMatch(object):
