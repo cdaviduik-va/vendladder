@@ -1,2 +1,4 @@
 .idea*
+*.iml
 src/static/lib/*
+src/lib/sc2reader-*

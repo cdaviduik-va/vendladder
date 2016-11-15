@@ -6,6 +6,7 @@ import json
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
 
+import settings
 from app.sc2.domain.player import get_pretty_name
 
 
@@ -45,6 +46,10 @@ def alert_match_closed_async(match):
     Send a message to slack when a match is closed
     :param match: the match that was closed
     """
+    if settings.IS_DEV_APPSERVER:
+        # Don't post to slack if on local environment
+        raise ndb.Return(None)
+
     headers = {
         'Content-type': 'application/json',
     }
